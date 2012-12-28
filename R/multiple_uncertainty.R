@@ -16,9 +16,10 @@
 #' Hence the optimal policy at time t is given by the policy function D[,t].  
 #' Values of D[,t] correspond to the index of h_grid.  Indices of of D[,t] correspond to states in y_grid.  
 #' @export
-SDP_multiple_uncertainty <- function(f, p, x_grid, h_grid, Tmax = 25,
-                                     sigmas =c(sigma_g=0.3, sigma_m=0, sigma_i=0), 
-                                     pdfn = pdfn, profit = function(x,h) pmin(x, h)){
+SDP_multiple_uncertainty <- 
+  function(f, p, x_grid, h_grid, Tmax = 25,
+           sigmas =c(sigma_g=0.3, sigma_m=0, sigma_i=0), 
+           pdfn = pdfn, profit = function(x,h) pmin(x, h)){
   
     sigma_g <- sigmas[1]      
     sigma_m <- sigmas[2]
@@ -103,5 +104,29 @@ FUN <- function(P, mu, s){
 #' 
 #' @export
 pdfn <- Vectorize(FUN)
+
+
+
+
+lnorm_FUN <- function(P, mu, s) {
+    if (mu == 0) {
+        as.integer(P == 0)
+    } else if (s > 0) {
+        if (mu > 0) {
+            dlnorm(P/mu, 0, s)
+        }
+    } else {
+        # delta spike
+        P <- snap_to_grid(P, x_grid)
+        mu <- snap_to_grid(mu, x_grid)
+        as.numeric(as.integer(P == mu))
+    }
+}
+
+
+#' log-normal noise function
+#' @export
+pdfn_lnorm <- Vectorize(lnorm_FUN)
+
 
 
