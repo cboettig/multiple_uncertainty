@@ -98,6 +98,10 @@ FUN <- function(P, mu, s){
     as.numeric(as.integer(P == mu))
   }
 }
+
+
+#' 
+#' @export
 pdfn <- Vectorize(FUN)
 
 
