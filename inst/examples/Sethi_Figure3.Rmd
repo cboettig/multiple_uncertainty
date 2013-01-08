@@ -13,6 +13,14 @@ opts_knit$set(upload.fun = socialR::notebook.url)
 opts_chunk$set(dev.args=list(bg="transparent"), cache=TRUE, cache.path = "Sethi_Figure3/")
 ```
 
+``` {r logistic, eval=FALSE, include=FALSE}
+f <- function(x,h,p){
+  sapply(x, function(x){
+  	S = max(x - h, 0)
+  	p[1] * S * (1 - S/p[2]) + S
+  })
+}
+````
 
 ``` {r stateeq}
 f <- function(x, h, p){
@@ -21,7 +29,6 @@ f <- function(x, h, p){
   s <- pmax(x-h, 0)
   A * s/(1 + B * s)
 }
-profit = function(x,h) pmin(x, h)
 ```
 
 ```{r }
@@ -36,7 +43,8 @@ h_grid <- seq(xmin, xmax, length = n_h)
 delta <- 0.05
 xT <- 0
 OptTime <- 5
-sigma_g=0.3
+sigma_g <- 0.3
+profit <- function(x,h) pmin(x, h)
 ````
 
 
