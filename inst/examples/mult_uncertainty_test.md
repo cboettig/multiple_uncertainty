@@ -26,7 +26,7 @@ pars <- c(1.5, 0.05)
 K <- (pars[1] - 1)/pars[2]
 xmin <- 0
 xmax <- 1.5 * K
-n_x <- 150
+n_x <- 500
 n_h <- n_x
 x_grid <- seq(xmin, xmax, length = n_x)
 h_grid <- seq(xmin, xmax, length = n_h)
@@ -70,13 +70,5 @@ policies <- melt(data.frame(stock = x_grid, g = x_grid[g$D[, 1]],
 ```
 
 
-
-```r
-q1 <- ggplot(policies, aes(stock, stock - value, color = variable)) + 
-    geom_point() + xlab("stock size") + ylab("escapement")
-q1
-```
-
-![plot of chunk policyfunctions](http://carlboettiger.info/assets/figures/2012-12-27-15-59-25-e1819cda84-policyfunctions.png) 
 
 
