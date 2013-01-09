@@ -17,7 +17,18 @@
 ```
 
 ```
-## data.table 1.8.6 For help type: help("data.table")
+## Loading required package: pdgControl
+```
+
+```
+## Attaching package: 'pdgControl'
+```
+
+```
+## The following object(s) are masked from 'package:multipleuncertainty':
+## 
+## SDP_multiple_uncertainty, active_adaptive_simulate, dp_optim,
+## model_uncertainty, setmodel, update_belief
 ```
 
 

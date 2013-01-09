@@ -4,7 +4,6 @@ require(multipleuncertainty)
 require(reshape2)
 require(ggplot2)
 require(data.table)
-require(pdgControl)
 ````
 
 ```{r plotting, include=FALSE}
@@ -77,48 +76,16 @@ Determine the policies for each of the scenarios (noise combinations).
 
 ``` {r runall}
 lvl <- 0.5
-````
-
-``` {r }
-det <- scenario(0.01, 0.00, 0.00)
-````
-
-``` {r }
-all_low <- scenario(0.1, 0.1, 0.1)
-````
-
-``` {r }
-g   <- scenario(lvl, 0, 0)
-````
-
-``` {r }
-m   <- scenario(0, lvl, 0)
-````
-
-``` {r }
-i   <- scenario(0, 0, lvl)
-````
-
-``` {r }
-gm  <- scenario(lvl, lvl, 0)
-````
-
-``` {r }
-gi  <- scenario(lvl, 0, lvl)
-````
-
-``` {r }
-mi  <- scenario(0, lvl, lvl)
-````
-
-``` {r }
-gmi <- scenario(lvl, lvl, lvl)
-````
-
-
-```{r }
-low <- all_low
-````
+scenarios = list(det = c(0.01, 0.00, 0.00)
+low = c(0.1, 0.1, 0.1)
+g   = c(lvl, 0, 0)
+m   = c(0, lvl, 0)
+i   = c(0, 0, lvl)
+gm  = c(lvl, lvl, 0)
+gi  = c(lvl, 0, lvl)
+mi  = c(0, lvl, lvl)
+gmi = c(lvl, lvl, lvl))
+```
 
 
 ### plots
