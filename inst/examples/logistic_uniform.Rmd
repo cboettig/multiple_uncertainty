@@ -159,7 +159,7 @@ ggplot(value) +
 
 ## Simulations
 
-``` {r simfn, rerun=TRUE} 
+``` {r simfn, dependson="sethiplots"} 
 simulatereps <- function(opt, true_g, true_m, true_i){
 
   z_g <- function() 1+(2*runif(1, 0,  1)-1) * true_g
