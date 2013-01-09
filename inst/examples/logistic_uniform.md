@@ -17,6 +17,10 @@
 ```
 
 ```
+## data.table 1.8.6 For help type: help("data.table")
+```
+
+```
 ## Loading required package: pdgControl
 ```
 
@@ -277,42 +281,13 @@ allcases <- lapply(policyfn, function(policyfn_i) {
 })
 ```
 
-```
-## Error: could not find function "ForwardSimulate"
-```
-
 
 
 ```r
 sims <- unlist(allcases, recursive = FALSE)
-```
-
-```
-## Error: object 'allcases' not found
-```
-
-```r
 dat <- melt(sims, id = names(sims[[1]][[1]]))
-```
-
-```
-## Error: object 'sims' not found
-```
-
-```r
 dt <- data.table(dat)
-```
-
-```
-## Error: object 'dat' not found
-```
-
-```r
 setnames(dt, c("L2", "L1"), c("reps", "uncertainty"))  # names are nice
-```
-
-```
-## Error: x is not a data.table or data.frame
 ```
 
 
@@ -326,9 +301,7 @@ ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + geom_line(aes(
     harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
-```
-## Error: object 'reps' not found
-```
+![plot of chunk onerep](http://carlboettiger.info/assets/figures/2013-01-08-16-31-02-a06af9b44f-onerep.png) 
 
 
 This plot summarizes the stock dynamics by visualizing the replicates.
@@ -336,38 +309,425 @@ This plot summarizes the stock dynamics by visualizing the replicates.
 
 ```r
 p1 <- ggplot(subset(dt, fishstock > 0))
-```
-
-```
-## Error: object 'fishstock' not found
-```
-
-```r
 p1 + geom_line(aes(time, fishstock, group = reps), alpha = 0.1) + facet_wrap(~uncertainty)
 ```
 
-```
-## Error: object 'p1' not found
-```
+![the induced dynamics in the stock size over time, for all replicates, by scenario](http://carlboettiger.info/assets/figures/2013-01-08-16-31-30-a06af9b44f-stock.png) 
 
 
 
 
 ```r
 profits <- dt[, sum(profit), by = c("reps", "uncertainty")]
-```
-
-```
-## Error: invalid 'type' (closure) of argument
-```
-
-```r
 ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
 ```
 
 ```
-## Error: object 'profits' not found
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
 ```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+```
+## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust
+## this.
+```
+
+![the distribution of profits by scenario](http://carlboettiger.info/assets/figures/2013-01-08-16-31-55-a06af9b44f-profits.png) 
 
 
 Summary statistics 
@@ -375,18 +735,7 @@ Summary statistics
 
 ```r
 means <- profits[, mean(V1), by = uncertainty]
-```
-
-```
-## Error: object 'profits' not found
-```
-
-```r
 sds <- profits[, sd(V1), by = uncertainty]
-```
-
-```
-## Error: object 'profits' not found
 ```
 
 
@@ -405,18 +754,40 @@ print(xtable(matrix(means$V1, nrow = length(noise), dimnames = list(uncertaintie
     uncertainties))), type = "html")
 ```
 
-```
-## Error: object 'means' not found
-```
+<!-- html table generated in R 2.15.2 by xtable 1.7-0 package -->
+<!-- Tue Jan  8 16:32:10 2013 -->
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> det </TH> <TH> low </TH> <TH> growth </TH> <TH> measure </TH> <TH> implement </TH> <TH> growth_measure </TH> <TH> growth_implement </TH> <TH> measure_implement </TH> <TH> all </TH>  </TR>
+  <TR> <TD align="right"> det </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 12.93 </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 12.93 </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 12.93 </TD> <TD align="right"> 12.93 </TD> </TR>
+  <TR> <TD align="right"> low </TD> <TD align="right"> 12.72 </TD> <TD align="right"> 12.86 </TD> <TD align="right"> 12.71 </TD> <TD align="right"> 12.77 </TD> <TD align="right"> 12.72 </TD> <TD align="right"> 12.72 </TD> <TD align="right"> 12.79 </TD> <TD align="right"> 12.81 </TD> <TD align="right"> 12.68 </TD> </TR>
+  <TR> <TD align="right"> growth </TD> <TD align="right"> 13.14 </TD> <TD align="right"> 12.81 </TD> <TD align="right"> 12.52 </TD> <TD align="right"> 12.85 </TD> <TD align="right"> 13.04 </TD> <TD align="right"> 12.59 </TD> <TD align="right"> 12.63 </TD> <TD align="right"> 12.63 </TD> <TD align="right"> 13.14 </TD> </TR>
+  <TR> <TD align="right"> measure </TD> <TD align="right"> 11.48 </TD> <TD align="right"> 11.64 </TD> <TD align="right"> 11.58 </TD> <TD align="right"> 11.57 </TD> <TD align="right"> 11.58 </TD> <TD align="right"> 11.41 </TD> <TD align="right"> 11.65 </TD> <TD align="right"> 11.50 </TD> <TD align="right"> 11.58 </TD> </TR>
+  <TR> <TD align="right"> implement </TD> <TD align="right"> 12.01 </TD> <TD align="right"> 12.14 </TD> <TD align="right"> 12.10 </TD> <TD align="right"> 12.05 </TD> <TD align="right"> 12.13 </TD> <TD align="right"> 12.08 </TD> <TD align="right"> 12.09 </TD> <TD align="right"> 12.11 </TD> <TD align="right"> 12.15 </TD> </TR>
+  <TR> <TD align="right"> growth_measure </TD> <TD align="right"> 11.61 </TD> <TD align="right"> 11.41 </TD> <TD align="right"> 11.71 </TD> <TD align="right"> 12.04 </TD> <TD align="right"> 12.04 </TD> <TD align="right"> 11.42 </TD> <TD align="right"> 11.66 </TD> <TD align="right"> 11.67 </TD> <TD align="right"> 11.51 </TD> </TR>
+  <TR> <TD align="right"> growth_implement </TD> <TD align="right"> 12.16 </TD> <TD align="right"> 11.97 </TD> <TD align="right"> 12.18 </TD> <TD align="right"> 11.75 </TD> <TD align="right"> 12.17 </TD> <TD align="right"> 12.01 </TD> <TD align="right"> 12.20 </TD> <TD align="right"> 12.02 </TD> <TD align="right"> 12.12 </TD> </TR>
+  <TR> <TD align="right"> measure_implement </TD> <TD align="right"> 11.36 </TD> <TD align="right"> 11.33 </TD> <TD align="right"> 11.43 </TD> <TD align="right"> 11.46 </TD> <TD align="right"> 11.48 </TD> <TD align="right"> 11.38 </TD> <TD align="right"> 11.45 </TD> <TD align="right"> 11.49 </TD> <TD align="right"> 11.27 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 11.26 </TD> <TD align="right"> 11.47 </TD> <TD align="right"> 11.58 </TD> <TD align="right"> 11.30 </TD> <TD align="right"> 11.59 </TD> <TD align="right"> 11.15 </TD> <TD align="right"> 11.60 </TD> <TD align="right"> 11.78 </TD> <TD align="right"> 11.33 </TD> </TR>
+   </TABLE>
 
 ```r
 print(xtable(matrix(sds$V1, nrow = length(noise), dimnames = list(uncertainties, 
     uncertainties))), type = "html")
 ```
 
-```
-## Error: object 'sds' not found
-```
+<!-- html table generated in R 2.15.2 by xtable 1.7-0 package -->
+<!-- Tue Jan  8 16:32:10 2013 -->
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> det </TH> <TH> low </TH> <TH> growth </TH> <TH> measure </TH> <TH> implement </TH> <TH> growth_measure </TH> <TH> growth_implement </TH> <TH> measure_implement </TH> <TH> all </TH>  </TR>
+  <TR> <TD align="right"> det </TD> <TD align="right"> 0.05 </TD> <TD align="right"> 0.04 </TD> <TD align="right"> 0.04 </TD> <TD align="right"> 0.04 </TD> <TD align="right"> 0.04 </TD> <TD align="right"> 0.05 </TD> <TD align="right"> 0.05 </TD> <TD align="right"> 0.05 </TD> <TD align="right"> 0.05 </TD> </TR>
+  <TR> <TD align="right"> low </TD> <TD align="right"> 0.52 </TD> <TD align="right"> 0.54 </TD> <TD align="right"> 0.48 </TD> <TD align="right"> 0.47 </TD> <TD align="right"> 0.49 </TD> <TD align="right"> 0.54 </TD> <TD align="right"> 0.50 </TD> <TD align="right"> 0.51 </TD> <TD align="right"> 0.50 </TD> </TR>
+  <TR> <TD align="right"> growth </TD> <TD align="right"> 2.29 </TD> <TD align="right"> 2.35 </TD> <TD align="right"> 1.99 </TD> <TD align="right"> 2.31 </TD> <TD align="right"> 2.29 </TD> <TD align="right"> 2.35 </TD> <TD align="right"> 2.06 </TD> <TD align="right"> 2.25 </TD> <TD align="right"> 2.27 </TD> </TR>
+  <TR> <TD align="right"> measure </TD> <TD align="right"> 1.03 </TD> <TD align="right"> 0.95 </TD> <TD align="right"> 1.00 </TD> <TD align="right"> 0.96 </TD> <TD align="right"> 1.04 </TD> <TD align="right"> 1.01 </TD> <TD align="right"> 0.97 </TD> <TD align="right"> 0.97 </TD> <TD align="right"> 0.93 </TD> </TR>
+  <TR> <TD align="right"> implement </TD> <TD align="right"> 0.79 </TD> <TD align="right"> 0.75 </TD> <TD align="right"> 0.77 </TD> <TD align="right"> 0.82 </TD> <TD align="right"> 0.80 </TD> <TD align="right"> 0.79 </TD> <TD align="right"> 0.83 </TD> <TD align="right"> 0.75 </TD> <TD align="right"> 0.82 </TD> </TR>
+  <TR> <TD align="right"> growth_measure </TD> <TD align="right"> 2.54 </TD> <TD align="right"> 2.10 </TD> <TD align="right"> 2.51 </TD> <TD align="right"> 2.45 </TD> <TD align="right"> 2.50 </TD> <TD align="right"> 2.26 </TD> <TD align="right"> 2.43 </TD> <TD align="right"> 2.41 </TD> <TD align="right"> 2.03 </TD> </TR>
+  <TR> <TD align="right"> growth_implement </TD> <TD align="right"> 2.16 </TD> <TD align="right"> 2.65 </TD> <TD align="right"> 2.15 </TD> <TD align="right"> 2.26 </TD> <TD align="right"> 2.23 </TD> <TD align="right"> 2.52 </TD> <TD align="right"> 2.13 </TD> <TD align="right"> 2.33 </TD> <TD align="right"> 2.37 </TD> </TR>
+  <TR> <TD align="right"> measure_implement </TD> <TD align="right"> 1.12 </TD> <TD align="right"> 1.09 </TD> <TD align="right"> 1.02 </TD> <TD align="right"> 1.14 </TD> <TD align="right"> 1.10 </TD> <TD align="right"> 1.12 </TD> <TD align="right"> 1.03 </TD> <TD align="right"> 1.08 </TD> <TD align="right"> 1.20 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 2.45 </TD> <TD align="right"> 2.28 </TD> <TD align="right"> 2.43 </TD> <TD align="right"> 2.49 </TD> <TD align="right"> 2.17 </TD> <TD align="right"> 2.15 </TD> <TD align="right"> 2.40 </TD> <TD align="right"> 2.25 </TD> <TD align="right"> 2.15 </TD> </TR>
+   </TABLE>
 
 
 
