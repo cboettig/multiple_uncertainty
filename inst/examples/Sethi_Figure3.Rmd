@@ -9,7 +9,7 @@ require(data.table)
 ````
 
 ```{r plotting, include=FALSE}
-opts_knit$set(upload.fun = socialR::notebook.url)
+opts_knit$set(upload.fun = image_uri)
 opts_chunk$set(dev.args=list(bg="transparent"), cache=TRUE, cache.path = "Sethi_Figure3/")
 ```
 
