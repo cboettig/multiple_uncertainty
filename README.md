@@ -17,8 +17,10 @@ This repository is structured as an R package and can be installed directly usin
 
 ```r
 library(devtools)
-install.guthub("multiple_uncertainty", "cboettig")
+install_github("multiple_uncertainty", "cboettig")
 ```
+
+from the R terminal.  
 
 [Research scripts](https://github.com/cboettig/multiple_uncertainty/tree/master/inst/examples)
 --------------------
