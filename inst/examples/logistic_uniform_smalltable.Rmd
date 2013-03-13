@@ -57,11 +57,11 @@ compute_policy <- function(sigmas){
  out <- 
   SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime,
                            sigmas = sigmas, pdfn=pdfn)
-  out 
+  list(D = out$D, V=out$V)
 }
 ````
 
-``` {r beparallel, cache=FALSE}
+``` {r beparallel, cache=FALSE, eval=FALSE}
 require(snowfall)
 sfInit(parallel=TRUE, cpu=4)
 sfLibrary(multipleuncertainty)
@@ -72,7 +72,7 @@ Determine the policies for each of the scenarios (noise combinations).
 
 ``` {r runall}
 set <- list(det = c(0, 0, 0), g = c(0.5, 0, 0), m = c(0, 0.5, 0), all = c(0.5, 0.5, 0.5))
-scenarios <- sfLapply(set, compute_policy)
+scenarios <- lapply(set, compute_policy)
 ```
 
 
