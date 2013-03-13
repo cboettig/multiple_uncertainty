@@ -6,11 +6,11 @@ opts_chunk$set(dev.args=list(bg="transparent"), cache=TRUE,
 ```
 
 ```{r  setup, echo=FALSE, cache=FALSE}
-require(multipleuncertainty)
 require(reshape2)
 require(ggplot2)
 require(data.table)
 require(pdgControl)
+require(multipleuncertainty)
 ````
 
 Define our functions 
@@ -27,8 +27,19 @@ pars = c(1.5, 100)
 K <- pars[2]
 ````
 
+``` {r bevholt}
+f <- function(x, h, p){
+    A <- p[1] 
+    B <- p[2] 
+    s <- pmax(x-h, 0)
+    A * s/(1 + B * s)
+}
+pars <- c(1.5, 0.05)
+K <- (pars[1] - 1)/pars[2]
+```
+
+
 ```{r }
-#pars <- c(1.5, 0.05)
 xmin <- 0
 xmax <- 1.5 * K
 n_x <- 30
@@ -139,8 +150,7 @@ simulatereps <- function(opt, sigmas){
 All cases
 
 ``` {r runallsims, dependson="simfn"} 
-policyfn <- sapply(scenarios, function(out) out)  # consider driving with stationary policy ...
-allcases <- lapply(policyfn, function(policyfn_i){
+allcases <- lapply(scenarios, function(policyfn_i){
   lapply(set, function(sigmas){
     simulatereps(policyfn_i, sigmas)
   })

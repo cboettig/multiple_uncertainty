@@ -23,7 +23,20 @@ K <- pars[2]
 
 
 ```r
-# pars <- c(1.5, 0.05)
+f <- function(x, h, p) {
+    A <- p[1]
+    B <- p[2]
+    s <- pmax(x - h, 0)
+    A * s/(1 + B * s)
+}
+pars <- c(1.5, 0.05)
+K <- (pars[1] - 1)/pars[2]
+```
+
+
+
+
+```r
 xmin <- 0
 xmax <- 1.5 * K
 n_x <- 30
@@ -77,10 +90,6 @@ set <- list(det = c(0, 0, 0), g = c(0.3, 0, 0), m = c(0, 0.3, 0), all = c(0.3,
 scenarios <- lapply(set, compute_policy)
 ```
 
-```
-Error: missing value where TRUE/FALSE needed
-```
-
 
 
 
@@ -107,7 +116,7 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8385/8553846623_9b85cf1a46_o.png) 
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8365/8553928105_432d758212_o.png) 
 
 
 
@@ -117,7 +126,7 @@ ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), shape =
         span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8226/8554952540_5bfc372064_o.png) 
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8243/8555035464_3ca4337486_o.png) 
 
 
 
@@ -157,50 +166,20 @@ All cases
 
 
 ```r
-policyfn <- sapply(scenarios, function(out) out)  # consider driving with stationary policy ...
-allcases <- lapply(policyfn, function(policyfn_i) {
+allcases <- lapply(scenarios, function(policyfn_i) {
     lapply(set, function(sigmas) {
         simulatereps(policyfn_i, sigmas)
     })
 })
 ```
 
-```
-Error: $ operator is invalid for atomic vectors
-```
-
 
 
 ```r
 sims <- unlist(allcases, recursive = FALSE)
-```
-
-```
-Error: object 'allcases' not found
-```
-
-```r
 dat <- melt(sims, id = names(sims[[1]][[1]]))
-```
-
-```
-Error: object 'sims' not found
-```
-
-```r
 dt <- data.table(dat)
-```
-
-```
-Error: object 'dat' not found
-```
-
-```r
 setnames(dt, c("L2", "L1"), c("reps", "uncertainty"))  # names are nice
-```
-
-```
-Error: x is not a data.table or data.frame
 ```
 
 
@@ -214,9 +193,7 @@ ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + geom_line(aes(
     harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
-```
-Error: object 'reps' not found
-```
+![plot of chunk onerep](http://farm9.staticflickr.com/8106/8553929165_b66e8fe70c_o.png) 
 
 
 Summary statistics 
@@ -243,6 +220,13 @@ Error: object 'profits' not found
 ```r
 require(xtable)
 uncertainties <- names(noise)
+```
+
+```
+Error: object 'noise' not found
+```
+
+```r
 print(xtable(matrix(means$V1, nrow = length(noise), dimnames = list(uncertainties, 
     uncertainties))), type = "html")
 ```
