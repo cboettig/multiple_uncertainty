@@ -5,7 +5,7 @@ opts_chunk$set(dev.args=list(bg="transparent"), cache=TRUE,
                cache.path = "smalltable/", comment=NA, message=FALSE, warning=FALSE)
 ```
 
-```{r  setup, echo=FALSE, cache=FALSE}
+```{r  libraries, echo=FALSE, cache=FALSE}
 require(reshape2)
 require(ggplot2)
 require(data.table)
@@ -39,7 +39,7 @@ K <- (pars[1] - 1)/pars[2]
 ```
 
 
-```{r }
+```{r setup}
 xmin <- 0
 xmax <- 1.5 * K
 n_x <- 300
@@ -50,6 +50,7 @@ delta <- 0.05
 xT <- 0
 OptTime <- 15
 profit <- function(x,h) pmin(x, h)
+sigma <- 0.5
 ````
 
 
@@ -86,13 +87,10 @@ sfExportAll()
 
 Determine the policies for each of the scenarios (noise combinations).
 
-``` {r runall}
-set <- list(det = c(0, 0, 0), g = c(0.3, 0, 0), m = c(0, 0.3, 0), all = c(0.3, 0.3, 0.3))
+``` {r runall, dependson=c("policyscenarios", "setup")}
+set <- list(det = c(0, 0, 0), g = c(sigma, 0, 0), 
+            m = c(0, sigma, 0), all = c(sigma, sigma, sigma))
 scenarios <- lapply(set, compute_policy)
-```
-
-
-```{r }
 policies <- sapply(scenarios, function(out) out$D[,1])
 values <- sapply(scenarios, function(out) out$V)
 ````
@@ -101,11 +99,11 @@ values <- sapply(scenarios, function(out) out$V)
 ### plots
 
 
-```{r policy-data}
+```{r policy-data, dependson="runall"}
 policy <- melt(data.frame(cbind(stock = x_grid, policies)), id = "stock")
 ```
 
-```{r sethiplots-escapement}
+```{r sethiplots-escapement, dependson="policy-data"}
 ggplot(policy) + 
   geom_point(aes(stock, stock-x_grid[value], color=variable), shape='+') +
 	stat_smooth(aes(stock, stock-x_grid[value], color=variable), 
@@ -113,7 +111,7 @@ ggplot(policy) +
   ylab("escapement") 
 ```
 
-```{r sethiplots-harvest}
+```{r sethiplots-harvest, dependson="policy-data"}
 ggplot(policy) +
   geom_point(aes(stock, x_grid[value], color=variable), shape='+') +
 	stat_smooth(aes(stock, x_grid[value], color=variable),
@@ -122,7 +120,7 @@ ggplot(policy) +
 ```
 
 
-```{r value-data}
+```{r value-data, dependson="runall"}
 # value <- melt(data.frame(cbind(stock = x_grid,values)), id = "stock")
 # ggplot(value) + 
 #  geom_point(aes(stock, value, color=variable), shape='+') +
@@ -135,7 +133,7 @@ ggplot(policy) +
 
 ## Simulations
 
-``` {r simfn, dependson="policy-data"} 
+``` {r simfn, dependson="runall"} 
 simulatereps <- function(opt, sigmas){
 
   z_g <- function() 1+(2*runif(1, 0,  1)-1) * sigmas[1]
