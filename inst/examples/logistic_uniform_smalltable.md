@@ -22,16 +22,6 @@ K <- pars[2]
 
 
 
-```r
-f <- function(x, h, p) {
-    A <- p[1]
-    B <- p[2]
-    s <- pmax(x - h, 0)
-    A * s/(1 + B * s)
-}
-pars <- c(1.5, 0.05)
-K <- (pars[1] - 1)/pars[2]
-```
 
 
 
@@ -85,8 +75,8 @@ Determine the policies for each of the scenarios (noise combinations).
 
 
 ```r
-set <- list(det = c(0, 0, 0), g = c(0.3, 0, 0), m = c(0, 0.3, 0), all = c(0.3, 
-    0.3, 0.3))
+set <- list(det = c(0, 0, 0), g = c(0.3, 0, 0), m = c(0, 0.3, 0), 
+    all = c(0.3, 0.3, 0.3))
 scenarios <- lapply(set, compute_policy)
 ```
 
@@ -116,17 +106,17 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8365/8553928105_432d758212_o.png) 
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8511/8554024679_6b35366456_o.png) 
 
 
 
 ```r
-ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), shape = "+") + 
-    stat_smooth(aes(stock, x_grid[value], color = variable), degree = 1, se = FALSE, 
-        span = 0.3) + ylab("harvest")
+ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), 
+    shape = "+") + stat_smooth(aes(stock, x_grid[value], color = variable), 
+    degree = 1, se = FALSE, span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8243/8555035464_3ca4337486_o.png) 
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8250/8555131868_bbfc64fb58_o.png) 
 
 
 
@@ -189,50 +179,42 @@ setnames(dt, c("L2", "L1"), c("reps", "uncertainty"))  # names are nice
 
 
 ```r
-ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + geom_line(aes(time, 
-    harvest), col = "darkgreen") + facet_wrap(~uncertainty)
+ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + 
+    geom_line(aes(time, harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
-![plot of chunk onerep](http://farm9.staticflickr.com/8106/8553929165_b66e8fe70c_o.png) 
+![plot of chunk onerep](http://farm9.staticflickr.com/8246/8555132576_262fb3b56f_o.png) 
 
 
 Summary statistics 
 
 
 ```r
-means <- profits[, mean(V1), by = uncertainty]
+profits <- dt[, sum(profit), by = c("reps", "uncertainty")]
+ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
 ```
 
-```
-Error: object 'profits' not found
-```
+![the distribution of profits by scenario](http://farm9.staticflickr.com/8529/8555132928_75cbf82bab_o.png) 
+
+
+
 
 ```r
+means <- profits[, mean(V1), by = uncertainty]
 sds <- profits[, sd(V1), by = uncertainty]
-```
-
-```
-Error: object 'profits' not found
 ```
 
 
 
 ```r
 require(xtable)
-uncertainties <- names(noise)
-```
-
-```
-Error: object 'noise' not found
-```
-
-```r
+uncertainties <- names(set)
 print(xtable(matrix(means$V1, nrow = length(noise), dimnames = list(uncertainties, 
     uncertainties))), type = "html")
 ```
 
 ```
-Error: object 'means' not found
+Error: object 'noise' not found
 ```
 
 ```r
@@ -241,7 +223,7 @@ print(xtable(matrix(sds$V1, nrow = length(noise), dimnames = list(uncertainties,
 ```
 
 ```
-Error: object 'sds' not found
+Error: object 'noise' not found
 ```
 
 

@@ -27,7 +27,7 @@ pars = c(1.5, 100)
 K <- pars[2]
 ````
 
-``` {r bevholt}
+``` {r bevholt, include=FALSE, eval=FALSE}
 f <- function(x, h, p){
     A <- p[1] 
     B <- p[2] 
@@ -190,7 +190,7 @@ sds <- profits[, sd(V1), by=uncertainty]
 
 ``` {r prettytable, cache=FALSE, results="asis"}
 require(xtable)
-uncertainties <- names(noise) 
+uncertainties <- names(set) 
 print(xtable(matrix(means$V1, nrow=length(noise), dimnames=list(uncertainties, uncertainties))), type="html")
 print(xtable(matrix(sds$V1, nrow=length(noise), dimnames=list(uncertainties, uncertainties))), type="html")
 ````
