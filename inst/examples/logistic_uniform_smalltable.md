@@ -39,7 +39,7 @@ K <- (pars[1] - 1)/pars[2]
 ```r
 xmin <- 0
 xmax <- 1.5 * K
-n_x <- 30
+n_x <- 300
 n_h <- n_x
 x_grid <- seq(xmin, xmax, length = n_x)
 h_grid <- seq(xmin, xmax, length = n_h)
@@ -116,7 +116,7 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8513/8553936837_7a0015aa85_o.png) 
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8507/8555086582_7294098926_o.png) 
 
 
 
@@ -126,7 +126,7 @@ ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), shape =
         span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8382/8553937041_4a7086dc68_o.png) 
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8247/8553980011_94ca80e9bf_o.png) 
 
 
 
@@ -193,7 +193,7 @@ ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + geom_line(aes(
     harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
-![plot of chunk onerep](http://farm9.staticflickr.com/8229/8555044578_ac70316859_o.png) 
+![plot of chunk onerep](http://farm9.staticflickr.com/8516/8553980455_460e73256b_o.png) 
 
 
 Summary statistics 
@@ -204,7 +204,7 @@ profits <- dt[, sum(profit), by = c("reps", "uncertainty")]
 ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
 ```
 
-![the distribution of profits by scenario](http://farm9.staticflickr.com/8381/8553937765_a0cea627ff_o.png) 
+![the distribution of profits by scenario](http://farm9.staticflickr.com/8249/8555087568_580de3a032_o.png) 
 
 
 
