@@ -177,6 +177,12 @@ ggplot(subset(dt,reps==1)) +
 
 Summary statistics 
 
+``` {r profits, fig.cap="the distribution of profits by scenario", dependson="tidyall"}
+profits <-dt[ , sum(profit), by=c("reps", "uncertainty")] 
+ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
+````
+
+
 ``` {r summarystats, cache=FALSE}
 means <- profits[, mean(V1), by=uncertainty]
 sds <- profits[, sd(V1), by=uncertainty]
