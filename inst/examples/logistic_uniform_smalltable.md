@@ -218,30 +218,35 @@ sds <- profits[, sd(V1), by = uncertainty]
 
 ```r
 require(xtable)
-uncertainties <- names(noise)
-```
-
-```
-Error: object 'noise' not found
-```
-
-```r
-print(xtable(matrix(means$V1, nrow = length(noise), dimnames = list(uncertainties, 
+uncertainties <- names(set)
+print(xtable(matrix(means$V1, nrow = length(set), dimnames = list(uncertainties, 
     uncertainties))), type = "html")
 ```
 
-```
-Error: object 'noise' not found
-```
+<!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
+<!-- Wed Mar 13 08:56:54 2013 -->
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
+  <TR> <TD align="right"> det </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 13.01 </TD> <TD align="right"> 13.03 </TD> </TR>
+  <TR> <TD align="right"> g </TD> <TD align="right"> 13.06 </TD> <TD align="right"> 13.09 </TD> <TD align="right"> 13.09 </TD> <TD align="right"> 12.85 </TD> </TR>
+  <TR> <TD align="right"> m </TD> <TD align="right"> 12.25 </TD> <TD align="right"> 12.36 </TD> <TD align="right"> 12.87 </TD> <TD align="right"> 12.89 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 11.88 </TD> <TD align="right"> 11.80 </TD> <TD align="right"> 12.37 </TD> <TD align="right"> 12.82 </TD> </TR>
+   </TABLE>
 
 ```r
-print(xtable(matrix(sds$V1, nrow = length(noise), dimnames = list(uncertainties, 
+print(xtable(matrix(sds$V1, nrow = length(set), dimnames = list(uncertainties, 
     uncertainties))), type = "html")
 ```
 
-```
-Error: object 'noise' not found
-```
+<!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
+<!-- Wed Mar 13 08:56:54 2013 -->
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
+  <TR> <TD align="right"> det </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> g </TD> <TD align="right"> 1.41 </TD> <TD align="right"> 1.55 </TD> <TD align="right"> 1.57 </TD> <TD align="right"> 1.50 </TD> </TR>
+  <TR> <TD align="right"> m </TD> <TD align="right"> 0.58 </TD> <TD align="right"> 0.56 </TD> <TD align="right"> 0.12 </TD> <TD align="right"> 0.12 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 1.44 </TD> <TD align="right"> 1.47 </TD> <TD align="right"> 1.50 </TD> <TD align="right"> 1.85 </TD> </TR>
+   </TABLE>
 
 
 
