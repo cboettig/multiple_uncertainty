@@ -48,7 +48,7 @@ x_grid <- seq(xmin, xmax, length = n_x)
 h_grid <- seq(xmin, xmax, length = n_h)
 delta <- 0.05
 xT <- 0
-OptTime <- 5
+OptTime <- 15
 profit <- function(x,h) pmin(x, h)
 ````
 
@@ -61,7 +61,7 @@ We use Monte Carlo integration over the noise processes to determine the transit
 
 
 ``` {r policyscenarios}
-compute_policy <- function(sigmas){ 
+compute_policy <- function(sigmas, stationary=TRUE){ 
   z_g <- function() 1+(2*runif(1, 0,  1)-1) * sigmas[1]
   z_m <- function() 1+(2*runif(1, 0,  1)-1) * sigmas[2]
   z_i <- function() 1+(2*runif(1, 0,  1)-1) * sigmas[3]
@@ -69,6 +69,10 @@ compute_policy <- function(sigmas){
  out <- 
   SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime,
                            sigmas = sigmas, pdfn=pdfn)
+
+  if(stationary)
+    out$D <- sapply(1:OptTime, function(i) out$D[,1])
+
   list(D = out$D, V=out$V)
 }
 ````
