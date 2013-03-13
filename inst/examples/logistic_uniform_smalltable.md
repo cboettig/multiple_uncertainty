@@ -16,23 +16,23 @@ f <- function(x, h, p) {
         p[1] * S * (1 - S/p[2]) + S
     })
 }
-K <- K
+pars = c(1.5, 100)
+K <- pars[2]
 ```
 
 
 
 ```r
-pars <- c(1.5, 0.05)
+# pars <- c(1.5, 0.05)
 xmin <- 0
 xmax <- 1.5 * K
-n_x <- 300
+n_x <- 30
 n_h <- n_x
 x_grid <- seq(xmin, xmax, length = n_x)
 h_grid <- seq(xmin, xmax, length = n_h)
 delta <- 0.05
 xT <- 0
 OptTime <- 5
-sigma_g <- 0.3
 profit <- function(x, h) pmin(x, h)
 ```
 
@@ -72,8 +72,8 @@ Determine the policies for each of the scenarios (noise combinations).
 
 
 ```r
-set <- list(det = c(0, 0, 0), g = c(0.5, 0, 0), m = c(0, 0.5, 0), all = c(0.5, 
-    0.5, 0.5))
+set <- list(det = c(0, 0, 0), g = c(0.3, 0, 0), m = c(0, 0.3, 0), all = c(0.3, 
+    0.3, 0.3))
 scenarios <- lapply(set, compute_policy)
 ```
 
@@ -107,7 +107,7 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8108/8553793815_cff187d80a_o.png) 
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8385/8553846623_9b85cf1a46_o.png) 
 
 
 
@@ -117,7 +117,7 @@ ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), shape =
         span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8087/8553793935_d66c58485a_o.png) 
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8226/8554952540_5bfc372064_o.png) 
 
 
 
