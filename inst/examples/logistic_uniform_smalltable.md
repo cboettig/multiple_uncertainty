@@ -16,13 +16,13 @@ f <- function(x, h, p) {
         p[1] * S * (1 - S/p[2]) + S
     })
 }
+K <- K
 ```
 
 
 
 ```r
 pars <- c(1.5, 0.05)
-K <- (pars[1] - 1)/pars[2]
 xmin <- 0
 xmax <- 1.5 * K
 n_x <- 300
@@ -77,6 +77,10 @@ set <- list(det = c(0, 0, 0), g = c(0.5, 0, 0), m = c(0, 0.5, 0), all = c(0.5,
 scenarios <- lapply(set, compute_policy)
 ```
 
+```
+Error: missing value where TRUE/FALSE needed
+```
+
 
 
 
@@ -103,7 +107,7 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8233/8554878428_39ac57a7ed_o.png) 
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8108/8553793815_cff187d80a_o.png) 
 
 
 
@@ -113,7 +117,7 @@ ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), shape =
         span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8389/8553773407_6d5e92f064_o.png) 
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8087/8553793935_d66c58485a_o.png) 
 
 
 
@@ -162,7 +166,7 @@ allcases <- lapply(policyfn, function(policyfn_i) {
 ```
 
 ```
-Error: could not find function "ForwardSimulate"
+Error: $ operator is invalid for atomic vectors
 ```
 
 

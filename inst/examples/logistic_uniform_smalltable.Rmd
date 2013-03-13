@@ -10,6 +10,7 @@ require(multipleuncertainty)
 require(reshape2)
 require(ggplot2)
 require(data.table)
+require(pdgControl)
 ````
 
 Define our functions 
@@ -22,11 +23,11 @@ f <- function(x,h,p){
   	p[1] * S * (1 - S/p[2]) + S
   })
 }
+K <- K
 ````
 
 ```{r }
 pars <- c(1.5, 0.05)
-K <- (pars[1] - 1)/pars[2]
 xmin <- 0
 xmax <- 1.5 * K
 n_x <- 300
