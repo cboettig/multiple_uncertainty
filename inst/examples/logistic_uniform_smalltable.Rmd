@@ -42,7 +42,7 @@ K <- (pars[1] - 1)/pars[2]
 ```{r }
 xmin <- 0
 xmax <- 1.5 * K
-n_x <- 30
+n_x <- 300
 n_h <- n_x
 x_grid <- seq(xmin, xmax, length = n_x)  
 h_grid <- seq(xmin, xmax, length = n_h)

@@ -116,7 +116,7 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8365/8553928105_432d758212_o.png) 
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8513/8553936837_7a0015aa85_o.png) 
 
 
 
@@ -126,7 +126,7 @@ ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), shape =
         span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8243/8555035464_3ca4337486_o.png) 
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8382/8553937041_4a7086dc68_o.png) 
 
 
 
@@ -193,26 +193,25 @@ ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + geom_line(aes(
     harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
-![plot of chunk onerep](http://farm9.staticflickr.com/8106/8553929165_b66e8fe70c_o.png) 
+![plot of chunk onerep](http://farm9.staticflickr.com/8229/8555044578_ac70316859_o.png) 
 
 
 Summary statistics 
 
 
 ```r
-means <- profits[, mean(V1), by = uncertainty]
+profits <- dt[, sum(profit), by = c("reps", "uncertainty")]
+ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
 ```
 
-```
-Error: object 'profits' not found
-```
+![the distribution of profits by scenario](http://farm9.staticflickr.com/8381/8553937765_a0cea627ff_o.png) 
+
+
+
 
 ```r
+means <- profits[, mean(V1), by = uncertainty]
 sds <- profits[, sd(V1), by = uncertainty]
-```
-
-```
-Error: object 'profits' not found
 ```
 
 
@@ -232,7 +231,7 @@ print(xtable(matrix(means$V1, nrow = length(noise), dimnames = list(uncertaintie
 ```
 
 ```
-Error: object 'means' not found
+Error: object 'noise' not found
 ```
 
 ```r
@@ -241,7 +240,7 @@ print(xtable(matrix(sds$V1, nrow = length(noise), dimnames = list(uncertainties,
 ```
 
 ```
-Error: object 'sds' not found
+Error: object 'noise' not found
 ```
 
 
