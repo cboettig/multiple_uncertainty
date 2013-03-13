@@ -188,6 +188,10 @@ means <- profits[, mean(V1), by=uncertainty]
 sds <- profits[, sd(V1), by=uncertainty]
 ````
 
+## Tables of results
+
+Note that columns represent the decision-maker's beliefs about uncertainty and rows represent the true uncertainty present in the simulation.  
+
 ``` {r prettytable, cache=FALSE, results="asis"}
 require(xtable)
 uncertainties <- names(set) 

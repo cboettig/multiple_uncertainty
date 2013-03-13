@@ -215,6 +215,10 @@ sds <- profits[, sd(V1), by = uncertainty]
 ```
 
 
+## Tables of results
+
+Note that columns represent the decision-maker's beliefs about uncertainty and rows represent the true uncertainty present in the simulation.  
+
 
 ```r
 require(xtable)
@@ -224,7 +228,7 @@ print(xtable(matrix(means$V1, nrow = length(set), dimnames = list(uncertainties,
 ```
 
 <!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
-<!-- Wed Mar 13 08:56:54 2013 -->
+<!-- Wed Mar 13 12:31:59 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
   <TR> <TD align="right"> det </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 12.94 </TD> <TD align="right"> 13.01 </TD> <TD align="right"> 13.03 </TD> </TR>
@@ -239,7 +243,7 @@ print(xtable(matrix(sds$V1, nrow = length(set), dimnames = list(uncertainties,
 ```
 
 <!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
-<!-- Wed Mar 13 08:56:54 2013 -->
+<!-- Wed Mar 13 12:31:59 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
   <TR> <TD align="right"> det </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
