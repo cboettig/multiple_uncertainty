@@ -1,4 +1,4 @@
-function [D, V] =  multiple_uncertainty(f, p, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i)
+function [D, V] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i)
 %' SDP under multiple uncertainty
 %'
 %' Computes the SDP solution under the case of growth noise, 
@@ -6,7 +6,7 @@ function [D, V] =  multiple_uncertainty(f, p, x_grid, h_grid, Tmax, sigma_g, sig
 %' the stock assessment.  
 %'
 %' @param f the growth function of the escapement population (x-h)
-%'   should be a function of f(t, y, p), with parameters p
+%'   should be a function of f(y, h)
 %' @param p the parameters of the growth function
 %' @param x_grid the discrete values allowed for the population size, x
 %' @param h_grid the discrete values of harvest levels to optimize over
@@ -40,10 +40,9 @@ function [D, V] =  multiple_uncertainty(f, p, x_grid, h_grid, Tmax, sigma_g, sig
     function out = pdfn(P, mu, s)
       if mu == 0
         out = (P == 0);
-      else if s > 0
+      elseif s > 0
         if mu > 0
-          %dlnorm(P/mu, 0, s)
-          out = unifrnd(P, mu * (1 - s), mu * (1 + s));
+          out = unifpdf(P, mu * (1 - s), mu * (1 + s));
         end
       else  % delta spike
         P = snap_to_grid(P, x_grid);
@@ -75,7 +74,7 @@ function [D, V] =  multiple_uncertainty(f, p, x_grid, h_grid, Tmax, sigma_g, sig
     % f_matrix is a matrix whose element i,j tells us the expected 
     % stock size next year given current stock size of x_grid[i] and harvest of h_grid[j] 
     [X,H] = meshgrid(x_grid, h_grid);
-    f_matrix = arrayfun(@f, X, H);
+    f_matrix = arrayfun(f, X, H);
    
     % G is a matrix of growth noise, the probability of being at state y given
     [X,Y] = meshgrid(x_grid, x_grid);
@@ -113,11 +112,8 @@ function [D, V] =  multiple_uncertainty(f, p, x_grid, h_grid, Tmax, sigma_g, sig
     %% Returns the policy decision matrix D.  Sometimes the value V associated with the optimal decision is also of interest
     D;
 end
-end
 
   %% Sidenote: q can often exceed y: if fishing is free, there might be more x than you think.  In such cases it is worth attempting to fish extra, and we shouldn't exert q < y. 
 
 
-%
-%%% EXAMPLE Call
 
