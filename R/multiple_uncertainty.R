@@ -9,6 +9,8 @@
 #' @param p the parameters of the growth function
 #' @param x_grid the discrete values allowed for the population size, x
 #' @param h_grid the discrete values of harvest levels to optimize over
+#' @param Tmax the maximum time to run 
+#' @param delta the discount rate
 #' @param sigma is the shape parameters for noise distribution (sigma_g, sigma_m, sigma_i) (default is no noise)
 #' @param pdfn is the probability density function (same functional form is used for growth, measure, implement).  (Default is uniform)
 #' @param profit is the profit function (defaults to the realized harvest)
@@ -17,7 +19,7 @@
 #' Values of D[,t] correspond to the index of h_grid.  Indices of of D[,t] correspond to states in y_grid.  
 #' @export
 SDP_multiple_uncertainty <- 
-  function(f, p, x_grid, h_grid, Tmax = 25,
+  function(f, p, x_grid, h_grid, Tmax = 25, delta, 
            sigmas =c(sigma_g=0.3, sigma_m=0, sigma_i=0), 
            pdfn = pdfn, profit = function(x,h) pmin(x, h)){
   

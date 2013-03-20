@@ -1,4 +1,4 @@
-function [D, V] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i)
+function [D, V, M, I, P, Ep, F]  =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta)
 %' SDP under multiple uncertainty
 %'
 %' Computes the SDP solution under the case of growth noise, 
@@ -29,27 +29,31 @@ function [D, V] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_
       out = min(x,y); 
     end  
 
-
+    %% Compute the probability density on a discrete grid %%
+    %%   (There must be a cleaner way to handle this.)
     %% binning routine (vectorized)
     function out = snap_to_grid(x, grid)
       [v,i] = min(abs(grid-x));
       out = grid(i);  
     end
-     
-    %% generate various sources of noise, or delta fns if noise is zero 
+    %% generate various sources of noise, or delta fns if noise is zero
     function out = pdfn(P, mu, s)
+      grid = [1:5];
       if mu == 0
         out = (P == 0);
       elseif s > 0
         if mu > 0
-          out = unifpdf(P, mu * (1 - s), mu * (1 + s));
+          out = unifpdf(P, mu * (1 - s), mu * (1 + s)); % Could use lognpdf for lognormal
         end
       else  % delta spike
-        P = snap_to_grid(P, x_grid);
-        mu = snap_to_grid(mu, x_grid);
+        P = snap_to_grid(P, grid);
+        mu = snap_to_grid(mu, grid);
         out = (P == mu);
       end
     end
+
+
+
 
     %%% GENERATE THE PROBABILITY MATRICES DEFINED IN                                    %%%%%  
     %%%% http://www.carlboettiger.info/2012/11/01/multiple-uncertainty-corrections.html %%%%%
@@ -85,7 +89,7 @@ function [D, V] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_
     for q = 1:n_h
       for y = 1:n_x
         out = zeros(n_x, 1);
-        mu = M(y,:) * f_matrix * I(q,:); % mean transition rate 
+        mu = M(y,:) * f_matrix * I(q,:)'; % mean transition rate 
         %%  Handle special cases
         if snap_to_grid(mu,x_grid) == 0;  % if we transition to zero, 
           out(1) = 1;  % probability of going to the zeroth state, (x_grid[1]) is unity
@@ -101,19 +105,16 @@ function [D, V] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_
     % The profit expected for a given action and state reflect 
     % the uncertainty in implementation of the action and measurement of the state
     Ep = M * P * I';          % matrix multiplications
-    V = Ep % Initialize  
+    V = Ep; % Initialize  
     for t = 1:Tmax
       [v_t, v_index] = max(V, [], 1); 
       D(:, (Tmax - t + 1)) = v_index;
       for j = 1:n_h
-        V(:,j) = Ep(:,j) + (1-delta) * M * F(:, :, j) * v_t;
+        V(:,j) = Ep(:,j) + (1-delta) * M * F(:, :, j) * v_t';
       end
     end
     %% Returns the policy decision matrix D.  Sometimes the value V associated with the optimal decision is also of interest
     D;
 end
-
-  %% Sidenote: q can often exceed y: if fishing is free, there might be more x than you think.  In such cases it is worth attempting to fish extra, and we shouldn't exert q < y. 
-
 
 

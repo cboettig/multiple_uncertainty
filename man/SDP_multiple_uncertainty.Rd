@@ -3,6 +3,7 @@
 \title{SDP under multiple uncertainty}
 \usage{
   SDP_multiple_uncertainty(f, p, x_grid, h_grid, Tmax = 25,
+    delta,
     sigmas = c(sigma_g = 0.3, sigma_m = 0, sigma_i = 0),
     pdfn = pdfn, profit = function(x, h) pmin(x, h))
 }
@@ -18,6 +19,10 @@
 
   \item{h_grid}{the discrete values of harvest levels to
   optimize over}
+
+  \item{Tmax}{the maximum time to run}
+
+  \item{delta}{the discount rate}
 
   \item{sigma}{is the shape parameters for noise
   distribution (sigma_g, sigma_m, sigma_i) (default is no
