@@ -40,7 +40,7 @@ SDP_multiple_uncertainty <-
     # Much faster to fill out f calls as a matrix ahead of time.  
     f_matrix <- outer(x_grid, h_grid, f, p)
     # Fill out uncertainty in transitions first
-    G <- outer(x_grid, x_grid, pdfn, sigma_g)
+    G <- rownorm( outer(x_grid, x_grid, pdfn, sigma_g) ) # rownorm, right?
     
     F <- lapply(1:n_h, function(q){  
       t(sapply(1:n_x, function(y){
