@@ -22,16 +22,6 @@ K <- pars[2]
 
 
 
-```r
-f <- function(x, h, p) {
-    A <- p[1]
-    B <- p[2]
-    s <- pmax(x - h, 0)
-    A * s/(1 + B * s)
-}
-pars <- c(1.5, 0.05)
-K <- (pars[1] - 1)/pars[2]
-```
 
 
 
@@ -115,7 +105,7 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8240/8581295726_5670d3e57c_o.png) 
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8506/8581428042_81dc764135_o.png) 
 
 
 
@@ -125,7 +115,7 @@ ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8522/8581295874_c96b2d29a0_o.png) 
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8513/8580326635_c373d27297_o.png) 
 
 
 
@@ -192,7 +182,7 @@ ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) +
     geom_line(aes(time, harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
-![plot of chunk onerep](http://farm9.staticflickr.com/8239/8581296408_3ab3b3a331_o.png) 
+![plot of chunk onerep](http://farm9.staticflickr.com/8234/8580327177_d249bdf9aa_o.png) 
 
 
 Summary statistics 
@@ -203,7 +193,7 @@ profits <- dt[, sum(profit), by = c("reps", "uncertainty")]
 ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
 ```
 
-![the distribution of profits by scenario](http://farm9.staticflickr.com/8093/8580195971_0e4f6a2cd3_o.png) 
+![the distribution of profits by scenario](http://farm9.staticflickr.com/8365/8580327363_5cc6725f32_o.png) 
 
 
 
@@ -227,13 +217,13 @@ print(xtable(matrix(means$V1, nrow = length(set), dimnames = list(uncertainties,
 ```
 
 <!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
-<!-- Fri Mar 22 13:57:32 2013 -->
+<!-- Fri Mar 22 15:00:29 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
-  <TR> <TD align="right"> det </TD> <TD align="right"> 19.11 </TD> <TD align="right"> 13.19 </TD> <TD align="right"> 18.96 </TD> <TD align="right"> 18.96 </TD> </TR>
-  <TR> <TD align="right"> g </TD> <TD align="right"> 18.74 </TD> <TD align="right"> 16.04 </TD> <TD align="right"> 18.50 </TD> <TD align="right"> 18.31 </TD> </TR>
-  <TR> <TD align="right"> m </TD> <TD align="right"> 16.83 </TD> <TD align="right"> 15.24 </TD> <TD align="right"> 17.64 </TD> <TD align="right"> 18.38 </TD> </TR>
-  <TR> <TD align="right"> all </TD> <TD align="right"> 14.98 </TD> <TD align="right"> 15.63 </TD> <TD align="right"> 16.26 </TD> <TD align="right"> 17.07 </TD> </TR>
+  <TR> <TD align="right"> det </TD> <TD align="right"> 100.25 </TD> <TD align="right"> 100.25 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
+  <TR> <TD align="right"> g </TD> <TD align="right"> 100.48 </TD> <TD align="right"> 100.43 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
+  <TR> <TD align="right"> m </TD> <TD align="right"> 113.20 </TD> <TD align="right"> 119.27 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 123.55 </TD> <TD align="right"> 124.84 </TD> <TD align="right"> 104.42 </TD> <TD align="right"> 101.60 </TD> </TR>
    </TABLE>
 
 ```r
@@ -242,13 +232,13 @@ print(xtable(matrix(sds$V1, nrow = length(set), dimnames = list(uncertainties,
 ```
 
 <!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
-<!-- Fri Mar 22 13:57:32 2013 -->
+<!-- Fri Mar 22 15:00:29 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
   <TR> <TD align="right"> det </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
-  <TR> <TD align="right"> g </TD> <TD align="right"> 4.86 </TD> <TD align="right"> 6.45 </TD> <TD align="right"> 4.36 </TD> <TD align="right"> 4.59 </TD> </TR>
-  <TR> <TD align="right"> m </TD> <TD align="right"> 3.00 </TD> <TD align="right"> 1.83 </TD> <TD align="right"> 1.29 </TD> <TD align="right"> 0.95 </TD> </TR>
-  <TR> <TD align="right"> all </TD> <TD align="right"> 4.45 </TD> <TD align="right"> 6.19 </TD> <TD align="right"> 4.17 </TD> <TD align="right"> 4.68 </TD> </TR>
+  <TR> <TD align="right"> g </TD> <TD align="right"> 0.42 </TD> <TD align="right"> 0.34 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> m </TD> <TD align="right"> 17.63 </TD> <TD align="right"> 25.80 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 36.33 </TD> <TD align="right"> 41.24 </TD> <TD align="right"> 11.81 </TD> <TD align="right"> 6.13 </TD> </TR>
    </TABLE>
 
 

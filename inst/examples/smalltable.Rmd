@@ -27,7 +27,7 @@ pars = c(1.5, 100)
 K <- pars[2]
 ````
 
-``` {r bevholt}
+``` {r bevholt, eval=FALSE, include=FALSE}
 f <- function(x, h, p){
     A <- p[1] 
     B <- p[2] 
