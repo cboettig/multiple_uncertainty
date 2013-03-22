@@ -27,7 +27,7 @@ pars = c(1, 100)
 K <- pars[2]
 ````
 
-``` {r bevholt, eval=FALSE, include=FALSE}
+``` {r bevholt}
 f <- function(x, h, p){
     A <- p[1] 
     B <- p[2] 
@@ -68,7 +68,7 @@ compute_policy <- function(sigmas, stationary=TRUE){
   z_i <- function() 1+(2*runif(1, 0,  1)-1) * sigmas[3]
 
  out <- 
-  SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime,
+  SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime, delta=0.01,
                            sigmas = sigmas, pdfn=pdfn)
 
   if(stationary)

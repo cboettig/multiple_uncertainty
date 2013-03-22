@@ -59,15 +59,19 @@ function [D, V, M, I, P, Ep, F]  =  multiple_uncertainty(f, x_grid, h_grid, Tmax
     [X, H] = meshgrid(x_grid, h_grid); 
     P = profit(X, H);
 
+    function out = norm1r(M)
+      out = M ./ sum(M,2)
+    end
+    
     % M is a matrix of the probability of being in observed state Y given the true 
     % state X.  We represent both as discrete values in x_grid
     [X,Y] = meshgrid(x_grid, x_grid); 
-    M = normr(arrayfun(@(x,y) pdfn(x, y, sigma_m, x_grid), X, Y));
+    M = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_m, x_grid), X, Y));
 
     % I is a matrix of the probability of implementing a harvest H given 
     % a quota set to Q.  We represent both as discrete values in h_grid
     [H,Q] = meshgrid(h_grid, h_grid); 
-    I = normr(arrayfun(@(x,y) pdfn(x, y, sigma_i, h_grid), H, Q));
+    I = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_i, h_grid), H, Q));
 
     % f_matrix is a matrix whose element i,j tells us the expected 
     % stock size next year given current stock size of x_grid[i] and harvest of h_grid[j] 
@@ -76,7 +80,7 @@ function [D, V, M, I, P, Ep, F]  =  multiple_uncertainty(f, x_grid, h_grid, Tmax
    
     % G is a matrix of growth noise, the probability of being at state y given
     [X,Y] = meshgrid(x_grid, x_grid);
-    G = normr(arrayfun(@(x,y) pdfn(x, y, sigma_g, x_grid), X, Y));
+    G = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_g, x_grid), X, Y));
 
     %% Calculate F   
     F = zeros(n_x, n_x, n_h);

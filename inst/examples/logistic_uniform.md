@@ -22,6 +22,16 @@ K <- pars[2]
 
 
 
+```r
+f <- function(x, h, p) {
+    A <- p[1]
+    B <- p[2]
+    s <- pmax(x - h, 0)
+    A * s/(1 + B * s)
+}
+pars <- c(1.5, 0.05)
+K <- (pars[1] - 1)/pars[2]
+```
 
 
 
@@ -80,11 +90,29 @@ Determine the policies for each of the scenarios (noise combinations).
 
 
 ```r
-set <- list(det = c(0, 0, 0), g = c(sigma, 0, 0), m = c(0, sigma, 0), all = c(sigma, 
-    sigma, sigma))
+set <- list(det = c(0, 0, 0), g = c(sigma, 0, 0), m = c(0, sigma, 
+    0), all = c(sigma, sigma, sigma))
 scenarios <- lapply(set, compute_policy)
+```
+
+```
+Error: argument "delta" is missing, with no default
+```
+
+```r
 policies <- sapply(scenarios, function(out) out$D[, 1])
+```
+
+```
+Error: object 'scenarios' not found
+```
+
+```r
 values <- sapply(scenarios, function(out) out$V)
+```
+
+```
+Error: object 'scenarios' not found
 ```
 
 
@@ -97,6 +125,10 @@ values <- sapply(scenarios, function(out) out$V)
 policy <- melt(data.frame(cbind(stock = x_grid, policies)), id = "stock")
 ```
 
+```
+Error: object 'policies' not found
+```
+
 
 
 ```r
@@ -105,17 +137,21 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
-![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8228/8555122307_a794ef660f_o.png) 
+```
+Error: object 'policy' not found
+```
 
 
 
 ```r
-ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), shape = "+") + 
-    stat_smooth(aes(stock, x_grid[value], color = variable), degree = 1, se = FALSE, 
-        span = 0.3) + ylab("harvest")
+ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable), 
+    shape = "+") + stat_smooth(aes(stock, x_grid[value], color = variable), 
+    degree = 1, se = FALSE, span = 0.3) + ylab("harvest")
 ```
 
-![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8087/8556232458_fbf1fc342b_o.png) 
+```
+Error: object 'policy' not found
+```
 
 
 
@@ -162,13 +198,42 @@ allcases <- lapply(scenarios, function(policyfn_i) {
 })
 ```
 
+```
+Error: object 'scenarios' not found
+```
+
 
 
 ```r
 sims <- unlist(allcases, recursive = FALSE)
+```
+
+```
+Error: object 'allcases' not found
+```
+
+```r
 dat <- melt(sims, id = names(sims[[1]][[1]]))
+```
+
+```
+Error: object 'sims' not found
+```
+
+```r
 dt <- data.table(dat)
+```
+
+```
+Error: object 'dat' not found
+```
+
+```r
 setnames(dt, c("L2", "L1"), c("reps", "uncertainty"))  # names are nice
+```
+
+```
+Error: x is not a data.table or data.frame
 ```
 
 
@@ -178,11 +243,13 @@ setnames(dt, c("L2", "L1"), c("reps", "uncertainty"))  # names are nice
 
 
 ```r
-ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + geom_line(aes(time, 
-    harvest), col = "darkgreen") + facet_wrap(~uncertainty)
+ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) + 
+    geom_line(aes(time, harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
-![plot of chunk onerep](http://farm9.staticflickr.com/8248/8556232960_808fb8cc01_o.png) 
+```
+Error: object 'reps' not found
+```
 
 
 Summary statistics 
@@ -190,17 +257,37 @@ Summary statistics
 
 ```r
 profits <- dt[, sum(profit), by = c("reps", "uncertainty")]
+```
+
+```
+Error: invalid 'type' (closure) of argument
+```
+
+```r
 ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
 ```
 
-![the distribution of profits by scenario](http://farm9.staticflickr.com/8512/8556233114_8ce187edf7_o.png) 
+```
+Error: object 'profits' not found
+```
 
 
 
 
 ```r
 means <- profits[, mean(V1), by = uncertainty]
+```
+
+```
+Error: object 'profits' not found
+```
+
+```r
 sds <- profits[, sd(V1), by = uncertainty]
+```
+
+```
+Error: object 'profits' not found
 ```
 
 
@@ -216,30 +303,18 @@ print(xtable(matrix(means$V1, nrow = length(set), dimnames = list(uncertainties,
     uncertainties))), type = "html")
 ```
 
-<!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
-<!-- Wed Mar 13 16:49:49 2013 -->
-<TABLE border=1>
-<TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
-  <TR> <TD align="right"> det </TD> <TD align="right"> 100.17 </TD> <TD align="right"> 100.17 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
-  <TR> <TD align="right"> g </TD> <TD align="right"> 100.26 </TD> <TD align="right"> 100.26 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
-  <TR> <TD align="right"> m </TD> <TD align="right"> 108.90 </TD> <TD align="right"> 109.52 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
-  <TR> <TD align="right"> all </TD> <TD align="right"> 113.30 </TD> <TD align="right"> 116.46 </TD> <TD align="right"> 102.16 </TD> <TD align="right"> 101.84 </TD> </TR>
-   </TABLE>
+```
+Error: object 'means' not found
+```
 
 ```r
 print(xtable(matrix(sds$V1, nrow = length(set), dimnames = list(uncertainties, 
     uncertainties))), type = "html")
 ```
 
-<!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
-<!-- Wed Mar 13 16:49:49 2013 -->
-<TABLE border=1>
-<TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
-  <TR> <TD align="right"> det </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
-  <TR> <TD align="right"> g </TD> <TD align="right"> 0.16 </TD> <TD align="right"> 0.18 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
-  <TR> <TD align="right"> m </TD> <TD align="right"> 12.69 </TD> <TD align="right"> 13.63 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
-  <TR> <TD align="right"> all </TD> <TD align="right"> 20.43 </TD> <TD align="right"> 25.49 </TD> <TD align="right"> 6.33 </TD> <TD align="right"> 5.78 </TD> </TR>
-   </TABLE>
+```
+Error: object 'sds' not found
+```
 
 
 
