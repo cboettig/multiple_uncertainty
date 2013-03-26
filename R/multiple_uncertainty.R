@@ -73,7 +73,7 @@ SDP_multiple_uncertainty <-
         Ep[,j] + (1-delta) * M %*% F[[j]] %*% v_t
       })
     }
-    list(D=D, M=M, I=I, P=P, Ep=Ep, V=V, F=F)
+    list(D=D, M=M, I=I, P=P, Ep=Ep, V=V, F=F, G=G)
 }
   
 # row-normalize the probability distribution
