@@ -105,7 +105,8 @@ function [D, V, M, I, P, Ep, F, G, f_matrix]  =  multiple_uncertainty(f, x_grid,
     Ep = M * P * I';          % matrix multiplications
     V = Ep; % Initialize  
     for t = 1:Tmax
-      [v_t, v_index] = max(V, [], 2);  % how does this handle multiple matches?  Gives smallest index to match (just like R) 
+      [v_t, v_index] = max(V, [], 2);  % how does this handle multiple matches?  Gives smallest index to match (just like R)
+      % Note that matlab calls this dimension 2, whereas in R, `apply` calls it dimension 1
       D(:, (Tmax - t + 1)) = v_index;
       for j = 1:n_h
         V(:,j) = Ep(:,j) + (1-delta) * M * F(:, :, j)' * v_t;
