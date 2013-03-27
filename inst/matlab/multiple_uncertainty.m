@@ -1,4 +1,4 @@
-function [D, V, M, I, P, Ep, F, G]  =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta)
+function [D, V, M, I, P, Ep, F, G, f_matrix]  =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta)
 %' SDP under multiple uncertainty
 %'
 %' Computes the SDP solution under the case of growth noise, 
@@ -76,7 +76,7 @@ function [D, V, M, I, P, Ep, F, G]  =  multiple_uncertainty(f, x_grid, h_grid, T
     % f_matrix is a matrix whose element i,j tells us the expected 
     % stock size next year given current stock size of x_grid[i] and harvest of h_grid[j] 
     [X,H] = meshgrid(x_grid, h_grid);
-    f_matrix = arrayfun(f, X, H);
+    f_matrix = arrayfun(f, H, X);
    
     % G is a matrix of growth noise, the probability of being at state y given
     [X,Y] = meshgrid(x_grid, x_grid);
@@ -98,17 +98,17 @@ function [D, V, M, I, P, Ep, F, G]  =  multiple_uncertainty(f, x_grid, h_grid, T
         F(:,y,q) = out / sum(out);
       end 
     end
-    
+   %% FIXME: Appears that F(:, :, i) is the transpose of the desired matrix.  Meanwhile, just transpose below 
 
     % The profit expected for a given action and state reflect 
     % the uncertainty in implementation of the action and measurement of the state
     Ep = M * P * I';          % matrix multiplications
     V = Ep; % Initialize  
     for t = 1:Tmax
-      [v_t, v_index] = max(V, [], 1); 
+      [v_t, v_index] = max(V, [], 2);  % how does this handle multiple matches?  Gives smallest index to match (just like R) 
       D(:, (Tmax - t + 1)) = v_index;
       for j = 1:n_h
-        V(:,j) = Ep(:,j) + (1-delta) * M * F(:, :, j) * v_t';
+        V(:,j) = Ep(:,j) + (1-delta) * M * F(:, :, j)' * v_t;
       end
     end
     %% Returns the policy decision matrix D.  Sometimes the value V associated with the optimal decision is also of interest
