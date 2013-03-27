@@ -7,7 +7,7 @@ sigma_g = 0.3;
 sigma_m = 0.3;
 sigma_i = 0.3;
 delta = 0.01;
-[D, V, M, I, P, Ep, F, G] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta);
+[D, V, M, I, P, Ep, F, G, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta);
 
 D(:,1)
 plot(x_grid, x_grid - x_grid(D(:,1)))
