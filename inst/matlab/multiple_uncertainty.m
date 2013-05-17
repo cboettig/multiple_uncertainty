@@ -60,7 +60,8 @@ function [D, V, M, I, P, Ep, F, G, f_matrix]  =  multiple_uncertainty(f, x_grid,
     P = profit(X, H);
 
     function out = norm1r(M)
-      out = M ./ sum(M,2);
+       out = bsxfun(@rdivide, M, sum(M, 2));
+%      out = M ./ sum(M,2);
     end
     
     % M is a matrix of the probability of being in observed state Y given the true 
