@@ -16,7 +16,7 @@ f <- function(x, h, p) {
         p[1] * S * (1 - S/p[2]) + S
     })
 }
-pars = c(1, 100)
+pars = c(0.2, 100)
 K <- pars[2]
 ```
 
@@ -115,7 +115,11 @@ ggplot(policy) + geom_point(aes(stock, stock - x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("escapement")
 ```
 
+<<<<<<< HEAD
+![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8109/8555192399_3ba80d6fb8_o.png) 
+=======
 ![plot of chunk sethiplots-escapement](http://farm9.staticflickr.com/8235/8580497721_0871204658_o.png) 
+>>>>>>> 87e5a1da88f21b369e98708a3b869fb0c7171ad9
 
 
 
@@ -125,7 +129,11 @@ ggplot(policy) + geom_point(aes(stock, x_grid[value], color = variable),
     degree = 1, se = FALSE, span = 0.3) + ylab("harvest")
 ```
 
+<<<<<<< HEAD
+![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8225/8555192575_03df7c08b6_o.png) 
+=======
 ![plot of chunk sethiplots-harvest](http://farm9.staticflickr.com/8111/8581600186_54f6f252fc_o.png) 
+>>>>>>> 87e5a1da88f21b369e98708a3b869fb0c7171ad9
 
 
 
@@ -192,7 +200,11 @@ ggplot(subset(dt, reps == 1)) + geom_line(aes(time, fishstock)) +
     geom_line(aes(time, harvest), col = "darkgreen") + facet_wrap(~uncertainty)
 ```
 
+<<<<<<< HEAD
+![plot of chunk onerep](http://farm9.staticflickr.com/8381/8556302574_deed16d2c9_o.png) 
+=======
 ![plot of chunk onerep](http://farm9.staticflickr.com/8532/8580498373_73ff393de4_o.png) 
+>>>>>>> 87e5a1da88f21b369e98708a3b869fb0c7171ad9
 
 
 Summary statistics 
@@ -203,7 +215,11 @@ profits <- dt[, sum(profit), by = c("reps", "uncertainty")]
 ggplot(profits) + geom_histogram(aes(V1)) + facet_wrap(~uncertainty)
 ```
 
+<<<<<<< HEAD
+![the distribution of profits by scenario](http://farm9.staticflickr.com/8226/8555193335_afd82bd9b0_o.png) 
+=======
 ![the distribution of profits by scenario](http://farm9.staticflickr.com/8379/8581600892_c298ff3f87_o.png) 
+>>>>>>> 87e5a1da88f21b369e98708a3b869fb0c7171ad9
 
 
 
@@ -227,6 +243,15 @@ print(xtable(matrix(means$V1, nrow = length(set), dimnames = list(uncertainties,
 ```
 
 <!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
+<<<<<<< HEAD
+<!-- Wed Mar 13 17:26:48 2013 -->
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
+  <TR> <TD align="right"> det </TD> <TD align="right"> 100.12 </TD> <TD align="right"> 100.12 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
+  <TR> <TD align="right"> g </TD> <TD align="right"> 100.13 </TD> <TD align="right"> 100.10 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
+  <TR> <TD align="right"> m </TD> <TD align="right"> 102.10 </TD> <TD align="right"> 102.53 </TD> <TD align="right"> 100.00 </TD> <TD align="right"> 100.00 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 103.73 </TD> <TD align="right"> 103.89 </TD> <TD align="right"> 100.73 </TD> <TD align="right"> 99.87 </TD> </TR>
+=======
 <!-- Fri Mar 22 16:27:24 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
@@ -234,6 +259,7 @@ print(xtable(matrix(means$V1, nrow = length(set), dimnames = list(uncertainties,
   <TR> <TD align="right"> g </TD> <TD align="right"> 18.70 </TD> <TD align="right"> 16.37 </TD> <TD align="right"> 19.00 </TD> <TD align="right"> 19.05 </TD> </TR>
   <TR> <TD align="right"> m </TD> <TD align="right"> 16.03 </TD> <TD align="right"> 15.48 </TD> <TD align="right"> 17.51 </TD> <TD align="right"> 18.42 </TD> </TR>
   <TR> <TD align="right"> all </TD> <TD align="right"> 15.77 </TD> <TD align="right"> 16.40 </TD> <TD align="right"> 16.51 </TD> <TD align="right"> 17.63 </TD> </TR>
+>>>>>>> 87e5a1da88f21b369e98708a3b869fb0c7171ad9
    </TABLE>
 
 ```r
@@ -242,6 +268,15 @@ print(xtable(matrix(sds$V1, nrow = length(set), dimnames = list(uncertainties,
 ```
 
 <!-- html table generated in R 2.15.3 by xtable 1.7-0 package -->
+<<<<<<< HEAD
+<!-- Wed Mar 13 17:26:48 2013 -->
+<TABLE border=1>
+<TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
+  <TR> <TD align="right"> det </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> g </TD> <TD align="right"> 0.06 </TD> <TD align="right"> 0.10 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> m </TD> <TD align="right"> 2.78 </TD> <TD align="right"> 2.91 </TD> <TD align="right"> 0.00 </TD> <TD align="right"> 0.00 </TD> </TR>
+  <TR> <TD align="right"> all </TD> <TD align="right"> 11.20 </TD> <TD align="right"> 11.16 </TD> <TD align="right"> 2.55 </TD> <TD align="right"> 1.49 </TD> </TR>
+=======
 <!-- Fri Mar 22 16:27:24 2013 -->
 <TABLE border=1>
 <TR> <TH>  </TH> <TH> det </TH> <TH> g </TH> <TH> m </TH> <TH> all </TH>  </TR>
@@ -249,6 +284,7 @@ print(xtable(matrix(sds$V1, nrow = length(set), dimnames = list(uncertainties,
   <TR> <TD align="right"> g </TD> <TD align="right"> 4.75 </TD> <TD align="right"> 6.44 </TD> <TD align="right"> 4.05 </TD> <TD align="right"> 4.77 </TD> </TR>
   <TR> <TD align="right"> m </TD> <TD align="right"> 3.53 </TD> <TD align="right"> 1.53 </TD> <TD align="right"> 1.22 </TD> <TD align="right"> 0.93 </TD> </TR>
   <TR> <TD align="right"> all </TD> <TD align="right"> 5.01 </TD> <TD align="right"> 6.67 </TD> <TD align="right"> 4.17 </TD> <TD align="right"> 4.80 </TD> </TR>
+>>>>>>> 87e5a1da88f21b369e98708a3b869fb0c7171ad9
    </TABLE>
 
 
