@@ -23,7 +23,7 @@ f <- function(x,h,p){
   	p[1] * S * (1 - S/p[2]) + S
   })
 }
-pars = c(1, 100)
+pars = c(.2, 100)
 K <- pars[2]
 ````
 
