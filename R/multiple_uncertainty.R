@@ -9,6 +9,8 @@
 #' @param p the parameters of the growth function
 #' @param x_grid the discrete values allowed for the population size, x
 #' @param h_grid the discrete values of harvest levels to optimize over
+#' @param Tmax the maximum time to run 
+#' @param delta the discount rate
 #' @param sigma is the shape parameters for noise distribution (sigma_g, sigma_m, sigma_i) (default is no noise)
 #' @param pdfn is the probability density function (same functional form is used for growth, measure, implement).  (Default is uniform)
 #' @param profit is the profit function (defaults to the realized harvest)
@@ -17,7 +19,7 @@
 #' Values of D[,t] correspond to the index of h_grid.  Indices of of D[,t] correspond to states in y_grid.  
 #' @export
 SDP_multiple_uncertainty <- 
-  function(f, p, x_grid, h_grid, Tmax = 25,
+  function(f, p, x_grid, h_grid, Tmax = 25, delta, 
            sigmas =c(sigma_g=0.3, sigma_m=0, sigma_i=0), 
            pdfn = pdfn, profit = function(x,h) pmin(x, h)){
   
@@ -38,7 +40,7 @@ SDP_multiple_uncertainty <-
     # Much faster to fill out f calls as a matrix ahead of time.  
     f_matrix <- outer(x_grid, h_grid, f, p)
     # Fill out uncertainty in transitions first
-    G <- outer(x_grid, x_grid, pdfn, sigma_g)
+    G <- rownorm( outer(x_grid, x_grid, pdfn, sigma_g) ) # rownorm, right?
     
     F <- lapply(1:n_h, function(q){  
       t(sapply(1:n_x, function(y){
@@ -71,7 +73,7 @@ SDP_multiple_uncertainty <-
         Ep[,j] + (1-delta) * M %*% F[[j]] %*% v_t
       })
     }
-    list(D=D, M=M, I=I, P=P, Ep=Ep, V=V, F=F)
+    list(D=D, M=M, I=I, P=P, Ep=Ep, V=V, F=F, G=G, f_matrix = f_matrix)
 }
   
 # row-normalize the probability distribution
