@@ -7,8 +7,8 @@ h_grid = x_grid;
 %h_grid = [0:1:30]; % Must be same dimensions as x_grid, or L91 errors...  
 Tmax = 10;
 sigma_g = 0.0;
-delta = 0.0;
-[D, V, P, G, f_matrix] =  reed(f, x_grid, h_grid, Tmax, sigma_g, delta);
+delta = 0.05;
+[D, V, P, f_matrix] =  reed(f, x_grid, h_grid, Tmax, sigma_g, delta);
 
 plot(x_grid, x_grid - x_grid(D(:,1)), '.-')
 ylim([0 100])

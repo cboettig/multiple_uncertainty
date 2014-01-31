@@ -1,4 +1,4 @@
-function [D, V, P, G, f_matrix]  =  reed(f, x_grid, h_grid, Tmax, sigma_g, delta)
+function [D, V, P, f_matrix]  =  reed(f, x_grid, h_grid, Tmax, sigma_g, delta)
 %' SDP under multiple uncertainty
 %'
 %' Computes the SDP solution under the case of growth noise, 
@@ -72,9 +72,7 @@ function [D, V, P, G, f_matrix]  =  reed(f, x_grid, h_grid, Tmax, sigma_g, delta
     [X,H] = meshgrid(x_grid, h_grid);
     f_matrix = arrayfun(f, H, X);
    
-    % G is a matrix of growth noise, the probability of being at state y given
-    [X,Y] = meshgrid(x_grid, x_grid);
-    G = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_g, x_grid), Y, X));
+
     V = P; % Initialize the value
 
     %% Perform the dynamic programming algorithm / Bellman iteration loop
@@ -83,9 +81,20 @@ function [D, V, P, G, f_matrix]  =  reed(f, x_grid, h_grid, Tmax, sigma_g, delta
       % Note that matlab calls this dimension 2, whereas in R, `apply` calls it dimension 1
       D(:, (Tmax - t + 1)) = v_index;
       for k = 1:n_h
+
+        %% We must interpolate because f(x) takes us off the x-grid,
+        %% and we only know v_t on the grid points.  
         v_t_interp = interp1(x_grid, v_t, f_matrix(:,k));
-        V(:,k) = P(:,k) + (1-delta) * G * v_t_interp;
+
+        %% Interpolation looks up the value of the corresponding
+        %% f(x_t,h) transition starting at each x_t. 
+        V(:,k) = P(:,k) + (1-delta) * v_t_interp;
       end
     end
 end
+
+
+%% IF we have uncertainty 
+
+
 
