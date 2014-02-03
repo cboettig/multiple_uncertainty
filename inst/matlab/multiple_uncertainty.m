@@ -29,14 +29,6 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
       out = bsxfun(@min,x,y); 
     end  
 
-    %% Compute the probability density on a discrete grid %%
-    %%   (There must be a cleaner way to handle this.)
-    function out = snap_to_grid(x, grid)
-%      grid(grid <= x)(end) % floor method 
-      [v,i] = min((grid - x).^2); % nearest box method
-      out = grid(i);  
-    end
-    
 
 
     %% generate various sources of noise, or delta fns if noise is zero
@@ -89,21 +81,11 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
     F = zeros(n_x, n_x, n_h);
     for q = 1:n_h
       for y = 1:n_x
-        out = zeros(n_x, 1);
         mu = M(y,:) * f_matrix * I(q,:)'; % mean transition rate %% FIXME Seems to require h_grid dimension is same as x_grid dimension??  
-        %%  Handle special cases
-        if snap_to_grid(mu,x_grid) == 0;  % if we transition to zero, 
-          out(1) = 1;  % probability of going to the zeroth state, (x_grid[1]) is unity
-        else 
-          out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid); % calculate directly, not with G and the index
-          if(sum(out) == 0)
-            out(1) = 1;
-          end 
-        end
-        F(:,y,q) = out / sum(out);
+        out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid); 
+        F(y,:,q) = out / sum(out); % as rows 
       end 
     end
-   %% FIXME: Appears that F(:, :, i) is the transpose of the desired matrix.  Meanwhile, just transpose below 
 
     % The profit expected for a given action and state reflect 
     % the uncertainty in implementation of the action and measurement of the state
@@ -114,7 +96,12 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
       % Note that matlab calls this dimension 2, whereas in R, `apply` calls it dimension 1
       D(:, (Tmax - t + 1)) = v_index;
       for j = 1:n_h
-        V(:,j) = Ep(:,j) + (1-delta) * M * F(:, :, j)' * v_t;
+        if sigma_g == 0
+          v_t_interp = interp1(x_grid, v_t, f_matrix(:,j));
+          V(:,j) = Ep(:,j) + 1 / (1 + delta) * M * v_t_interp;
+        else 
+          V(:,j) = Ep(:,j) + 1 / (1 + delta) * M * F(:, :, j) * v_t;
+        end
       end
     end
 end

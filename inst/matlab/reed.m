@@ -80,15 +80,15 @@ function [D, V, P, f_matrix]  =  reed(f, x_grid, h_grid, Tmax, sigma_g, delta)
       [v_t, v_index] = max(V, [], 2);  % how does this handle multiple matches?  Gives smallest index to match (just like R)
       % Note that matlab calls this dimension 2, whereas in R, `apply` calls it dimension 1
       D(:, (Tmax - t + 1)) = v_index;
-      for k = 1:n_h
+      for j = 1:n_h
 
         %% We must interpolate because f(x) takes us off the x-grid,
         %% and we only know v_t on the grid points.  
-        v_t_interp = interp1(x_grid, v_t, f_matrix(:,k));
+        v_t_interp = interp1(x_grid, v_t, f_matrix(:,j));
 
         %% Interpolation looks up the value of the corresponding
         %% f(x_t,h) transition starting at each x_t. 
-        V(:,k) = P(:,k) + (1-delta) * v_t_interp;
+        V(:,j) = P(:,j) + 1 / (1 + delta) * v_t_interp;
       end
     end
 end
