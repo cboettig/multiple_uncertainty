@@ -10,7 +10,7 @@ require(data.table)
 
 ```{r plotting, include=FALSE}
 opts_knit$set(upload.fun = image_uri)
-opts_chunk$set(dev.args=list(bg="transparent"), cache=TRUE, cache.path = "Sethi_Figure3/")
+opts_chunk$set(dev.args=list(bg="transparent"), cache=FALSE, cache.path = "Sethi_Figure3/")
 ```
 
 ``` {r logistic}
@@ -22,20 +22,11 @@ f <- function(x,h,p){
 }
 ````
 
-``` {r stateeq eval=FALSE, include=FALSE}
-f <- function(x, h, p){
-  A <- p[1] 
-  B <- p[2] 
-  s <- pmax(x-h, 0)
-  A * s/(1 + B * s)
-}
-```
-
 ```{r }
 #pars <- c(1.5, 0.05)
 #K <- (pars[1] - 1)/pars[2]
 
-p <- c(1,100)
+pars <- c(1,100)
 K <- 100
 xmin <- 0
 xmax <- 1.5 * K
@@ -46,11 +37,12 @@ h_grid <- seq(xmin, xmax, length = n_h)
 delta <- 0.05
 xT <- 0
 OptTime <- 20
-sigma_g <- 0.5
-sigma_m <- 0.5
-sigma_g <- 0.5
-small_noise <- 0.03
+sigma_g <- 0.3
+sigma_m <- 0.3
+sigma_i <- 0.3
+small_noise <- 0.0
 profit <- function(x,h) pmin(x, h)
+pdfn = pdfn_lnorm
 ````
 
 The default pdfn is uniform
