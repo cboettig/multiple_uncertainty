@@ -1,4 +1,4 @@
-function [D, V, M, I, P, Ep, F, G, f_matrix]  =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta)
+function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf)
 %' SDP under multiple uncertainty
 %'
 %' Computes the SDP solution under the case of growth noise, 
@@ -29,21 +29,19 @@ function [D, V, M, I, P, Ep, F, G, f_matrix]  =  multiple_uncertainty(f, x_grid,
       out = bsxfun(@min,x,y); 
     end  
 
-    %% Compute the probability density on a discrete grid %%
-    %%   (There must be a cleaner way to handle this.)
-    function out = snap_to_grid(x, grid)
-      [v,i] = min((grid - x).^2);
-      out = grid(i);  
-    end
+
+
     %% generate various sources of noise, or delta fns if noise is zero
-    function out = pdfn(p, mu, s, grid)
+    function out = pdfn(p, mu, s, grid, pdf)
       if mu == 0
         out = (p == 0);
       elseif s > 0
         if mu > 0
-          out = unifpdf(p, mu .* (1 - s), mu .* (1 + s)); % Could use lognpdf for lognormal
+           out = pdf(p, mu, s);
+%          out = unifpdf(p, mu .* (1 - s), mu .* (1 + s)); 
+%          out = lognpdf(p ./ mu, 0, s);
         end
-      else  % delta spike
+      else  % delta spike if s = 0
         out = isequal(histc(mu,grid), histc(p, grid));
       end
     end
@@ -61,45 +59,33 @@ function [D, V, M, I, P, Ep, F, G, f_matrix]  =  multiple_uncertainty(f, x_grid,
 
     function out = norm1r(M)
        out = bsxfun(@rdivide, M, sum(M, 2));
-%      out = M ./ sum(M,2);
+%      out = M ./ sum(M,2); %% this notation works on OCTAVE but not MATLAB
     end
     
     % M is a matrix of the probability of being in observed state Y given the true 
     % state X.  We represent both as discrete values in x_grid
     [X,Y] = meshgrid(x_grid, x_grid); 
-    M = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_m, x_grid), Y, X));
+    M = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_m, x_grid, pdf), Y, X));
 
     % I is a matrix of the probability of implementing a harvest H given 
     % a quota set to Q.  We represent both as discrete values in h_grid
     [H,Q] = meshgrid(h_grid, h_grid); 
-    I = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_i, h_grid), Q, H));
+    I = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_i, h_grid, pdf), Q, H));
 
     % f_matrix is a matrix whose element i,j tells us the expected 
     % stock size next year given current stock size of x_grid[i] and harvest of h_grid[j] 
     [X,H] = meshgrid(x_grid, h_grid);
     f_matrix = arrayfun(f, H, X);
-   
-    % G is a matrix of growth noise, the probability of being at state y given
-    [X,Y] = meshgrid(x_grid, x_grid);
-    G = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_g, x_grid), Y, X));
-
+  
     %% Calculate F   
     F = zeros(n_x, n_x, n_h);
     for q = 1:n_h
       for y = 1:n_x
-        out = zeros(n_x, 1);
-        mu = M(y,:) * f_matrix * I(q,:)'; % mean transition rate 
-        %%  Handle special cases
-        if snap_to_grid(mu,x_grid) == 0;  % if we transition to zero, 
-          out(1) = 1;  % probability of going to the zeroth state, (x_grid[1]) is unity
-        else 
-         [val, index] = min(abs(x_grid - mu)); %% snap mu to grid first
-         out = G(:, index);   %% then do this by table look-up
-        end
-        F(:,y,q) = out / sum(out);
+        mu = M(y,:) * f_matrix * I(q,:)'; % mean transition rate %% FIXME Seems to require h_grid dimension is same as x_grid dimension??  
+        out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid); 
+        F(y,:,q) = out / sum(out); % as rows 
       end 
     end
-   %% FIXME: Appears that F(:, :, i) is the transpose of the desired matrix.  Meanwhile, just transpose below 
 
     % The profit expected for a given action and state reflect 
     % the uncertainty in implementation of the action and measurement of the state
@@ -110,11 +96,14 @@ function [D, V, M, I, P, Ep, F, G, f_matrix]  =  multiple_uncertainty(f, x_grid,
       % Note that matlab calls this dimension 2, whereas in R, `apply` calls it dimension 1
       D(:, (Tmax - t + 1)) = v_index;
       for j = 1:n_h
-        V(:,j) = Ep(:,j) + (1-delta) * M * F(:, :, j)' * v_t;
+        if sigma_g == 0
+          v_t_interp = interp1(x_grid, v_t, f_matrix(:,j));
+          V(:,j) = Ep(:,j) + 1 / (1 + delta) * M * v_t_interp;
+        else 
+          V(:,j) = Ep(:,j) + 1 / (1 + delta) * M * F(:, :, j) * v_t;
+        end
       end
     end
-    %% Returns the policy decision matrix D.  Sometimes the value V associated with the optimal decision is also of interest
-    D;
 end
 
 
