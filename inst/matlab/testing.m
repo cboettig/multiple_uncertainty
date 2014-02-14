@@ -3,7 +3,7 @@ clear;
 f = @(x, h) max( max((x - h),0) * (1 - max((x - h),0) ./ 100) + max((x - h),0), 0);
 %f=@(x, h) max( (x-h) * (1 - (x-h) ./ 100) + (x-h), 0);
 
-x_grid = [0:5:150];
+x_grid = [0:1:150];
 h_grid = x_grid; % Must be same dimensions as x_grid, or L91 errors...  
 Tmax = 10;
 sigma_g = 0.0;

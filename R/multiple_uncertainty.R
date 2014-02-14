@@ -19,7 +19,7 @@
 #' Values of D[,t] correspond to the index of h_grid.  Indices of of D[,t] correspond to states in y_grid.  
 #' @export
 SDP_multiple_uncertainty <- 
-  function(f, p, x_grid, h_grid, Tmax = 25, delta, 
+  function(f, p, x_grid, h_grid, Tmax = 25, delta = 0.05, 
            sigmas =c(sigma_g=0.3, sigma_m=0, sigma_i=0), 
            pdfn = pdfn, profit = function(x,h) pmin(x, h)){
   

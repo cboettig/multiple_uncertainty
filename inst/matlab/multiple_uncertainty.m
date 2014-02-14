@@ -96,7 +96,7 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
       % Note that matlab calls this dimension 2, whereas in R, `apply` calls it dimension 1
       D(:, (Tmax - t + 1)) = v_index;
       for j = 1:n_h
-        if sigma_g == 0
+        if sigma_g == 0 %% Then f_matrix takes us off-grid to where we don't know the value
           v_t_interp = interp1(x_grid, v_t, f_matrix(:,j));
           V(:,j) = Ep(:,j) + 1 / (1 + delta) * M * v_t_interp;
         else 
