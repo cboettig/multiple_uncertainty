@@ -39,41 +39,42 @@ SDP_multiple_uncertainty <-
     
     # Much faster to fill out f calls as a matrix ahead of time.  
     f_matrix <- outer(x_grid, h_grid, f, p)
-    # Fill out uncertainty in transitions first
-    G <- rownorm( outer(x_grid, x_grid, pdfn, sigma_g) ) # rownorm, right?
+    
+    # Fill out uncertainty in transitions first -- involves snapping to grids.. not ideal. interpolation possible?
+#    G <- rownorm( outer(x_grid, x_grid, pdfn, sigma_g) ) # rownorm, right?
     
     F <- lapply(1:n_h, function(q){  
       t(sapply(1:n_x, function(y){
         out <- numeric(n_x)
         mu <- M[y,] %*% f_matrix %*% I[q,] 
-        # Handle special cases
+
+## Don't need to handle this separtely         
         if(snap_to_grid(mu,x_grid)==0){ # 
           out[1] <- 1   
         } else {
-        #out <- pdfn(x_grid, mu, sigma_g)  ## All computational time spent here.  could be done by look-up:
-         mu_i <- which.min(abs(x_grid - mu)) ## snap mu to grid first
-         out <- G[,mu_i]   ## then do this by table look-up
-         ## Not identical but very close.  
+
+        out <- pdfn(x_grid, mu, sigma_g)  ## All computational time spent here.  
+
+          # could be done by look-up:
+#         mu_i <- which.min(abs(x_grid - mu)) ## snap mu to grid first
+#         out <- G[,mu_i]   ## then do this by table look-up, Not identical but very close.  Makes Jim unhappy
+
         }
         out/sum(out)
       }))
     })
-    
-    
+        
     # n_y by n_x, given y %*% n_x by n_h %*% n_h by n_q, given q
     Ep <- M %*% P %*% t(I)
     V <- Ep
     for(t in 1:Tmax){
       D[,(Tmax-t+1)] <- apply(V, 1, which.max) 
-      ## q can often exceed y: if fishing is free, there might be more x than you think.  In such cases it is worth attempting to fish extra, and we shouldn't exert q < y.  
-      #if(any(pmin(D[,(Tmax-t+1)], 1:n_h) !=  D[,(Tmax-t+1)])) stop()
-      #v_t <- sapply(1:n_h, function(i) V[i,D[i,(Tmax-t+1)]]) # Look-up value given by which.max
       v_t <- apply(V, 1, max) # vector of current values 
       V <- sapply(1:n_h, function(j){ # updated value matrix
         Ep[,j] + (1-delta) * M %*% F[[j]] %*% v_t
       })
     }
-    list(D=D, M=M, I=I, P=P, Ep=Ep, V=V, F=F, G=G, f_matrix = f_matrix)
+    list(D=D, M=M, I=I, P=P, Ep=Ep, V=V, F=F, f_matrix = f_matrix)
 }
   
 # row-normalize the probability distribution

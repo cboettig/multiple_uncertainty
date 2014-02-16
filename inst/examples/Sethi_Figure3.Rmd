@@ -30,33 +30,32 @@ pars <- c(1,100)
 K <- 100
 xmin <- 0
 xmax <- 1.5 * K
-n_x <- 300
+n_x <- 31
 n_h <- n_x
 x_grid <- seq(xmin, xmax, length = n_x)  
 h_grid <- seq(xmin, xmax, length = n_h)
 delta <- 0.05
-xT <- 0
-OptTime <- 20
-sigma_g <- 0.3
-sigma_m <- 0.3
-sigma_i <- 0.3
-small_noise <- 0.0
+OptTime <- 25
+sigma_g <- 0.0
+sigma_m <- 0.0
+sigma_i <- 0.0
+small_noise <- 0.00
 profit <- function(x,h) pmin(x, h)
-pdfn = pdfn_lnorm
+pdf = pdfn_lnorm
 ````
 
 The default pdfn is uniform
 
 ```{r }
-g <- SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime, sigmas = c(sigma_g=sigma_g, sigma_m=0, sigma_i=0), pdfn=pdfn, delta=delta)
+g <- SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime, sigmas = c(sigma_g=sigma_g, sigma_m=0, sigma_i=0), pdfn=pdf, delta=delta)
 ```
 
 ```{r}
-m <- SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime, sigmas = c(sigma_g=small_noise, sigma_m=sigma_m, sigma_i=0), pdfn=pdfn, delta=delta)  
+m <- SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime, sigmas = c(sigma_g=small_noise, sigma_m=sigma_m, sigma_i=0), pdfn=pdf, delta=delta)  
 ```
 
 ```{r}
-i <- SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime, sigmas = c(sigma_g=small_noise, sigma_m=0, sigma_i=sigma_i), pdfn=pdfn, delta=delta)  
+i <- SDP_multiple_uncertainty(f, pars, x_grid, h_grid, OptTime, sigmas = c(sigma_g=small_noise, sigma_m=0, sigma_i=sigma_i), pdfn=pdf, delta=delta)  
 ```
 
 Plot the policy function (in terms of escapement, `x-h`, rather than harvest `h`) at equilibrium (first time-step):
