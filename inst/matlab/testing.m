@@ -53,4 +53,3 @@ title('Figure 3 in Sethi')
 legend('All Low','Large Growth','Large Measurement','Large  Implementation')
 
 
-saveas(1, "SethiFig3.png")
