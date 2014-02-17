@@ -33,7 +33,7 @@ if test == 0 % Set to run with small uncertainty
     sigma_g = 0.1; % Stock shock
     sigma_m = 0.1; % Measurement shock
     sigma_i = 0.1; % harvest implementation shock
-    [D, V, M, I, P, Ep, F, G, f_matrix, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+    [D, V, M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
     % Figures
     % Policy Function
     figure
@@ -57,7 +57,7 @@ if test == 1
     sigma_m = 0.0; % Measurement shock
     sigma_i = 0.0; % harvest implementation shock
     % Not calling back F or f_matrix to save memory space
-    [det.D, det.V, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+    [det.D, det.V, M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
     % Figures
     % Policy Function
     figure
@@ -86,12 +86,12 @@ if test == 1
       end
       
       % Not calling back F or f_matrix to save memory space
-      [D, V, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+      [D, V, M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
       Y{i}=x_grid - x_grid(D(:,1));
       Val{i}=V;
       %Epp{i}=Ep;
       %FF{i}=F;
-      Iter(i)=iter;
+%      Iter(i)=iter;
       
   end
 
@@ -132,19 +132,19 @@ if test == 3
   sigma_g = 0.1; % Stock shock
   sigma_m = 0.1; % Measurement shock
   sigma_i = 0.1; % harvest implementation shock
-  [Fig3.D, Fig3.V, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+  [Fig3.D, Fig3.V,  M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
   sigma_g = 0.5; % Stock shock
   sigma_m = 0.1; % Measurement shock
   sigma_i = 0.1; % harvest implementation shock
-  [Fig3.D1, Fig3.V1, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+  [Fig3.D1, Fig3.V1,  M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
   sigma_g = 0.1; % Stock shock
   sigma_m = 0.5; % Measurement shock
   sigma_i = 0.1; % harvest implementation shock
-  [Fig3.D2, Fig3.V2, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+  [Fig3.D2, Fig3.V2,  M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
   sigma_g = 0.1; % Stock shock
   sigma_m = 0.1; % Measurement shock
   sigma_i = 0.5; % harvest implementation shock
-  [Fig3.D3, Fig3.V3, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+  [Fig3.D3, Fig3.V3,  M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
 
   figure
   plot(x_grid,x_grid - x_grid(Fig3.D(:,1)),colorlines{1},...
@@ -165,12 +165,12 @@ if test == 4
   sigma_g = 0.5; % Stock shock
   sigma_m = 0.1; % Measurement shock
   sigma_i = 0.5; % harvest implementation shock
-  [Fig4.D1, Fig4.V1, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+  [Fig4.D1, Fig4.V1, M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
 
   sigma_g = 0.5; % Stock shock
   sigma_m = 0.5; % Measurement shock
   sigma_i = 0.5; % harvest implementation shock
-  [Fig4.D2, Fig4.V2, ~, ~, ~, ~,~, ~, ~, iter] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
+  [Fig4.D2, Fig4.V2, M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
 
   figure
   plot(x_grid,x_grid - x_grid(Fig4.D1(:,1)),'b--',...
