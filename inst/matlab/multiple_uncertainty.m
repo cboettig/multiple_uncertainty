@@ -33,6 +33,7 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
 
     %% generate various sources of noise, or delta fns if noise is zero
     function out = pdfn(p, mu, s, grid, pdf)
+      out = 0; % avoid cases in which out is undefined (e.g. mu < 0, s > 0)
       if mu == 0
         out = +(p == 0); % + coerces logical to double
       elseif s > 0
