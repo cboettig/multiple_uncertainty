@@ -28,6 +28,5 @@ plot(x_grid,small,colorlines{1})
 axis([0 100 0 100])
 xlabel(XL)
 ylabel(YL)
-%title('Figure 3 in Sethi')
-%legend('All Low','Large Growth','Large Measurement','Large  Implementation')
-
+title('Growth noise only')
+print -dpng carl.png
