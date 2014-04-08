@@ -59,6 +59,8 @@ if test==1 % Set to test code before running all of the different permutations
     ylabel('Harvest')
     toc
     
+    print -dpng script_mulitpleU_test.png
+
 
 else
 
@@ -115,6 +117,7 @@ xlabel(XL)
 ylabel(YL)
 title('Figure 1 in Sethi')
 legend('Deterministic','Large Growth Shock (LGS), Stock known','LGS, Stock unknown','Very LGS, Stock unknown')
+print -dpng figure1.png
 
 figure
 subplot(221)
@@ -133,6 +136,7 @@ subplot(224)
 plot(x_grid,Val{3}(grid-20:grid, :)','.-')
 xlabel(XL)
 title('Very LGS, Stock unknown')
+print -dpng figure2.png
 
 
 %% Generating Figure 3 in Sethi
@@ -163,6 +167,7 @@ xlabel(XL)
 ylabel(YL)
 title('Figure 3 in Sethi')
 legend('All Low','Large Growth','Large Measurement','Large  Implementation')
+print -dpng figure3.png
 
 
 
@@ -186,6 +191,9 @@ ylabel(YL)
 title('Figure 4 in Sethi')
 legend('Large Growth & Implementation','All Large')
 grid on
+print -dpng figure4.png
+
+
 
 end
 
