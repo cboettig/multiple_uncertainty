@@ -38,7 +38,7 @@ Implementation Noise only
 - (See linked code all parameters)
 
 
-![Implementation noise only](implementation.svg)
+![Implementation noise only](implementation.png)
 
 
 
@@ -55,4 +55,4 @@ Attempt to replicate Figure 3
 - see linked code to confirm parameters, etc
 - This run from octave, on laptop, batch mode.  
 
-![Figure 3](fig3.svg)
+![Figure 3](fig3.png)
