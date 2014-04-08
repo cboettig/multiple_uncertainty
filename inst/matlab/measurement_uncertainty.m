@@ -13,8 +13,8 @@ pdf = @(p,mu,s) lognpdf(p ./ mu, 0, s);
 %pdf = @(p,mu,s) unifpdf(p, mu .* (1 - s), mu .* (1 + s)); 
 
 sigma_g = 0.0;
-sigma_m = 0.0;
-sigma_i = 0.2;
+sigma_m = 0.2;
+sigma_i = 0.0;
 [D, V, M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf);
 small = x_grid - x_grid(D(:,1));
 
@@ -28,6 +28,6 @@ plot(x_grid,small,colorlines{1})
 axis([0 100 0 100])
 xlabel(XL)
 ylabel(YL)
-title('Implementation noise only')
-%print -dsvg implementation.svg
-print -dpng implementation.png
+title('Measurement noise only')
+%print -dsvg measurement.svg
+print -dpng measurement.png
