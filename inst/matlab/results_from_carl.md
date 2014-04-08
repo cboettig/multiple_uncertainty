@@ -25,7 +25,7 @@ Results from running [testing.m](testing.m):
 - (See linked code all parameters)
 
 
-![Growth noise only](carl.png)
+![Growth noise only](http://cboettig.github.com/multiple_uncertainty/carl.svg)
 
 
 Implementation Noise only
@@ -38,7 +38,7 @@ Implementation Noise only
 - (See linked code all parameters)
 
 
-![Implementation noise only](implementation.png)
+![Implementation noise only](http://cboettig.github.com/multiple_uncertainty/implementation.svg)
 
 
 
@@ -55,4 +55,4 @@ Attempt to replicate Figure 3
 - see linked code to confirm parameters, etc
 - This run from octave, on laptop, batch mode.  
 
-![Figure 3](fig3.png)
+![Figure 3](http://cboettig.github.com/multiple_uncertainty/fig3.svg)
