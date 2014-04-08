@@ -1,4 +1,4 @@
-function [D, V, M, I, P, Ep, F, f_matrix,iter,ESC]  =  multiple_uncertainty_rev(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf)
+function [D, V, M, I, P, Ep, F, f_matrix,iter,ESC]  =  multiple_uncertainty_rev(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, Pdf)
 %' SDP under multiple uncertainty
 %'
 %' Computes the SDP solution under the case of growth noise, 
@@ -38,17 +38,17 @@ function [D, V, M, I, P, Ep, F, f_matrix,iter,ESC]  =  multiple_uncertainty_rev(
 
 
     %% generate various sources of noise, or delta fns if noise is zero
-    function out = pdfn(p, mu, s, grid, pdf)
+    function out = pdfn(p, mu, s, grid, Pdf)
       if mu == 0
-        out = (p == 0);
+        out = +(p == 0);
       elseif s > 0
         if mu > 0
-           out = pdf(p, mu, s);
+           out = Pdf(p, mu, s);
 %          out = unifpdf(p, mu .* (1 - s), mu .* (1 + s)); 
 %          out = lognpdf(p ./ mu, 0, s);
         end
       else  % delta spike if s = 0
-        out = isequal(histc(mu,grid), histc(p, grid));
+        out = +isequal(histc(mu,grid), histc(p, grid));
       end
     end
 
@@ -71,12 +71,12 @@ function [D, V, M, I, P, Ep, F, f_matrix,iter,ESC]  =  multiple_uncertainty_rev(
     % M is a matrix of the probability of being in observed state Y given the true 
     % state X.  We represent both as discrete values in x_grid
     [X,Y] = meshgrid(x_grid, x_grid); 
-    M = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_m, x_grid, pdf), Y, X));
+    M = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_m, x_grid, Pdf), Y, X));
 
     % I is a matrix of the probability of implementing a harvest H given 
     % a quota set to Q.  We represent both as discrete values in h_grid
     [H,Q] = meshgrid(h_grid, h_grid); 
-    I = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_i, h_grid, pdf), Q, H));
+    I = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_i, h_grid, Pdf), Q, H));
 
     % f_matrix is a matrix whose element i,j tells us the expected 
     % stock size next year given current stock size of x_grid[i] and harvest of h_grid[j] 
@@ -88,7 +88,7 @@ function [D, V, M, I, P, Ep, F, f_matrix,iter,ESC]  =  multiple_uncertainty_rev(
     for q = 1:n_h
       for y = 1:n_x
         mu = M(y,:) * f_matrix * I(q,:)'; % mean transition rate %% FIXME Seems to require h_grid dimension is same as x_grid dimension??  
-        out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid); 
+        out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, Pdf), x_grid); 
         F(y,:,q) = out / sum(out); % as rows 
       end 
     end
