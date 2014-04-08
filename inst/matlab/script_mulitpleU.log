@@ -1,0 +1,40 @@
+Warning: No display specified.  You will not be able to display graphics on the screen.
+Warning: No window system found.  Java option 'MWT' ignored
+
+                            < M A T L A B (R) >
+                  Copyright 1984-2012 The MathWorks, Inc.
+                    R2012a (7.14.0.739) 64-bit (glnxa64)
+                              February 9, 2012
+
+    ----------------------------------------------------
+	Your MATLAB license will expire in 54 days.
+	Please contact your system administrator or
+	MathWorks to renew this license.
+    ----------------------------------------------------
+ 
+To get started, type one of these: helpwin, helpdesk, or demo.
+For product information, visit www.mathworks.com.
+ 
+>> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> Elapsed time is 14.727960 seconds.
+>> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> >> 
+ans =
+
+    5.3525
+
+>> >> >> {Warning: Objects of graph2d.lineseries class exist - not clearing this class
+or any of its super-classes} 
+{Warning: Objects of scribe.legend class exist - not clearing this class
+or any of its super-classes} 
+{Warning: Objects of graphics.panbehavior class exist - not clearing this class
+or any of its super-classes} 
+{Warning: Objects of graphics.zoombehavior class exist - not clearing this class
+or any of its super-classes} 
+{Warning: Objects of graphics.rotate3dbehavior class exist - not clearing this
+class
+or any of its super-classes} 
+{Warning: Objects of graphics.datacursorbehavior class exist - not clearing this
+class
+or any of its super-classes} 
+{Warning: Objects of graphics.ploteditbehavior class exist - not clearing this
+class
+or any of its super-classes} 
