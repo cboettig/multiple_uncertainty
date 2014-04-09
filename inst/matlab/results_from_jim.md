@@ -8,20 +8,23 @@ Multiple uncertainty
 Run: 
 
 ```bash
-matlab -nodesktop < script_multipleU.m > script_multipleU.log
+matlab -nodesktop < script_mulitpleU.m > script_mulitpleU.log
 
 ```
 
-Results from running [script_multipleU.m](script_multipleU.m)
+Results from running [script_mulitpleU.m](script_mulitpleU.m)
 
+![test case](script_mulitpleU_test.png)
 
-![Figure 1](figure1.svg)
+<!--
 
-![Figure 2](figure2.svg)
+![Figure 1](figure1.png)
 
-![Figure 3](figure3.svg)
+![Figure 2](figure2.png)
 
-![Figure 4](figure4.svg)
+![Figure 3](figure3.png)
 
+![Figure 4](figure4.png)
 
+-->
 
