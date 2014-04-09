@@ -65,7 +65,7 @@ Attempt to replicate Figure 3, but with one noise at a time
 - Large noise means devation of 0.5, as in Sethi
 - Other noise terms are 0 instead of 0.1 
 
-![](http://cboettig.github.com/multiple_uncertainty/one_noise_at_a_time.png)
+![](one_noise_at_a_time.png)
 
 
 Figure 3
@@ -76,6 +76,6 @@ Figure 3
 - Large noise means devation of 0.5, as in Sethi
 - Small noise means 0.1, as in Sethi
 
-![](http://cboettig.github.com/multiple_uncertainty/carl_fig3.png)
+![](carl_fig3.png)
 
 
