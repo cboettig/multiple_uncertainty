@@ -73,4 +73,5 @@ legend('All Uncertainties Low','Large Growth Uncertainty','Large Measurement Unc
        case 'b'
          text(50,10,['Beverton-Holt, r=' num2str(r)])
      end
- 
+
+plot2svg('SethiEtAl05_Figure3.svg')

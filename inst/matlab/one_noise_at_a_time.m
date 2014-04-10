@@ -50,5 +50,8 @@ xlabel(XL)
 ylabel(YL)
 title('Uniform noise')
 legend('Deterministic','(Large) Growth Only','(Large) Measurement Only','(Large) Implementation Only')
-print -dpng one_noise_at_a_time.png
-save("one_at_a_time.mat")
+
+%print -dpng one_noise_at_a_time.png
+
+plot2svg('one_at_a_time.svg')
+save('one_at_a_time.mat')
