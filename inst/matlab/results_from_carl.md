@@ -5,6 +5,7 @@ Summary of results from Carl's scripts
 - Date: 2014-04-08
 
 
+<!-- 
 
 Growth Noise Only
 ------------------
@@ -25,34 +26,56 @@ Results from running [testing.m](testing.m):
 - (See linked code all parameters)
 
 
+
 ![Growth noise only](http://cboettig.github.com/multiple_uncertainty/carl.svg)
+
+measurement Noise only
+--------------------------
+
+- Code: [measurement_uncertainty.m](measurement_uncertainty.m)
+- `sigma_m = 0.5` 
+- Other noise set to zero.  
+- Fine grid `0:1:150`
+- (See linked code all parameters)
+
+
+![measurement noise only](http://cboettig.github.com/multiple_uncertainty/unif_0.5_fine_measurement.svg)
+
 
 
 Implementation Noise only
 --------------------------
 
 - Code: [implementation_uncertainty.m](implementation_uncertainty.m)
-- sigma_i = 0.2 
+- `sigma_i = 0.5`
 - Other noise set to zero.  
-- Coarse grid `0:5:150`
+- Fine grid `0:1:150`
 - (See linked code all parameters)
 
 
-![Implementation noise only](http://cboettig.github.com/multiple_uncertainty/implementation.svg)
+![Implementation noise only](http://cboettig.github.com/multiple_uncertainty/unif_0.5_fine_implementation.svg)
+
+-->
+
+Attempt to replicate Figure 3, but with one noise at a time
+-----------------------------------------------------------
+
+- Code: [one_noise_at_a_time.m](one_noise_at_a_time.m)
+- Uniform Noise 
+- Large noise means devation of 0.5, as in Sethi
+- Other noise terms are 0 instead of 0.1 
+
+![](one_noise_at_a_time.png)
 
 
-
-Attempt to replicate Figure 3
------------------------------
+Figure 3
+---------
 
 - Code: [carl_fig3.m](carl_fig3.m)
-- small: all noise at 0.01
-- growth: growth noise at 0.1, all others at 0.01
-- measure: meaurement noise at 0.1, others at 0.01
-- implement: implementation noise at 0.1, others at 0.01
-- All are uniform pdf noise functions 
-- Fine grid of `0:1:150`
-- see linked code to confirm parameters, etc
-- This run from octave, on laptop, batch mode.  
+- Uniform Noise 
+- Large noise means devation of 0.5, as in Sethi
+- Small noise means 0.1, as in Sethi
 
-![Figure 3](http://cboettig.github.com/multiple_uncertainty/fig3.svg)
+![](carl_fig3.png)
+
+
