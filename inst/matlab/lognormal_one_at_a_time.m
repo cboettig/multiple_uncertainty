@@ -2,7 +2,7 @@ clear;
 
 f=@(x, h) max( (x-h) * (1 - (x-h) ./ 100) + (x-h), 0);
 
-x_grid = [0:5:150];
+x_grid = [0:1:150];
 h_grid = x_grid; % Must be same dimensions as x_grid, or L91 errors...  
 
 Tmax = 10;
@@ -50,5 +50,5 @@ xlabel(XL)
 ylabel(YL)
 title('Figure 3 in Sethi')
 legend('Det','Large Growth','Large Measurement','Large  Implementation')
-print -dsvg lognormal_one_at_a_time.svg
-
+%print -dsvg lognormal_one_at_a_time.svg
+plot2svg('lognormal_one_at_a_time.svg')
