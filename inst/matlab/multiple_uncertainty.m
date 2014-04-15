@@ -59,8 +59,15 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
     P = profit(X, H);
 
     function out = norm1r(M)
-       out = bsxfun(@rdivide, M, sum(M, 2));
-%      out = M ./ sum(M,2); %% this notation works on OCTAVE but not MATLAB
+       % Find all-zero rows and normalize to 1
+       ind = find(sum(M, 2) == 0);
+       M(ind,1) = 1;
+       % row normalize
+       if(all(sum(M,2) > 0))
+         out = bsxfun(@rdivide, M, sum(M, 2));
+       else 
+         out
+       end 
     end
     
     % M is a matrix of the probability of being in observed state Y given the true 
@@ -83,8 +90,13 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
     for q = 1:n_h
       for y = 1:n_x
         mu = M(y,:) * f_matrix * I(q,:)'; % mean transition rate %% FIXME Seems to require h_grid dimension is same as x_grid dimension??  
-        out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid); 
-        F(y,:,q) = out / sum(out); % as rows 
+        out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid);
+        if(sum(out) > 0)
+          F(y,:,q) = out / sum(out); % as rows 
+        else 
+          F(y,:,q) = out 
+        end
+
       end 
     end
 
