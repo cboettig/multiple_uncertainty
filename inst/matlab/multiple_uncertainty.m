@@ -94,7 +94,7 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
         if(sum(out) > 0)
           F(y,:,q) = out / sum(out); % as rows 
         else 
-          F(y,:,q) = out; 
+          F(y,:,q) = [1, zeros(length(out)-1)]; 
         end
 
       end 
