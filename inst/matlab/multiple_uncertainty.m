@@ -66,7 +66,7 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
        if(all(sum(M,2) > 0))
          out = bsxfun(@rdivide, M, sum(M, 2));
        else 
-         out
+         out;
        end 
     end
     
@@ -94,7 +94,7 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
         if(sum(out) > 0)
           F(y,:,q) = out / sum(out); % as rows 
         else 
-          F(y,:,q) = out 
+          F(y,:,q) = out; 
         end
 
       end 
