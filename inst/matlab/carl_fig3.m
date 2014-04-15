@@ -50,6 +50,5 @@ xlabel(XL)
 ylabel(YL)
 title('Figure 3 in Sethi')
 legend('Det','Large Growth','Large Measurement','Large  Implementation')
-%print -dsvg 'carl_fig3.svg' 
-plot2svg('carl_fig3.svg')
+plot2svg('carl_figure3.svg')
 
