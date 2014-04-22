@@ -36,7 +36,7 @@
 % Based on:
 % Fishery management under multiple uncertainty
 % Gautam Sethi, Christopher Costello, Anthony Fisher, Michael Hanemann, Larry Karp
-% Journal of Environmental Economics and Management 50 (2005) 300–318
+% Journal of Environmental Economics and Management 50 (2005) 300-318
 
 function [model,results]=SethiEtAl05Solve(GF,r,K,sigg,sigi,sigm,dr,ytype, ...
                            gtype,itype,mtype,na,nq,ng,ni,nm,Smax)
@@ -50,7 +50,7 @@ switch lower(GF(1))
     G = @(x) (1+r)*x.*exp(-(log(1+r)/K)*x);  % Ricker growth function
 end
 
-%% Is Q quota or implmented harvest? is S assessed or true stock?  
+  
 harv=@(S,Q,v) min(S,v*Q);  % harvest function
 
 % Y=Se or S=Ye
@@ -69,23 +69,28 @@ ee=rectgrid(zg,zi,zm,zm);
 pp=rectgrid(pg,pi,pm,pm); pp=prod(pp,2); pp=pp/sum(pp);
 
 A=linspace(0,Smax,na)';   % possible assessment values
-Q=linspace(0,Smax,nq)';   % possible quota values
-X=rectgrid(A,Q);
-X=X(X(:,2)<=X(:,1),:);    % eliminate quotas that are greater than assessments
-Ix=getI(X,1);
+Q=linspace(0,Smax,nq)';   % possible quota values                               %% No need to assume quota between 0 & Smax
+X=rectgrid(A,Q);          % Single grid of assessment values, X(:,1) and quota values X(:,2)
+
+X=X(X(:,2)<=X(:,1),:);    % eliminate quotas that are greater than assessments from the search space  %% A-HA! 
+Ix=getI(X,1);             % Huh?  
 
 % transition matrix
 options=struct('cleanup',2,'rectinterp',1,'expande',0);
 P=g2P(g,A,X,ee,pp,options);
 P=mxv(P,1./sum(P));  % improve normalization
 
-% reward vector
+% A vector of rewards for all possible state-action pairs 
 R=0;
-for i=1:length(zi)
-  for j=1:length(zm)
-    R=R+harv(X(:,1)/zm(j),X(:,2),zi(i))*pm(j)*pi(i);
+for i=1:length(zi)      % Grid for implementation error
+  for j=1:length(zm)    % Grid for measurment error 
+    R=R + harv(X(:,1) / zm(j), X(:,2), zi(i)) * pm(j) * pi(i);
   end
 end
+
+% \sum_i \sum_j min(Assessed_stock / measurement_grid_j,  Quota * implementation_grid_i)   * measurement_shock_j * implementation_shock_i
+
+
 
 model=struct('P',P,'R',R,'d',delta,'X',X,'Ix',Ix);
 options=struct('colstoch',1);
