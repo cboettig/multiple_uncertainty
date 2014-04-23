@@ -53,7 +53,7 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
 
 
 
-
+    %% Should this pile density on the boundary instead? 
     function out = norm1r(M)
        % Find all-zero rows and normalize to 1
        ind = find(sum(M, 2) == 0);
@@ -65,7 +65,7 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
          out;
        end 
     end
-
+    
 %% GENERATE THE PROBABILITY MATRICES DEFINED IN %%%%%  
 %% http://www.carlboettiger.info/2012/11/01/multiple-uncertainty-corrections.html 
 
@@ -93,25 +93,29 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
     F = zeros(n_y, n_x, n_q);
     for q = 1:n_q
       for y = 1:n_y
-        mu = M(y,:) * f_matrix * I(:,q); % mean transition rate %% FIXME Seems to require h_grid dimension is same as x_grid dimension??  
-        out = arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid);
-        if(sum(out) > 0)
-          F(y,:,q) = out / sum(out); % as rows 
-        else 
-          F(y,:,q) = [1, zeros(1, length(out)-1)]; 
-        end
-
+        mu = M(y,:) * f_matrix * I(:,q); % mean transition rate 
+        F(y,:,q) = norm1r(arrayfun( @(x) pdfn(x, mu, sigma_g, x_grid, pdf), x_grid));
       end 
     end
 
     % The profit expected for a given action and state reflect 
-    % the uncertainty in implementation of the action and measurement of the state
-    Ep = M * P * I;          % matrix multiplications
-    V = Ep; % Initialize  
+    % the uncertainty in implementation of the action and 
+    % measurement of the state
+
+    Ep = M * P * I;   % expected profit (from space x,h -> y,q)   
+    V = Ep;           % Initialize  
+
     for t = 1:Tmax
-      [v_t, v_index] = max(V, [], 2);  % how does this handle multiple matches?  Gives smallest index to match (just like R)
-      % Note that matlab calls this dimension 2, whereas in R, `apply` calls it dimension 1
+
+      %% Enforce no harvest greater than assessed stock size
+      V = tril(V); % Use only lower triangle, upper set to 0.
+
+      %% Maximize the value-to-go
+      [v_t, v_index] = max(V, [], 2);  
+      % For multiple matches, gives smallest index to match 
+
       D(:, (Tmax - t + 1)) = v_index;
+
       for j = 1:n_q
         if sigma_g == 0 %% Then f_matrix takes us off-grid to where we don't know the value
           v_t_interp = interp1(x_grid, v_t, f_matrix(:,j));
