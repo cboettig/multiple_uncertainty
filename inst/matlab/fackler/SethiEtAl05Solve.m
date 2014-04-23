@@ -66,7 +66,8 @@ delta=1/(1+dr);
 [zm,pm]=unitshocks(nm,sigm,mtype);
 
 ee=rectgrid(zg,zi,zm,zm);
-pp=rectgrid(pg,pi,pm,pm); pp=prod(pp,2); pp=pp/sum(pp);
+pp=rectgrid(pg,pi,pm,pm); 
+pp=prod(pp,2); pp=pp/sum(pp); % Normalize the shocks?
 
 A=linspace(0,Smax,na)';   % possible assessment values
 Q=linspace(0,Smax,nq)';   % possible quota values                               %% No need to assume quota between 0 & Smax
