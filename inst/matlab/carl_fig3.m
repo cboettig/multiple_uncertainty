@@ -38,9 +38,6 @@ sigma_i = 0.5;
 [D, V, M, I, P, Ep, F, f_matrix] =  multiple_uncertainty(f, x_grid, h_grid, Tmax, sigma_g, sigma_m, sigma_i, delta, pdf, y_grid, q_grid);
 implement = y_grid - q_grid(D(:,1));
 
-XL='Fish Stock';
-YL = 'Policy Function, H';
-YL2 = 'Value Funciton';
 colorlines={'b','k--','g.-','r.'};
 figure
 plot(y_grid,small,colorlines{1},...
@@ -48,9 +45,10 @@ plot(y_grid,small,colorlines{1},...
      y_grid, measure, colorlines{3},...
      y_grid, implement, colorlines{4})
 axis([0 100 0 100])
-xlabel(XL)
-ylabel(YL)
+xlabel('Fish Stock')
+ylabel('Escapement policy')
 title('Figure 3 in Sethi')
-legend('Det','Large Growth','Large Measurement','Large  Implementation')
+legend('Deterministic','Large Growth','Large Measurement','Large  Implementation')
+legend('boxoff')
 plot2svg('multiple_uncertainty.svg')
 
