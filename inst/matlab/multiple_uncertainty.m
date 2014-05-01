@@ -76,11 +76,14 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
    
     % M is a matrix of the probability of being in observed state Y given the true 
     % state X.  We represent both as discrete values in x_grid
+    % Normalized such that y = M*x, the probability of observing over the possibly y's given a normalized probability in being state x is still normalized.  
     [Y,X] = meshgrid(y_grid, x_grid); 
     M = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_m, x_grid, pdf), Y, X))';
 
     % I is a matrix of the probability of implementing a harvest H given 
     % a quota set to Q.  We represent both as discrete values in h_grid
+    % Normalized such that a quota q is implemented as a normalized probability density
+    % of harvests h; I*q = h, sum(h) == 1
     [H,Q] = meshgrid(h_grid, q_grid); 
     I = norm1r(arrayfun(@(x,y) pdfn(x, y, sigma_i, h_grid, pdf), Q, H))';
 
@@ -112,13 +115,13 @@ function [D, V, M, I, P, Ep, F, f_matrix]  =  multiple_uncertainty(f, x_grid, h_
 
       %% Maximize the value-to-go
       [v_t, v_index] = max(V, [], 2);  
-      % For multiple matches, gives smallest index to match 
+      % For multiple matches, gives smallest index to match
 
       D(:, (Tmax - t + 1)) = v_index;
 
       for j = 1:n_q
         if sigma_g == 0 %% Then f_matrix takes us off-grid to where we don't know the value
-          v_t_interp = interp1(x_grid, v_t, f_matrix(:,j));
+          v_t_interp = interp1(y_grid, v_t, f_matrix(:,j));
           V(:,j) = Ep(:,j) + 1 / (1 + delta) * M' * v_t_interp;
         else 
           V(:,j) = Ep(:,j) + 1 / (1 + delta) * F(:, :, j) * M' * v_t;
