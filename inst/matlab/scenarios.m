@@ -68,9 +68,10 @@ plot2svg('scenarios.svg')
 colorlines={'b','k--','g.-','r.'};
 figure
 hold on;
-for i = 5:8
-  y_grid = global_data(global_data(:,8)==i,1);
-  escapement = smooth(y_grid, global_data(global_data(:,8)==i,2));
+for i = 1:4
+  j = i+4;
+  y_grid = global_data(global_data(:,8)==j,1);
+  escapement = smooth(y_grid, global_data(global_data(:,8)==j,2));
   plot(y_grid, escapement, colorlines{i})
 end
 axis([0 120 0 120])
