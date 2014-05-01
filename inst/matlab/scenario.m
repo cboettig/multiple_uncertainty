@@ -1,17 +1,17 @@
 %% Define the thing that we'll want to loop over 
-function data = scenario(sigma, recruitment, noise, id, grids)
-
-  %% FIXME consider varying growth rate "r" as well 
+function data = scenario(sigma, r, K, recruitment, noise, id, grids)
 
   %% Select the recruitment function
   if recruitment == 1
-    f=@(x, h) max( (x-h) * (1 - (x-h) ./ 100) + (x-h), 0);
+    recruit_f=@(x, r, K)  x+r*x.*(1-x/K);
   elseif recruitment == 2 
-
+    recruit_f=@(x, r, K)  (1+r)*x.*exp(-(log(1+r)/K)*x);
   elseif recruitment == 3
+    recruit_f=@(x, r, K)  (1+r)*x./(1+r/K*x);
 
   end 
-  
+ 
+  f = @(x,h) max(recruit_f(x-h, r, K), 0)
   %% Select the noise function
   if noise == 1
     pdf = @(p,mu,s) unifpdf(p, mu .* (1 - s), mu .* (1 + s)); 
@@ -26,6 +26,7 @@ function data = scenario(sigma, recruitment, noise, id, grids)
   escapement = grids.y - grids.q(D(:,1));
   data = [grids.y', escapement', ... 
          bsxfun(@times,  ones(length(escapement),1), ... 
-                [sigma(1), sigma(2), sigma(3), recruitment,  noise, id])];
+                [sigma(1), sigma(2), sigma(3), r, K,...
+                 recruitment,  noise, id])];
 end
 
