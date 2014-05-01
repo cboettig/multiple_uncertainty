@@ -11,10 +11,10 @@ clear;
 
 
 % Fixed parameters and grids: 
-x_grid =  linspace(0,200,151); 
-y_grid  = linspace(0,200,151);
-h_grid =  linspace(0,100,51);
-q_grid  = linspace(0,100,51);
+x_grid =  linspace(0,200,201); 
+y_grid  = linspace(0,200,201);
+h_grid =  linspace(0,120,121);
+q_grid  = linspace(0,120,121);
 Tmax = 10;
 delta = 0.05;
 grids = struct('x', x_grid, 'y', y_grid, 'h', h_grid, ...
