@@ -550,9 +550,6 @@
   <clipPath id="ID000012">
     <rect x="405.625" y="49.375" width="178.750" height="71.875"/>
   </clipPath>
-      <polygon fill="#ffffff" fill-opacity="1.00" stroke="none" stroke-width="0.5pt" stroke-opacity="1.00" stroke-dasharray="none" points="405.625,121.250 584.375,121.250 584.375,49.375 405.625,49.375 "/>
-      <polygon fill="#ffffff" fill-opacity="1.00" stroke="none" stroke-width="0.5pt" stroke-opacity="1.00" stroke-dasharray="none" points="405.625,49.375 584.375,49.375 584.375,49.375 405.625,49.375 "/>
-      <polygon fill="#ffffff" fill-opacity="1.00" stroke="none" stroke-width="0.5pt" stroke-opacity="1.00" stroke-dasharray="none" points="405.625,121.250 405.625,121.250 405.625,49.375 405.625,49.375 "/>
     <g>
 <g id="ID000013" >
   <g transform="translate(455.898,66.979)">
@@ -619,20 +616,6 @@
 <circle cx="431.875" cy="110.625" r="1.000" fill="#ff0000" stroke="none" stroke-width="0.5pt" />
 </g>
 </g>
-<g id="ID000025" >
-</g>
-<g id="ID000026" >
-</g>
-<g id="ID000027" >
-</g>
-    </g>
-    <g>
-      <polyline fill="none" stroke="#000000" stroke-width="0.5pt" stroke-dasharray="none" points="405.625,121.250 584.375,121.250 "/>
-      <polyline fill="none" stroke="#000000" stroke-width="0.5pt" stroke-dasharray="none" points="405.625,49.375 584.375,49.375 "/>
-      <polyline fill="none" stroke="#000000" stroke-width="0.5pt" stroke-dasharray="none" points="405.625,121.250 405.625,49.375 "/>
-      <polyline fill="none" stroke="#000000" stroke-width="0.5pt" stroke-dasharray="none" points="584.375,121.250 584.375,49.375 "/>
-      <polyline fill="none" stroke="#000000" stroke-width="0.5pt" stroke-dasharray="none" points="405.625,121.250 405.625,120.531 "/>
-      <polyline fill="none" stroke="#000000" stroke-width="0.5pt" stroke-dasharray="none" points="405.625,121.250 405.625,121.250 "/>
     </g>
   </g>
   </g>
