@@ -36,33 +36,29 @@ global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 100, 1, 2, 6, grids)];
 global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 100, 1, 2, 7, grids)];
 global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 100, 1, 2, 8, grids)];
 
-
-
-
-
 % logistic uniform, r=.1, K=100
-global_data = [global_data; scenario([0.1, 0.1, 0.1], 1, 100, 1, 1, 9, grids)];
-global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 100, 1, 1, 10, grids)];
-global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 100, 1, 1, 11, grids)];
-global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 100, 1, 1, 12, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.1], .1, 100, 1, 1, 9, grids)];
+global_data = [global_data; scenario([0.5, 0.1, 0.1], .1, 100, 1, 1, 10, grids)];
+global_data = [global_data; scenario([0.1, 0.5, 0.1], .1, 100, 1, 1, 11, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.5], .1, 100, 1, 1, 12, grids)];
 
 % logistic lognormal, r=.1, K=100
-global_data = [global_data; scenario([0.1, 0.1, 0.1], 1, 100, 1, 2, 13, grids)];
-global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 100, 1, 2, 14, grids)];
-global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 100, 1, 2, 15, grids)];
-global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 100, 1, 2, 16, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.1], .1, 100, 1, 2, 13, grids)];
+global_data = [global_data; scenario([0.5, 0.1, 0.1], .1, 100, 1, 2, 14, grids)];
+global_data = [global_data; scenario([0.1, 0.5, 0.1], .1, 100, 1, 2, 15, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.5], .1, 100, 1, 2, 16, grids)];
 
 % bevholt uniform, r=1, K=100
-global_data = [global_data; scenario([0.1, 0.1, 0.1], 1, 100, 1, 1, 17, grids)];
-global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 100, 1, 1, 18, grids)];
-global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 100, 1, 1, 19, grids)];
-global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 100, 1, 1, 20, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.1], 1, 100, 3, 1, 17, grids)];
+global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 100, 3, 1, 18, grids)];
+global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 100, 3, 1, 19, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 100, 3, 1, 20, grids)];
 
 % bevholt lognormal, r=1, K=100
-global_data = [global_data; scenario([0.1, 0.1, 0.1], 1, 100, 1, 2, 21, grids)];
-global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 100, 1, 2, 22, grids)];
-global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 100, 1, 2, 23, grids)];
-global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 100, 1, 2, 24, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.1], 1, 100, 3, 2, 21, grids)];
+global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 100, 3, 2, 22, grids)];
+global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 100, 3, 2, 23, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 100, 3, 2, 24, grids)];
 
 
 
@@ -74,43 +70,7 @@ csvwrite('scenarios.csv', global_data)
 
 
 
-%% Plot from file -- can be run from here without rerunning the above 
-global_data = csvread('scenarios.csv');
-
-colorlines={'b','k--','g.-','r.'};
-figure
-hold on;
-for i = 1:4
-  y_grid = global_data(global_data(:,end)==i,1);
-  escapement = smooth(y_grid, global_data(global_data(:,end)==i,2));
-  plot(y_grid, escapement, colorlines{i})
-end
-axis([0 120 0 120])
-xlabel('Fish Stock')
-ylabel('Escapement')
-legend('All Low','Large Growth','Large Measurement','Large  Implementation')
-legend('boxoff')
-plot2svg('scenarios.svg')
-
-
-
-%%% Lognormal set 
-colorlines={'b','k--','g.-','r.'};
-figure
-hold on;
-for i = 1:4
-  j = i+4;
-  y_grid = global_data(global_data(:,end)==j,1);
-  escapement = smooth(y_grid, global_data(global_data(:,end)==j,2));
-  plot(y_grid, escapement, colorlines{i})
-end
-axis([0 120 0 120])
-xlabel('Fish Stock')
-ylabel('Escapement')
-legend('All Low','Large Growth','Large Measurement','Large  Implementation')
-legend('boxoff')
-plot2svg('lognormal.svg')
-
-
+%% Plot 
+plot_scenarios
 
 

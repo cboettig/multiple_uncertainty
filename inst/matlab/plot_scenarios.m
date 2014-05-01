@@ -18,7 +18,6 @@ plot2svg('scenarios.svg')
 
 
 %%% Lognormal set 
-colorlines={'b','k--','g.-','r.'};
 figure
 hold on;
 for i = 1:4
@@ -31,7 +30,42 @@ axis([0 120 0 120])
 xlabel('Fish Stock')
 ylabel('Escapement')
 legend('All Low','Large Growth','Large Measurement','Large  Implementation')
-%legend('boxoff')
+legend('boxoff')
 plot2svg('lognormal.svg')
+
+
+%% logistic uniform small r
+figure
+hold on;
+for i = 1:4
+  j = i+8;
+  y_grid = global_data(global_data(:,end)==j,1);
+  escapement = smooth(y_grid, global_data(global_data(:,end)==j,2));
+  plot(y_grid, escapement, colorlines{i})
+end
+axis([0 120 0 120])
+xlabel('Fish Stock')
+ylabel('Escapement')
+legend('All Low','Large Growth','Large Measurement','Large  Implementation')
+legend('boxoff')
+plot2svg('logistic_unif_small_r.svg')
+
+
+
+%%% Bevholt  
+figure
+hold on;
+for i = 1:4
+  j = i+16;
+  y_grid = global_data(global_data(:,end)==j,1);
+  escapement = smooth(y_grid, global_data(global_data(:,end)==j,2));
+  plot(y_grid, escapement, colorlines{i})
+end
+axis([0 120 0 120])
+xlabel('Fish Stock')
+ylabel('Escapement')
+legend('All Low','Large Growth','Large Measurement','Large  Implementation')
+legend('boxoff')
+plot2svg('bevholt_uniform.svg')
 
 

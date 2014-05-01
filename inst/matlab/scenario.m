@@ -11,7 +11,7 @@ function data = scenario(sigma, r, K, recruitment, noise, id, grids)
 
   end 
  
-  f = @(x,h) max(recruit_f(x-h, r, K), 0)
+  f = @(x,h) max(recruit_f(x-h, r, K), 0);
   %% Select the noise function
   if noise == 1
     pdf = @(p,mu,s) unifpdf(p, mu .* (1 - s), mu .* (1 + s)); 
