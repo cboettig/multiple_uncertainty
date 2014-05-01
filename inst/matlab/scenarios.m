@@ -40,12 +40,13 @@ global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 2, 8, grids)];
 
 
 %% write the output data
-csvwrite("scenarios.csv", global_data);
+csvwrite('scenarios.csv', global_data)
 
 
 
 %% Plot from file -- can be run from here without rerunning the above 
-global_data = csvread("scenarios.csv");
+global_data = csvread('scenarios.csv');
+
 colorlines={'b','k--','g.-','r.'};
 figure
 hold on;
