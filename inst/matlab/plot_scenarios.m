@@ -6,7 +6,7 @@ figure
 hold on;
 for i = 1:4
   y_grid = global_data(global_data(:,end)==i,1);
-  escapement = smooth(y_grid, global_data(global_data(:,end)==i,2));
+  escapement = smooth(y_grid, global_data(global_data(:,end)==i,2), 'rlowess');
   plot(y_grid, escapement, colorlines{i})
 end
 axis([0 120 0 120])
