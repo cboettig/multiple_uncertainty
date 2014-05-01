@@ -6,7 +6,7 @@ figure
 hold on;
 for i = 1:4
   y_grid = global_data(global_data(:,end)==i,1);
-  escapement = smooth(y_grid, global_data(global_data(:,end)==i,2), 'rlowess');
+  escapement = smooth(global_data(global_data(:,end)==i,2), 15);
   plot(y_grid, escapement, colorlines{i})
 end
 axis([0 120 0 120])
@@ -50,6 +50,23 @@ legend('All Low','Large Growth','Large Measurement','Large  Implementation')
 legend('boxoff')
 plot2svg('logistic_unif_small_r.svg')
 
+%% logistic lognormal small r
+figure
+hold on;
+for i = 1:4
+  j = i+12;
+  y_grid = global_data(global_data(:,end)==j,1);
+  escapement = smooth(y_grid, global_data(global_data(:,end)==j,2));
+  plot(y_grid, escapement, colorlines{i})
+end
+axis([0 120 0 120])
+xlabel('Fish Stock')
+ylabel('Escapement')
+legend('All Low','Large Growth','Large Measurement','Large  Implementation')
+legend('boxoff')
+plot2svg('logistic_lognormal_small_r.svg')
+
+
 
 
 %%% Bevholt  
@@ -67,5 +84,21 @@ ylabel('Escapement')
 legend('All Low','Large Growth','Large Measurement','Large  Implementation')
 legend('boxoff')
 plot2svg('bevholt_uniform.svg')
+
+%%% Bevholt  
+figure
+hold on;
+for i = 1:4
+  j = i+20;
+  y_grid = global_data(global_data(:,end)==j,1);
+  escapement = smooth(y_grid, global_data(global_data(:,end)==j,2));
+  plot(y_grid, escapement, colorlines{i})
+end
+axis([0 120 0 120])
+xlabel('Fish Stock')
+ylabel('Escapement')
+legend('All Low','Large Growth','Large Measurement','Large  Implementation')
+legend('boxoff')
+plot2svg('bevholt_lognormal.svg')
 
 
