@@ -17,13 +17,15 @@ y_grid  = linspace(0,150,31);
 q_grid  = linspace(0,150,31);
 Tmax = 10;
 delta = 0.05;
-grids = struct('x', x_grid, 'y', y_grid, 'h', h_grid, 'q', q_grid, 'Tmax', Tmax, 'delta', delta)
+grids = struct('x', x_grid, 'y', y_grid, 'h', h_grid, 'q', q_grid, 'Tmax', Tmax, 'delta', delta);
+
+save("scenarios_constants.txt");
 
 
 
 global_data = []; % initialize variable
 %% Define the thing that we'll want to loop over 
-function data = scenario(id, sigma, noise, recruitment, grids)
+function data = scenario(sigma, recruitment, noise, id, grids)
 
   %% FIXME consider varying growth rate "r" as well 
 
@@ -56,15 +58,32 @@ end
 
 %%% Run the scenarios
 
-global_data = [global_data; scenario(1, [0.5, 0.1, 0.1], 1, 1, grids)]
-global_data = [global_data; scenario(2, [0.1, 0.5, 0.1], 1, 1, grids)]
-global_data = [global_data; scenario(3, [0.1, 0.1, 0.5], 1, 1, grids)]
+global_data = [global_data; scenario([0.5, 0.1, 0.1], 1, 1, 1, grids)];
+global_data = [global_data; scenario([0.1, 0.5, 0.1], 1, 1, 2, grids)];
+global_data = [global_data; scenario([0.1, 0.1, 0.5], 1, 1, 3, grids)];
 
 
 
 %% write the output data
-csvwrite("escapement.csv", global_data)
+csvwrite("scenarios.csv", global_data);
 
 
+%% Plot from file
+load("scenarios_constants.txt");
 
+dat = csvread("scenarios.csv");
+colorlines={'b','k--','g.-','r.'};
+figure
+hold on;
+for i = 1:3
+  smooth = regdatasmooth(y_grid, dat(dat(:,7)==i,1));
+  plot(y_grid, smooth, colorlines{i})
+end
+axis([0 120 0 120])
+xlabel('Fish Stock')
+ylabel('Escapement')
+legend('Deterministic','Large Growth','Large Measurement','Large  Implementation')
+
+%legend('boxoff')
+plot2svg('multiple_uncertainty.svg')
 
