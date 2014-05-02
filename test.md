@@ -1,8 +1,14 @@
-
 ## Title
 
 - item1
 - item2
+
+An image embedded using `![](scenarios.svg)`
+
+![](scenarios.svg)
+
+
+an image with svg XML embedded directly:
 
 <svg preserveAspectRatio="xMinYMin meet" width="100%" height="100%" viewBox="0 0 825.000 650.000"  version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <desc>Matlab Figure Converted by PLOT2SVG written by Juerg Schwizer</desc>
