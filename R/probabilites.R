@@ -31,7 +31,7 @@ pdfn <- function(p, mu, s, grid, pdf){
   if(mu <= 0){
     out <- as.integer(p == 0)
   } else if(s == 0){  ## delta spike if s = 0  
-    out <- as.numeric(as.integer(snap_to_grid(p, x_grid) == snap_to_grid(mu, x_grid)))
+    out <- as.numeric(as.integer(snap_to_grid(p, grid) == snap_to_grid(mu, grid)))
   } else if(s > 0){ ## Evaluate pdf only for mu, s > 0
     out <- pdf(p, mu, s)
   } else { # all other cases. perhaps should be warning/error instead
