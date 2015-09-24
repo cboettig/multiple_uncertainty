@@ -1,0 +1,25 @@
+---
+title: "Fig3 robustness to grid"
+author: "Carl Boettiger"
+date: "9/24/2015"
+output: md_document
+---
+
+```{r}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+```
+
+
+
+```{r}
+reed <- multiple_uncertainty()
+
+qplot(seq_along(reed), reed) + 
+    coord_cartesian(xlim = c(0, 150)) + 
+    xlab("Stock") + ylab("Escapement") +
+    theme_bw()
+```
+
