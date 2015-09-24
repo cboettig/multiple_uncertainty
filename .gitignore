@@ -1,6 +1,5 @@
 .Rhistory
 .Rbuildignore
-*.png
 *.rda
 *.Rproj.user
 *.Rproj
