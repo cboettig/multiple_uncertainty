@@ -1,3 +1,6 @@
+*.rdx
+*.rdb
+*.RData
 .Rhistory
 .Rbuildignore
 *.rda
@@ -7,3 +10,4 @@
 *.fff
 *.pdf
 .Rproj.user
+__packages
