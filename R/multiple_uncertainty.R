@@ -1,3 +1,7 @@
+#' multiple uncertainty
+#' 
+#' Stochastic dynamic programming solution under multiple uncertainty
+#' @export
 multiple_uncertainty <- function(f = logistic, 
                                  x_grid = seq(0,150,length=151), 
                                  h_grid = x_grid, 
@@ -5,14 +9,14 @@ multiple_uncertainty <- function(f = logistic,
                                  sigma_g = 0.2, 
                                  sigma_m = 0.0, 
                                  sigma_i = 0.0, 
-                                 delta = 0.99, 
+                                 delta = 0.05, 
                                  noise_dist = "uniform", 
                                  y_grid = x_grid, 
                                  q_grid = x_grid){
 
   if(noise_dist == "uniform"){
-    pdf = function(p,mu,s) unifpdf(p, mu * (1 - s), mu * (1 + s)) 
-    cdf = function(p,mu,s) unifcdf(p, mu * (1 - s), mu * (1 + s))
+    pdf = function(p,mu,s) dunif(p, mu * (1 - s), mu * (1 + s)) 
+    cdf = function(p,mu,s) punif(p, mu * (1 - s), mu * (1 + s))
     invpdf = function(p,mu,s) iunifpdf(p, mu, s) 
     invcdf = function(p,mu,s) iunifcdf(p, mu, s)
   } else if (noise_dist == "lognormal"){
@@ -38,7 +42,7 @@ multiple_uncertainty <- function(f = logistic,
   F <- array(0, c(n_x, n_x, n_h))
   for(h in 1:n_h){
     for(x in 1:n_x){
-      mu <- f(x_grid(x), h_grid(h))
+      mu <- f(x_grid[x], h_grid[h])
       F[x, , h] <- pdf_matrix(mu, x_grid, sigma_g, pdf, cdf)
     }
   }
@@ -58,25 +62,17 @@ multiple_uncertainty <- function(f = logistic,
   ## Initialize 
   V <- Ep 
   v_t <- numeric(n_y)
-  D <- matrix(0, nrow = n_y, ncol = Tmax)
+  D <- array(0, c(n_y, Tmax))
 
 ## main SDP recursion loop:
   for(t in 1:Tmax){
-    if(sigma_g > 0){ ## Standard Bellman Recursion
-      for(j in 1:n_q){
-        V[,j] <- Ep[,j] + 1 / (1 + delta) %*% T[, , j] %*% v_t
-      }
-    } else { ## a special case, sigma_g == 0.
-      for(j in 1:n_q){
-        v_t_interp <- interp1(y_grid, v_t, f_matrix[,j]) #FIXME
-        V[,j] <- Ep[,j] + 1 / (1 + delta) %*% T[, , j] %*% v_t_interp
-      }
+    for(j in 1:n_q){
+      V[,j] <- Ep[,j] + 1 / (1 + delta) * T[, , j] %*% v_t
     }
-    ## Maximize the value-to-go
-    v_t <- apply(M, 2, max)
-    v_index <- apply(M, 2, which.max) 
-
-    D[, (Tmax - t + 1)] = v_index
+    v_t <- apply(V, 1, max)
+    v_index <- apply(V, 1, which.max) 
+    D[, (Tmax - t + 1)] = t(v_index)
   }
-  S = y_grid - q_grid(D[,1])
+  S = y_grid - q_grid[D[,1]]
 }
+

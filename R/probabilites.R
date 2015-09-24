@@ -1,3 +1,5 @@
+## Internal functions
+
 iunifpdf <- function(x, y, sigma){
   a <- (1 - sigma)
   b <- (1 + sigma)
@@ -22,13 +24,14 @@ iunifcdf <- function(x, y, sigma){
   out
 }
 
+snap_to_grid <- function(x, grid) sapply(x, function(x) grid[which.min(abs(grid - x))])   
 
 
 pdfn <- function(p, mu, s, grid, pdf){
   if(mu <= 0){
     out <- as.integer(p == 0)
-  } else if(s == 0){  ## delta spike if s = 0  FIXME
-    out <- +isequal(histc(mu,grid), histc(p, grid)) 
+  } else if(s == 0){  ## delta spike if s = 0  
+    out <- as.numeric(as.integer(snap_to_grid(p, x_grid) == snap_to_grid(mu, x_grid)))
   } else if(s > 0){ ## Evaluate pdf only for mu, s > 0
     out <- pdf(p, mu, s)
   } else { # all other cases. perhaps should be warning/error instead
@@ -44,14 +47,14 @@ pdf_matrix <- function(i_grid, j_grid, sigma, pdf, cdf){
   A <- array(0, c(n_i, n_j))
   for(i in 1:n_i){
     ## compute pdf on extended grid as loop
-    A[i, ] <- pdfn(j_grid, i_grid(i), sigma, j_grid, pdf)
+    A[i, ] <- pdfn(j_grid, i_grid[i], sigma, j_grid, pdf)
     ## handle any all-zero rows 
-    if(sum(A[i,]) == 0 || i_grid(i) == 0){
-      A[i, ] <- c(1, zeros(1, size(A)(2)-1))
-    } else {
+    if(sum(A[i,]) == 0 || i_grid[i] == 0){
+      A[i, ] <- c(1, numeric(dim(A)[2]-1))
+    } else if(sigma > 0){
       ## normalize row
-      N <- cdf(j_grid(n_j), i_grid(i), sigma)
-      A[i, ] <- A[i, ] %*% N / sum(A[i,])
+      N <- cdf(j_grid[n_j], i_grid[i], sigma)
+      A[i, ] <- A[i, ] %*% t(N) / sum(A[i,])
       ## pile on boundary any density from extended grid
       A[i,n_j] <- 1 - N + A[i, n_j]
     }
