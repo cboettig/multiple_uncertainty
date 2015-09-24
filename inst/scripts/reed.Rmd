@@ -18,7 +18,7 @@ library("multipleuncertainty")
 reed <- multiple_uncertainty()
 
 qplot(seq_along(reed), reed) + 
-    coord_cartesian(xlim = c(0, 150)) + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0, 150)) + 
     xlab("Stock") + ylab("Escapement") +
     theme_bw()
 ```

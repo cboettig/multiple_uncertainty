@@ -28,7 +28,7 @@
       ggplot(aes(x = y_grid, y = value, col = scenario)) + 
         geom_point()  + 
         xlab("Stock") + ylab("Escapement") + 
-        coord_cartesian(xlim = c(0, 150)) + 
+        coord_cartesian(xlim = c(0, 100)) + 
         theme_bw()
 
 ![](carl_fig3_files/figure-markdown_strict/unnamed-chunk-3-1.png)
