@@ -1,0 +1,55 @@
+---
+title: "Fig3 robustness to grid"
+author: "Carl Boettiger"
+date: "9/24/2015"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+```{r}
+f <- logistic
+x <- numeric(50)
+x[1] <- 60
+for(t in 1:length(x))
+  x[t+1] = f(x[t], 0)
+qplot(seq_along(x), x)
+```
+
+```{r}
+fig3 <- function(model){  
+  grid <- seq(0, 200, length = 401)
+  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1)
+  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1)
+  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1)
+  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5)
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+df <- 
+data.frame() %>%
+  dplyr::group_by(id) %>%
+  dplyr::do(fig3(.$max, .$length))
+
+```
+
+```{r fig.width = 9, fig.height = 12}
+df %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_point()  + facet_wrap(~id, ncol = 2) + 
+    xlab("Stock") + ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw() 
+```
+
