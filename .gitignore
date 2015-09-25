@@ -5,7 +5,6 @@
 .Rbuildignore
 *.rda
 *.Rproj.user
-*.Rproj
 *.jpg
 *.fff
 *.pdf
