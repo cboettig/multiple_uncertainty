@@ -4,7 +4,7 @@
 \alias{logistic}
 \title{logistic}
 \usage{
-logistic(x, h)
+logistic(x, h, r = 1, K = 100)
 }
 \description{
 logistic growth with harvesting
