@@ -24,6 +24,12 @@ iunifcdf <- function(x, y, sigma){
   out
 }
 
+ilognpdf <- function(x, y, sigma){
+  (y / (x * sigma * sqrt(2*pi))) * exp(-(log(x) - y)^2/(2 * sigma^2))
+}
+
+ilogncdf <- function(x, y, sigma) qlnorm(x, y, sigma)
+
 snap_to_grid <- function(x, grid) sapply(x, function(x) grid[which.min(abs(grid - x))])   
 
 

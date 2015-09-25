@@ -1,22 +1,26 @@
----
-title: "Fig3 robustness to grid"
-author: "Carl Boettiger"
-date: "9/24/2015"
-output: 
-  md_document:
-    variant: markdown_github
----
-
-```{r}
+``` r
 library("dplyr")
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+    ## 
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+    ## 
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 library("tidyr")
 library("ggplot2")
 library("multipleuncertainty")
 knitr::opts_chunk$set(cache = TRUE)
 ```
 
-
-```{r}
+``` r
 f <- gompertz
 x <- numeric(50)
 x[1] <- 60
@@ -25,7 +29,9 @@ for(t in 1:length(x))
 qplot(seq_along(x), x)
 ```
 
-```{r}
+![](robust_to_model_files/figure-markdown_github/unnamed-chunk-2-1.png)
+
+``` r
 fig3 <- function(model){  
   grid <- seq(0, 200, length = 401)
   model <- switch(model,
@@ -46,10 +52,9 @@ df <-
 data.frame(model = c("logistic", "bevertonholt", "ricker", "gompertz"), stringsAsFactors = FALSE) %>%
   dplyr::group_by(model) %>%
   dplyr::do(fig3(.$model))
-
 ```
 
-```{r fig.width = 9, fig.height = 12}
+``` r
 df %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_point()  + facet_wrap(~model, ncol = 2) + 
@@ -58,3 +63,4 @@ df %>%
     theme_bw() 
 ```
 
+![](robust_to_model_files/figure-markdown_github/unnamed-chunk-4-1.png)

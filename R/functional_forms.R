@@ -4,7 +4,7 @@
 #' @export
 #' 
 logistic <- function(x, h, r = 1, K = 100){
-  S <- max(x-h, 0)
+  S <- max(x - h, 0)
   max( r * S * (1 - S / K) + S, 0)
 }
 
@@ -12,7 +12,7 @@ logistic <- function(x, h, r = 1, K = 100){
 # Beverton-Holt
 #' @export
 bevertonholt <- function(x, h, A = 2, B = 100){
-  S <- max(x-h, 0)
+  S <- max(x - h, 0)
   max( A * S / (1 + S / B), 0)
 }
 
@@ -20,8 +20,13 @@ bevertonholt <- function(x, h, A = 2, B = 100){
 # Ricker
 #' @export
 ricker <- function(x, h, r = 1, K = 100){
-  S <- max(x-h, 0)
+  S <- max(x - h, 0)
   S * exp(r * (1 - S / K))
 }
 
-# Gomperitz
+# Gompertz
+#' @export
+gompertz <- function(x, h, a = 1, b = 0.01){
+  S <- max(x - h, 0)
+  S * exp(a - b * S)
+}
