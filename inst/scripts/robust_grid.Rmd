@@ -7,7 +7,7 @@ output:
     variant: markdown_github
 ---
 
-```{r}
+```{r, message=FALSE}
 library("dplyr")
 library("tidyr")
 library("ggplot2")
