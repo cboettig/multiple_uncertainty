@@ -25,10 +25,16 @@ iunifcdf <- function(x, y, sigma){
 }
 
 ilognpdf <- function(x, y, sigma){
-  (y / (x * sigma * sqrt(2*pi))) * exp(-(log(x) - y)^2/(2 * sigma^2))
+    out <- (y / (x * sigma * sqrt(2 * pi))) * exp(-(log(x) - y)^2 / (2 * sigma^2))
+    out[is.nan(out)] <- 0
+    out
 }
 
-ilogncdf <- function(x, y, sigma) qlnorm(x, y, sigma)
+ilogncdf <- function(x, y, sigma){ # FIXME rewrite this to catch conditions resulting in NAs first
+  N <- qlnorm(x, y, sigma)
+  N[is.na(N)] <- 1
+  N
+}
 
 snap_to_grid <- function(x, grid) sapply(x, function(x) grid[which.min(abs(grid - x))])   
 
@@ -59,7 +65,7 @@ pdf_matrix <- function(i_grid, j_grid, sigma, pdf, cdf){
       A[i, ] <- c(1, numeric(dim(A)[2]-1))
     } else if(sigma > 0){
       ## normalize row
-      N <- cdf(j_grid[n_j], i_grid[i], sigma)
+      N <- cdf(j_grid[n_j], i_grid[i], sigma) 
       A[i, ] <- A[i, ] %*% t(N) / sum(A[i,])
       ## pile on boundary any density from extended grid
       A[i,n_j] <- 1 - N + A[i, n_j]

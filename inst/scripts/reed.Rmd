@@ -17,7 +17,7 @@ library("multipleuncertainty")
 
 
 ```{r}
-reed <- multiple_uncertainty()
+reed <- multiple_uncertainty(noise_dist = "lognormal")
 
 qplot(seq_along(reed), reed) + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0, 150)) + 
