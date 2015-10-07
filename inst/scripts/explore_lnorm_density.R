@@ -1,7 +1,7 @@
 library("ggplot2")
 
-x <- seq(0, 3, 0.01)
-m <- 0.5
+x <- seq(0, 150, 1)
+m <- 80
 s <- 0.1
 
 ## These match
@@ -14,6 +14,8 @@ df <- data.frame(x = x, y1 = dlnorm(x, log(m), s) * m, y2 = dlnorm(x/m, 0, s))
 ggplot(df, aes(x)) + geom_line(aes(y=y1)) + geom_line(aes(y=y2), col=2)
 
 
+# These match
+df <- data.frame(x = x, y1 = dlnorm(x, log(m), s) * m, y2 = dlnorm(x, log(m), log(m)*s), y3 = dlnorm(x/m, 0, s))
+ggplot(df, aes(x)) + geom_line(aes(y=y1)) + geom_line(aes(y=y2), col=2) + geom_line(aes(y=y3), col=3)
 
-
-
+qplot(x, dlnorm(x, log(m), log(m)*s))

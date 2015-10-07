@@ -20,10 +20,11 @@ multiple_uncertainty <- function(f = logistic,
     invpdf = function(p,mu,s) iunifpdf(p, mu, s) 
     invcdf = function(p,mu,s) iunifcdf(p, mu, s)
   } else if (noise_dist == "lognormal"){
-    pdf = function(p,mu,s) dlnorm(p, log(mu), s) * mu
+    pdf = function(p,mu,s) dlnorm(p, log(mu), s)
     cdf = function(p,mu,s) plnorm(p, log(mu), s)
     invpdf = function(p,mu,s) ilognpdf(p, log(mu), s)
     invcdf = function(p,mu,s) ilogncdf(p, log(mu), s)
+    ## Confirm cdf is integral pdf
   }
 
   ## Store constants 
