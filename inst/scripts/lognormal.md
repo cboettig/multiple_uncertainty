@@ -1,22 +1,20 @@
 ---
-title: "Fig3 robustness to grid"
-author: "Carl Boettiger"
-date: "9/24/2015"
-output: 
+author: Carl Boettiger
+date: '9/24/2015'
+output:
   md_document:
     variant: markdown
----
+title: Fig3 robustness to grid
+...
 
-```{r, message=FALSE}
+``` {.r}
 library("dplyr")
 library("tidyr")
 library("ggplot2")
 library("multipleuncertainty")
 ```
- 
 
-
-```{r, warning=FALSE}
+``` {.r}
 grid <- seq(0, 200, length = 201)
 noise_dist <- "lognormal"
 small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise_dist)
@@ -26,10 +24,9 @@ implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, si
 df <- data.frame(y_grid = grid, small = small, growth = growth, 
                    measure = measure, implement = implement) %>%
     tidyr::gather(scenario, value, -y_grid)
-
 ```
 
-```{r}
+``` {.r}
 df %>% 
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_point()  + 
@@ -38,3 +35,4 @@ df %>%
     theme_bw()
 ```
 
+![](lognormal_files/figure-markdown/unnamed-chunk-3-1.png)
