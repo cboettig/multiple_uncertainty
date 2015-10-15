@@ -1,19 +1,5 @@
 ``` r
 library("dplyr")
-```
-
-    ## 
-    ## Attaching package: 'dplyr'
-    ## 
-    ## The following objects are masked from 'package:stats':
-    ## 
-    ##     filter, lag
-    ## 
-    ## The following objects are masked from 'package:base':
-    ## 
-    ##     intersect, setdiff, setequal, union
-
-``` r
 library("tidyr")
 library("ggplot2")
 library("multipleuncertainty")
@@ -46,29 +32,31 @@ ggplot(df, aes(x = t, y = x, color = model)) + geom_line() + facet_wrap(~model)
 Optimal control under multiple uncertainty by model:
 
 ``` r
-fig3 <- function(model){  
+fig3 <- function(model, noise_dist){  
   grid <- seq(0, 200, length = 401)
-  model <- get(model)
-  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1)
-  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1)
-  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1)
-  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5)
+  model <- get(as.character(model))
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5, noise_dist = noise_dist)
+  ## Combine records by scenario
   df <- data.frame(y_grid = grid, small = small, growth = growth, 
                    measure = measure, implement = implement) %>%
     tidyr::gather(scenario, value, -y_grid)
 }
 
-df <- 
-data.frame(model = c("logistic", "bevertonholt", "ricker", "gompertz"), stringsAsFactors = FALSE) %>%
-  dplyr::group_by(model) %>%
-  dplyr::do(fig3(.$model))
+
+expand.grid(model = c("logistic", "bevertonholt", "ricker", "gompertz"), 
+            noise_dist = c("uniform", "lognormal")) %>%
+  dplyr::group_by(model, noise_dist) %>%
+  dplyr::do(fig3(.$model, .$noise_dist)) -> df
 ```
 
 ``` r
 df %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_point()  + 
-    facet_wrap(~model, ncol = 2) + 
+    facet_grid(model ~ noise_dist) + 
     xlab("Stock") + 
     ylab("Escapement") + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
