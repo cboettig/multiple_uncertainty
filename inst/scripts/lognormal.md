@@ -34,7 +34,7 @@ expand.grid(low = c(0.01, 0.1), high = c(0.25, 0.5, 0.75), noise_dist = c("logno
 ``` r
 df %>% filter(noise_dist == "lognormal") %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
-    geom_point()  + 
+    geom_line()  + 
     facet_grid(high ~ low) + 
     xlab("Stock") + 
     ylab("Escapement") + 
@@ -48,7 +48,7 @@ df %>% filter(noise_dist == "lognormal") %>%
 ``` r
 df %>% filter(noise_dist == "uniform") %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
-    geom_point()  + 
+    geom_line()  + 
     facet_grid(high ~ low) + 
     xlab("Stock") + 
     ylab("Escapement") + 
