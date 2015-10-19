@@ -55,7 +55,7 @@ expand.grid(model = c("logistic", "bevertonholt", "ricker", "gompertz"),
 ``` r
 df %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
-    geom_point()  + 
+    geom_line()  + 
     facet_grid(model ~ noise_dist) + 
     xlab("Stock") + 
     ylab("Escapement") + 
