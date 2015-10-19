@@ -13,7 +13,10 @@ multiple_uncertainty <- function(f = logistic,
                                  noise_dist = "uniform", 
                                  y_grid = x_grid, 
                                  q_grid = x_grid){
-
+  
+  if(is.character(f))
+    f <- get(f)
+  
   if(noise_dist == "uniform"){
     pdf = function(p,mu,s) dunif(p, mu * (1 - s), mu * (1 + s)) 
     cdf = function(p,mu,s) punif(p, mu * (1 - s), mu * (1 + s))
@@ -34,8 +37,8 @@ multiple_uncertainty <- function(f = logistic,
   n_q <- length(q_grid)
 
   ## Define a profit function.    
-  profit <- function(x,h) pmin(x, h)
-  P <- outer(x_grid, h_grid, profit)
+  profit_fn <- function(x,h) pmin(x, h)
+  P <- outer(x_grid, h_grid, profit_fn)
   Minv <- pdf_matrix(y_grid, x_grid, sigma_m, invpdf, invcdf) 
   M <- pdf_matrix(x_grid, y_grid, sigma_m, pdf, cdf) 
   I <- pdf_matrix(q_grid, h_grid, sigma_i, pdf, cdf)

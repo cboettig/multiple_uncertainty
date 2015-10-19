@@ -1,15 +1,18 @@
 #' @export
-simulate <- function(S,
+scenario <- function(S,
                      x0 = 100,
                      f = logistic,
-                     x_grid = seq(0,150,length = 151),
+                     x_grid,
                      Tmax = 50,
                      sigma_g = 0.2,
                      sigma_m = 0.0,
                      sigma_i = 0.0,
-                     delta = 0.05,
                      noise_dist = "uniform",
                      y_grid = x_grid) {
+  
+  
+  if(is.character(f))
+    f <- get(f)
   
   if(noise_dist == "uniform")
     shock <- function(x, sigma) runif(1, x * (1 - sigma), x * 1 + sigma)
@@ -17,11 +20,12 @@ simulate <- function(S,
     shock <- function(x, sigma) rlnorm(1, log(x), sigma)
   else 
     stop(paste("noise_dist", noise_dist, "not recognized"))
+
   
   measure <- function(x) shock(x, sigma_m)
   implement <- function(q) shock(q, sigma_i)
   set_quota <- function(y){
-    i <- max(which(y_grid < y))
+    i <- max(which(y_grid <= y))
     ## quota is observed minus target escapement
     y - S[i]
   } 
