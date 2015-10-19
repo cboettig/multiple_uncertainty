@@ -7,8 +7,8 @@ knitr::opts_chunk$set(cache = TRUE)
 ```
 
 ``` r
-fig3 <- function(m, l){  
-  grid <- seq(0, m, length = l)
+fig3 <- function(max, by){  
+  grid <- seq(0, max, by = by)
   small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1)
   growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1)
   measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1)
@@ -19,18 +19,19 @@ fig3 <- function(m, l){
 }
 
 df <- 
-data.frame(id = 1:5, 
-           max    = c(150, 200, 200, 400, 300), 
-           length = c(151, 201, 401, 401, 601)) %>%
-  dplyr::group_by(id) %>%
-  dplyr::do(fig3(.$max, .$length))
+expand.grid(max = c(150, 200, 300, 400), 
+            by = c(0.5, 1, 2)) %>%
+  dplyr::group_by(max,by) %>%
+  dplyr::do(fig3(.$max, .$by))
 ```
 
 ``` r
 df %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
-    geom_line()  + facet_wrap(~id, ncol = 2) + 
-    xlab("Stock") + ylab("Escapement") + 
+    geom_line()  + 
+    facet_grid(by ~ max) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
     theme_bw() 
 ```
