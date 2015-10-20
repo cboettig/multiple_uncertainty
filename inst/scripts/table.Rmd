@@ -12,6 +12,8 @@ library("stringr")
 library("dplyr")
 library("tidyr")
 library("ggplot2")
+library("lazyeval")
+library("readr")
 library("multipleuncertainty")
 knitr::opts_chunk$set(cache = TRUE)
 ```
@@ -95,15 +97,19 @@ rekey <- function(str){
   str %>% 
   stringr::str_replace_all("0.01", "L") %>%
   stringr::str_replace_all("0.5", "H") %>%
-  stringr::str_replace_all("_", "") %>%
-  stringr::str_replace("(\\w{3})(.*)", "\\1 | \\2")
+  stringr::str_replace_all("_", "")
 }
 
 df %>% 
-  unite_("key", names(df)[1:6]) %>% 
-  mutate(key = rekey(key)) %>% 
-  select(key, ENPV, sd) -> 
+  unite_("true", names(df)[4:6]) %>% 
+  mutate(true = rekey(true)) %>% 
+  unite_("belief", names(df)[1:3]) %>% 
+  mutate(belief = rekey(belief)) %>% 
+  select(belief, true, ENPV, sd) -> 
   table
+
+## Include unique id for binding
+table <- cbind(id = 1:dim(df)[1], table)
 
 ```
 
@@ -111,48 +117,44 @@ df %>%
 In these 8 scenarios, the beliefs match the true values for each of the noise levels:
 
 ```{r}
-optimal <- c("LLL | LLL", "HLL | HLL", "LHL | LHL", "LLH | LLH", "HHL | HHL", "LHH | LHH", "HLH | HLH", "HHH | HHH")
-table %>% filter(key %in% optimal)
+table %>% filter(belief == true) -> optimal
+optimal
 ```
-
-What happens if we think a noise source is not present, but it is?  (Note: curious that the scenario in which growth noise alone is present actually has a higher ENPV than the deterministic world.  In general, noise reduces the NPV, even when accounted for optimally)
-
-
-```{r}
-table %>% 
-  mutate( N =  filter(table, key=="LLL | LLL")[["ENPV"]]) %>% 
-  filter(key %in% c("LLL | HLL", "LLL | LHL", "LLL | LLH")) %>% 
-  mutate(ENPV / N)
-```
-
-Note: Curious why the deterministic solution is actually doing better 
 
 
 
 Is it worse to believe noise is present when it is absent (e.g. conservative noise model), or ingore sources of noise when they are present?   
 
-```{r}
-#always assumes belief HLL
-ignore <- c("HLL | HHL", "HLL | HLH", "HLL | HHH")
-# reality is always HLL
-conservative <-  c("HHL | HLL", "HLH | HLL", "HHH | HLL")
+First, we'd like to normalize each case by the expected value achieved by applying the optimal control to the simulated scenario:
 
-table %>% 
-  mutate( N =  filter(table, key=="HLL | HLL")[["ENPV"]]) %>% 
-  filter(key %in% c(ignore, conservative)) %>% 
-  mutate(ENPV / N)
+```{r}
+tbls <- lapply(optimal$true, function(x){
+  expr1 <- interp(~true == x)
+  expr2 <- interp(~N, N = filter_(optimal, .dots = list(expr1))[["ENPV"]])
+  table %>% filter_(~true == x) %>% mutate_(.dots = setNames(list(expr2), "N"))
+})
+tbl <- bind_rows(tbls) %>% arrange(id)
+
+```
+
+Now we can normalize: 
+
+```{r}
+tbl %>% mutate(ENPV / N) -> tbl
+```
+
+Ingore uncertaines that are present:
+
+```{r}
+tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH"))
+```
+
+Conservative: include uncertainty that doesn't exist
+
+```{r}
+tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH"))
 ```
 
 
-Here's the same question, but fixing growth noise at low instead of high:
-
 ```{r}
-ignore <- c("LLL | HLL", "LLL | LHL", "LLL | LLH")
-conservative <-  c("LHL | LLL", "LLH | LLL", "LHH | LLL")
-
-table %>% 
-  mutate( N =  filter(table, key=="LLL | LLL")[["ENPV"]]) %>% 
-  filter(key %in% c(ignore, conservative)) %>% 
-  mutate(ENPV / N)
-```
-
+write_csv(tbl, "data/table.csv")

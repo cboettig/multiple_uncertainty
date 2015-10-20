@@ -3,6 +3,8 @@ library("stringr")
 library("dplyr")
 library("tidyr")
 library("ggplot2")
+library("lazyeval")
+library("readr")
 library("multipleuncertainty")
 knitr::opts_chunk$set(cache = TRUE)
 ```
@@ -76,100 +78,85 @@ rekey <- function(str){
   str %>% 
   stringr::str_replace_all("0.01", "L") %>%
   stringr::str_replace_all("0.5", "H") %>%
-  stringr::str_replace_all("_", "") %>%
-  stringr::str_replace("(\\w{3})(.*)", "\\1 | \\2")
+  stringr::str_replace_all("_", "")
 }
 
 df %>% 
-  unite_("key", names(df)[1:6]) %>% 
-  mutate(key = rekey(key)) %>% 
-  select(key, ENPV, sd) -> 
+  unite_("true", names(df)[4:6]) %>% 
+  mutate(true = rekey(true)) %>% 
+  unite_("belief", names(df)[1:3]) %>% 
+  mutate(belief = rekey(belief)) %>% 
+  select(belief, true, ENPV, sd) -> 
   table
+
+## Include unique id for binding
+table <- cbind(id = 1:dim(df)[1], table)
 ```
 
 In these 8 scenarios, the beliefs match the true values for each of the noise levels:
 
 ``` r
-optimal <- c("LLL | LLL", "HLL | HLL", "LHL | LHL", "LLH | LLH", "HHL | HHL", "LHH | LHH", "HLH | HLH", "HHH | HHH")
-table %>% filter(key %in% optimal)
+table %>% filter(belief == true) -> optimal
+optimal
 ```
 
-    ## Source: local data frame [8 x 3]
-    ## 
-    ##         key     ENPV         sd
-    ##       (chr)    (dbl)      (dbl)
-    ## 1 LLL | LLL 602.7425   2.346842
-    ## 2 LLH | LLH 444.6088  86.403558
-    ## 3 LHL | LHL 285.6336 129.673301
-    ## 4 LHH | LHH 211.8751  97.936354
-    ## 5 HLL | HLL 762.2499 120.537733
-    ## 6 HLH | HLH 524.6004 133.593980
-    ## 7 HHL | HHL 294.4968 139.328054
-    ## 8 HHH | HHH 251.7012 110.776794
-
-What happens if we think a noise source is not present, but it is? (Note: curious that the scenario in which growth noise alone is present actually has a higher ENPV than the deterministic world. In general, noise reduces the NPV, even when accounted for optimally)
-
-``` r
-table %>% 
-  mutate( N =  filter(table, key=="LLL | LLL")[["ENPV"]]) %>% 
-  filter(key %in% c("LLL | HLL", "LLL | LHL", "LLL | LLH")) %>% 
-  mutate(ENPV / N)
-```
-
-    ## Source: local data frame [3 x 5]
-    ## 
-    ##         key     ENPV        sd        N    ENPV/N
-    ##       (chr)    (dbl)     (dbl)    (dbl)     (dbl)
-    ## 1 LLL | LLH 288.8413 148.57233 602.7425 0.4792118
-    ## 2 LLL | LHL 150.2830  67.56709 602.7425 0.2493320
-    ## 3 LLL | HLL 758.8783 130.25866 602.7425 1.2590422
-
-Note: Curious why the deterministic solution is actually doing better
+    ##   id belief true     ENPV         sd
+    ## 1  1    LLL  LLL 602.7425   2.346842
+    ## 2 10    LLH  LLH 444.6088  86.403558
+    ## 3 19    LHL  LHL 285.6336 129.673301
+    ## 4 28    LHH  LHH 211.8751  97.936354
+    ## 5 37    HLL  HLL 762.2499 120.537733
+    ## 6 46    HLH  HLH 524.6004 133.593980
+    ## 7 55    HHL  HHL 294.4968 139.328054
+    ## 8 64    HHH  HHH 251.7012 110.776794
 
 Is it worse to believe noise is present when it is absent (e.g. conservative noise model), or ingore sources of noise when they are present?
 
-``` r
-#always assumes belief HLL
-ignore <- c("HLL | HHL", "HLL | HLH", "HLL | HHH")
-# reality is always HLL
-conservative <-  c("HHL | HLL", "HLH | HLL", "HHH | HLL")
-
-table %>% 
-  mutate( N =  filter(table, key=="HLL | HLL")[["ENPV"]]) %>% 
-  filter(key %in% c(ignore, conservative)) %>% 
-  mutate(ENPV / N)
-```
-
-    ## Source: local data frame [6 x 5]
-    ## 
-    ##         key     ENPV        sd        N    ENPV/N
-    ##       (chr)    (dbl)     (dbl)    (dbl)     (dbl)
-    ## 1 HLL | HLH 309.1881 166.66997 762.2499 0.4056256
-    ## 2 HLL | HHL 197.5846 101.22018 762.2499 0.2592124
-    ## 3 HLL | HHH 178.7917  99.22453 762.2499 0.2345579
-    ## 4 HLH | HLL 628.4697 125.09035 762.2499 0.8244931
-    ## 5 HHL | HLL 610.0263 108.72459 762.2499 0.8002970
-    ## 6 HHH | HLL 476.9531 102.08201 762.2499 0.6257175
-
-Here's the same question, but fixing growth noise at low instead of high:
+First, we'd like to normalize each case by the expected value achieved by applying the optimal control to the simulated scenario:
 
 ``` r
-ignore <- c("LLL | HLL", "LLL | LHL", "LLL | LLH")
-conservative <-  c("LHL | LLL", "LLH | LLL", "LHH | LLL")
-
-table %>% 
-  mutate( N =  filter(table, key=="LLL | LLL")[["ENPV"]]) %>% 
-  filter(key %in% c(ignore, conservative)) %>% 
-  mutate(ENPV / N)
+tbls <- lapply(optimal$true, function(x){
+  expr1 <- interp(~true == x)
+  expr2 <- interp(~N, N = filter_(optimal, .dots = list(expr1))[["ENPV"]])
+  table %>% filter_(~true == x) %>% mutate_(.dots = setNames(list(expr2), "N"))
+})
+tbl <- bind_rows(tbls) %>% arrange(id)
 ```
 
-    ## Source: local data frame [6 x 5]
+Now we can normalize:
+
+``` r
+tbl %>% mutate(ENPV / N) -> tbl
+```
+
+Ingore uncertaines that are present:
+
+``` r
+tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH"))
+```
+
+    ## Source: local data frame [3 x 7]
     ## 
-    ##         key     ENPV         sd        N    ENPV/N
-    ##       (chr)    (dbl)      (dbl)    (dbl)     (dbl)
-    ## 1 LLL | LLH 288.8413 148.572330 602.7425 0.4792118
-    ## 2 LLL | LHL 150.2830  67.567089 602.7425 0.2493320
-    ## 3 LLL | HLL 758.8783 130.258657 602.7425 1.2590422
-    ## 4 LLH | LLL 484.3563   1.763013 602.7425 0.8035875
-    ## 5 LHL | LLL 493.4585   1.713756 602.7425 0.8186886
-    ## 6 LHH | LLL 378.8967   1.415383 602.7425 0.6286212
+    ##      id belief  true     ENPV        sd        N    ENPV/N
+    ##   (int)  (chr) (chr)    (dbl)     (dbl)    (dbl)     (dbl)
+    ## 1    38    HLL   HLH 309.1881 166.66997 524.6004 0.5893783
+    ## 2    39    HLL   HHL 197.5846 101.22018 294.4968 0.6709228
+    ## 3    40    HLL   HHH 178.7917  99.22453 251.7012 0.7103331
+
+Conservative: include uncertainty that doesn't exist
+
+``` r
+tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH"))
+```
+
+    ## Source: local data frame [3 x 7]
+    ## 
+    ##      id belief  true     ENPV       sd        N    ENPV/N
+    ##   (int)  (chr) (chr)    (dbl)    (dbl)    (dbl)     (dbl)
+    ## 1    45    HLH   HLL 628.4697 125.0903 762.2499 0.8244931
+    ## 2    53    HHL   HLL 610.0263 108.7246 762.2499 0.8002970
+    ## 3    61    HHH   HLL 476.9531 102.0820 762.2499 0.6257175
+
+``` r
+write_csv(tbl, "data/table.csv")
+```
