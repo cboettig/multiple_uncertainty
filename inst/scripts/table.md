@@ -6,7 +6,7 @@ library("ggplot2")
 library("lazyeval")
 library("readr")
 library("multipleuncertainty")
-knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(cache = TRUE, comment=NA)
 ```
 
 Optimal control under multiple uncertainty by model:
@@ -97,18 +97,19 @@ In these 8 scenarios, the beliefs match the true values for each of the noise le
 
 ``` r
 table %>% filter(belief == true) -> optimal
-optimal
+optimal %>% knitr::kable("pandoc")
 ```
 
-    ##   id belief true     ENPV         sd
-    ## 1  1    LLL  LLL 602.7425   2.346842
-    ## 2 10    LLH  LLH 444.6088  86.403558
-    ## 3 19    LHL  LHL 285.6336 129.673301
-    ## 4 28    LHH  LHH 211.8751  97.936354
-    ## 5 37    HLL  HLL 762.2499 120.537733
-    ## 6 46    HLH  HLH 524.6004 133.593980
-    ## 7 55    HHL  HHL 294.4968 139.328054
-    ## 8 64    HHH  HHH 251.7012 110.776794
+|   id| belief | true |      ENPV|          sd|
+|----:|:-------|:-----|---------:|-----------:|
+|    1| LLL    | LLL  |  602.7722|    1.810204|
+|   10| LLH    | LLH  |  458.1304|   90.734832|
+|   19| LHL    | LHL  |  277.9756|  124.425553|
+|   28| LHH    | LHH  |  248.3373|  110.209729|
+|   37| HLL    | HLL  |  764.1851|  124.416405|
+|   46| HLH    | HLH  |  505.6283|  155.409103|
+|   55| HHL    | HHL  |  305.1203|  134.972764|
+|   64| HHH    | HHH  |  259.2962|  120.848636|
 
 Is it worse to believe noise is present when it is absent (e.g. conservative noise model), or ingore sources of noise when they are present?
 
@@ -132,30 +133,26 @@ tbl %>% mutate(ENPV / N) -> tbl
 Ingore uncertaines that are present:
 
 ``` r
-tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH"))
+tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH")) %>% knitr::kable("pandoc")
 ```
 
-    ## Source: local data frame [3 x 7]
-    ## 
-    ##      id belief  true     ENPV        sd        N    ENPV/N
-    ##   (int)  (chr) (chr)    (dbl)     (dbl)    (dbl)     (dbl)
-    ## 1    38    HLL   HLH 309.1881 166.66997 524.6004 0.5893783
-    ## 2    39    HLL   HHL 197.5846 101.22018 294.4968 0.6709228
-    ## 3    40    HLL   HHH 178.7917  99.22453 251.7012 0.7103331
+|   id| belief | true |      ENPV|         sd|         N|     ENPV/N|
+|----:|:-------|:-----|---------:|----------:|---------:|----------:|
+|   38| HLL    | HLH  |  311.8716|  168.08611|  505.6283|  0.6168001|
+|   39| HLL    | HHL  |  201.3554|  104.69603|  305.1203|  0.6599215|
+|   40| HLL    | HHH  |  161.7940|   86.74184|  259.2962|  0.6239736|
 
 Conservative: include uncertainty that doesn't exist
 
 ``` r
-tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH"))
+tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH")) %>% knitr::kable("pandoc")
 ```
 
-    ## Source: local data frame [3 x 7]
-    ## 
-    ##      id belief  true     ENPV       sd        N    ENPV/N
-    ##   (int)  (chr) (chr)    (dbl)    (dbl)    (dbl)     (dbl)
-    ## 1    45    HLH   HLL 628.4697 125.0903 762.2499 0.8244931
-    ## 2    53    HHL   HLL 610.0263 108.7246 762.2499 0.8002970
-    ## 3    61    HHH   HLL 476.9531 102.0820 762.2499 0.6257175
+|   id| belief | true |      ENPV|        sd|         N|     ENPV/N|
+|----:|:-------|:-----|---------:|---------:|---------:|----------:|
+|   45| HLH    | HLL  |  630.9335|  132.3907|  764.1851|  0.8256292|
+|   53| HHL    | HLL  |  590.9232|  117.4317|  764.1851|  0.7732724|
+|   61| HHH    | HLL  |  495.1301|  118.1861|  764.1851|  0.6479190|
 
 ``` r
 write_csv(tbl, "data/table.csv")

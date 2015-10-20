@@ -15,7 +15,7 @@ library("ggplot2")
 library("lazyeval")
 library("readr")
 library("multipleuncertainty")
-knitr::opts_chunk$set(cache = TRUE)
+knitr::opts_chunk$set(cache = TRUE, comment=NA)
 ```
 
 
@@ -66,6 +66,7 @@ mean_value <- function(sigma_g_belief, sigma_m_belief, sigma_i_belief,
 
 ```
 
+
 ```{r warning=FALSE}
 low <- 0.01
 high <- 0.5
@@ -87,6 +88,7 @@ cases %>%
   ungroup() -> df
 
 ```
+
 
 
 We want to collapse the columns that simply list the values of each true/belief sigma value into a single scenario key, where we'll use `L` for "Low" noise and `H` for high.  We indicate the belief values of growth, measurement, and implementation error, respectively, followed by the true values used for the simulations. Thus `HLL | LHL` indicates that the optimal solution was computing assuming high growth error, but low measurement and implementation, and then this policy was applied to simulations in which growth noise and implementation noise were low, but measurement was high.  
@@ -118,7 +120,7 @@ In these 8 scenarios, the beliefs match the true values for each of the noise le
 
 ```{r}
 table %>% filter(belief == true) -> optimal
-optimal
+optimal %>% knitr::kable("pandoc")
 ```
 
 
@@ -146,13 +148,13 @@ tbl %>% mutate(ENPV / N) -> tbl
 Ingore uncertaines that are present:
 
 ```{r}
-tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH"))
+tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH")) %>% knitr::kable("pandoc")
 ```
 
 Conservative: include uncertainty that doesn't exist
 
 ```{r}
-tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH"))
+tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH")) %>% knitr::kable("pandoc")
 ```
 
 
