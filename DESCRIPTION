@@ -8,3 +8,4 @@ Author: Carl Boettiger
 Maintainer: Carl Boettiger, <cboettig@gmail.com>
 URL: https://github.com/cboettig/multiple_uncertainty
 BugReports: https://github.com/cboettig/multiple_uncertainty/issues
+RoxygenNote: 5.0.0

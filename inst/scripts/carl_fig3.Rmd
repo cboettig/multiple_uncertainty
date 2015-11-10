@@ -4,7 +4,7 @@ author: "Carl Boettiger"
 date: "9/24/2015"
 output: 
   md_document:
-    variant: markdown
+    variant: markdown_github
 ---
 
 ```{r, message=FALSE}
@@ -17,11 +17,11 @@ library("multipleuncertainty")
 
 
 ```{r}
-grid <- seq(0, 200, length = 401)
-small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1)
-growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1)
-measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1)
-implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5)
+grid <- seq(0, 200, length = 301)
+small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = "lognormal")
+growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1, noise_dist = "lognormal")
+measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1, noise_dist = "lognormal")
+implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5, noise_dist = "lognormal")
 df <- data.frame(y_grid = grid, small = small, growth = growth, 
                    measure = measure, implement = implement) %>%
     tidyr::gather(scenario, value, -y_grid)
