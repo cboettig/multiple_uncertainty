@@ -161,7 +161,7 @@ We can visualize the whole table (rows are the true scenario, columns are believ
 which justifies our normalization routine, since we see the very strong influence of reality regardless what you believe.  Note that we supress grid labels as the units are arbitrary and only relative differences are of interest.
 
 ```{r}
-ggplot(tbl) + geom_histogram(aes(ENPV)) + 
+ggplot(tbl) + geom_histogram(aes(ENPV), binwidth=50) + 
   facet_grid(belief ~ true) + 
   theme(axis.text=element_blank())
 ```
@@ -169,7 +169,7 @@ ggplot(tbl) + geom_histogram(aes(ENPV)) +
 After normalizing by the optimum that could be achieved for the given scenario, we have the following patterns. 
 
 ```{r}
-ggplot(tbl) + geom_histogram(aes(normalized_value)) + 
+ggplot(tbl) + geom_histogram(aes(normalized_value), binwidth=.05) + 
   facet_grid(belief ~ true)  + 
   theme(axis.text.y=element_blank()) + 
   scale_x_continuous(breaks=scales::pretty_breaks(n=3)) + 
@@ -181,14 +181,9 @@ Note that believing that both measurement and implementation error are low (`LLL
 
 ```{r}
 ggplot(tbl) + 
-  geom_histogram(aes(normalized_value, fill=belief), position="identity", binwidth=.02) + 
+  geom_histogram(aes(normalized_value, fill=belief), position="identity", binwidth=.05) + 
   facet_grid(~ true) + 
   theme(axis.text=element_blank())
 ```
 
 
-
-
-```{r}
-write_csv(tbl, "table_files/table.csv")
-```

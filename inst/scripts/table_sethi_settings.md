@@ -157,152 +157,22 @@ tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH")) %>% knitr::kab
 We can visualize the whole table (rows are the true scenario, columns are believed scenario). First we just plot ENPV, which justifies our normalization routine, since we see the very strong influence of reality regardless what you believe. Note that we supress grid labels as the units are arbitrary and only relative differences are of interest.
 
 ``` r
-ggplot(tbl) + geom_histogram(aes(ENPV)) + 
+ggplot(tbl) + geom_histogram(aes(ENPV), binwidth=50) + 
   facet_grid(belief ~ true) + 
   theme(axis.text=element_blank())
 ```
-
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 
 ![](table_sethi_settings_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
 After normalizing by the optimum that could be achieved for the given scenario, we have the following patterns.
 
 ``` r
-ggplot(tbl) + geom_histogram(aes(normalized_value)) + 
+ggplot(tbl) + geom_histogram(aes(normalized_value), binwidth=.05) + 
   facet_grid(belief ~ true)  + 
   theme(axis.text.y=element_blank()) + 
   scale_x_continuous(breaks=scales::pretty_breaks(n=3)) + 
   coord_cartesian(xlim=c(0, 1.2))
 ```
-
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 
 ![](table_sethi_settings_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
@@ -310,13 +180,9 @@ Note that believing that both measurement and implementation error are low (`LLL
 
 ``` r
 ggplot(tbl) + 
-  geom_histogram(aes(normalized_value, fill=belief), position="identity", binwidth=.02) + 
+  geom_histogram(aes(normalized_value, fill=belief), position="identity", binwidth=.05) + 
   facet_grid(~ true) + 
   theme(axis.text=element_blank())
 ```
 
 ![](table_sethi_settings_files/figure-markdown_github/unnamed-chunk-12-1.png)
-
-``` r
-write_csv(tbl, "table_files/table.csv")
-```

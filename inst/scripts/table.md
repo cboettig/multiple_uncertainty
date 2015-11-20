@@ -130,7 +130,7 @@ Now we can normalize:
 tbl %>% mutate(normalized_value = ENPV / N) -> tbl
 ```
 
-Ingore uncertaines that are present:
+Ignoring uncertaines that are present:
 
 ``` r
 tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH")) %>% knitr::kable("pandoc")
@@ -154,14 +154,39 @@ tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH")) %>% knitr::kab
 |   53| HHL    | HLL  |  605.9144|  120.94954|  774.3748|  0.7824562|
 |   61| HHH    | HLL  |  480.9155|   95.93188|  774.3748|  0.6210371|
 
-``` r
-ggplot(tbl) + geom_histogram(aes(ENPV, color="belief"))
-```
+We can visualize the whole table (rows are the true scenario, columns are believed scenario). First we just plot ENPV, which justifies our normalization routine, since we see the very strong influence of reality regardless what you believe. Note that we supress grid labels as the units are arbitrary and only relative differences are of interest.
 
-    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+``` r
+ggplot(tbl) + geom_histogram(aes(ENPV), binwidth=50) + 
+  facet_grid(belief ~ true) + 
+  theme(axis.text=element_blank())
+```
 
 ![](table_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
+After normalizing by the optimum that could be achieved for the given scenario, we have the following patterns.
+
 ``` r
-write_csv(tbl, "table_files/table.csv")
+ggplot(tbl) + geom_histogram(aes(normalized_value), binwidth=0.05) + 
+  facet_grid(belief ~ true)  + 
+  theme(axis.text.y=element_blank()) + 
+  scale_x_continuous(breaks=scales::pretty_breaks(n=3)) + 
+  coord_cartesian(xlim=c(0, 1.2))
+```
+
+![](table_files/figure-markdown_github/unnamed-chunk-11-1.png)
+
+Note that believing that both measurement and implementation error are low (`LLL` and `HLL`) gives you consistently the worst outcomes unless both sources of noise truely are low.
+
+``` r
+ggplot(tbl) + 
+  geom_histogram(aes(normalized_value, fill=belief), position="identity", binwidth=.05) + 
+  facet_grid(~ true) + 
+  theme(axis.text=element_blank())
+```
+
+![](table_files/figure-markdown_github/unnamed-chunk-12-1.png)
+
+``` r
+#write_csv(tbl, "table_files/table.csv")
 ```
