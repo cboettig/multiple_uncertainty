@@ -44,14 +44,14 @@ mean_value <- function(sigma_g_belief, sigma_m_belief, sigma_i_belief,
     group_by(rep) %>% 
     do(replicates()) %>% 
     ungroup() %>%
-    summarise(ENPV = mean(NPV), sd = sd(NPV))
+    summarise(ENPV = mean(NPV), sd = sd(NPV), min=min(NPV), max=max(NPV))
 
 
   }
 ```
 
 ``` r
-low <- 0.01
+low <- 0.1
 high <- 0.5
 cases <-
   expand.grid(
@@ -76,8 +76,8 @@ We want to collapse the columns that simply list the values of each true/belief 
 ``` r
 rekey <- function(str){
   str %>% 
-  stringr::str_replace_all("0.01", "L") %>%
-  stringr::str_replace_all("0.5", "H") %>%
+  stringr::str_replace_all(as.character(low), "L") %>%
+  stringr::str_replace_all(as.character(high), "H") %>%
   stringr::str_replace_all("_", "")
 }
 
@@ -100,16 +100,16 @@ table %>% filter(belief == true) -> optimal
 optimal %>% knitr::kable("pandoc")
 ```
 
-|   id| belief | true |      ENPV|          sd|
-|----:|:-------|:-----|---------:|-----------:|
-|    1| LLL    | LLL  |  457.4543|   0.5631201|
-|   10| LLH    | LLH  |  438.0797|   4.5596371|
-|   19| LHL    | LHL  |  369.9958|  16.9390710|
-|   28| LHH    | LHH  |  249.6880|  16.8867770|
-|   37| HLL    | HLL  |  184.8037|  29.3914618|
-|   46| HLH    | HLH  |  161.2395|  26.6041530|
-|   55| HHL    | HHL  |  165.5816|  22.0515356|
-|   64| HHH    | HHH  |  147.5293|  26.0192068|
+|   id| belief | true |      ENPV|         sd|
+|----:|:-------|:-----|---------:|----------:|
+|    1| LLL    | LLL  |  396.9258|   6.530375|
+|   10| LLH    | LLH  |  371.1727|   8.265367|
+|   19| LHL    | LHL  |  366.8641|  10.721565|
+|   28| LHH    | LHH  |  327.5487|  14.242372|
+|   37| HLL    | HLL  |  161.0474|  30.687857|
+|   46| HLH    | HLH  |  155.9838|  27.492843|
+|   55| HHL    | HHL  |  164.2114|  28.901709|
+|   64| HHH    | HHH  |  152.0555|  23.081706|
 
 Is it worse to believe noise is present when it is absent (e.g. conservative noise model), or ingore sources of noise when they are present?
 
@@ -124,11 +124,13 @@ tbls <- lapply(optimal$true, function(x){
 tbl <- bind_rows(tbls) %>% arrange(id)
 ```
 
-Now we can normalize:
+Now we can normalize for the final table:
 
 ``` r
 tbl %>% mutate(normalized_value = ENPV / N) -> tbl
 ```
+
+### Summarizing and Analyzing the table
 
 Ignoring uncertaines that are present:
 
@@ -136,11 +138,11 @@ Ignoring uncertaines that are present:
 tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH")) %>% knitr::kable("pandoc")
 ```
 
-|   id| belief | true |      ENPV|        sd|         N|  normalized\_value|
-|----:|:-------|:-----|---------:|---------:|---------:|------------------:|
-|   38| HLL    | HLH  |  164.8689|  26.14336|  161.2395|          1.0225098|
-|   39| HLL    | HHL  |  113.5121|  28.00425|  165.5816|          0.6855355|
-|   40| HLL    | HHH  |   99.1436|  21.16372|  147.5293|          0.6720266|
+|   id| belief | true |       ENPV|        sd|         N|  normalized\_value|
+|----:|:-------|:-----|----------:|---------:|---------:|------------------:|
+|   38| HLL    | HLH  |  145.42216|  27.29802|  155.9838|          0.9322901|
+|   39| HLL    | HHL  |  108.43488|  26.83073|  164.2114|          0.6603372|
+|   40| HLL    | HHH  |   90.63248|  24.87252|  152.0555|          0.5960488|
 
 Conservative: include uncertainty that doesn't exist
 
@@ -150,9 +152,9 @@ tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH")) %>% knitr::kab
 
 |   id| belief | true |      ENPV|        sd|         N|  normalized\_value|
 |----:|:-------|:-----|---------:|---------:|---------:|------------------:|
-|   45| HLH    | HLL  |  179.7346|  22.76720|  184.8037|          0.9725705|
-|   53| HHL    | HLL  |  201.8626|  23.08644|  184.8037|          1.0923080|
-|   61| HHH    | HLL  |  204.1115|  21.84648|  184.8037|          1.1044770|
+|   45| HLH    | HLL  |  166.7742|  24.87790|  161.0474|           1.035560|
+|   53| HHL    | HLL  |  200.1233|  28.39223|  161.0474|           1.242636|
+|   61| HHH    | HLL  |  198.5589|  23.18692|  161.0474|           1.232922|
 
 We can visualize the whole table (rows are the true scenario, columns are believed scenario). First we just plot ENPV, which justifies our normalization routine, since we see the very strong influence of reality regardless what you believe. Note that we supress grid labels as the units are arbitrary and only relative differences are of interest.
 
@@ -170,12 +172,25 @@ After normalizing by the optimum that could be achieved for the given scenario, 
 ggplot(tbl) + geom_histogram(aes(normalized_value), binwidth=.05) + 
   facet_grid(belief ~ true)  + 
   theme(axis.text.y=element_blank()) + 
-  scale_x_continuous(breaks=scales::pretty_breaks(n=3))
+  scale_x_continuous(breaks=scales::pretty_breaks(n=4))
 ```
 
 ![](table_sethi_settings_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
-Note that believing that both measurement and implementation error are low (`LLL` and `HLL`) gives you consistently the worst outcomes unless both sources of noise truely are low.
+Note that some scenarios are doing better than optimal
+
+``` r
+ tbl %>% filter(belief %in% c("HHH", "HHL"), true == "LHH")
+```
+
+    Source: local data frame [2 x 7]
+
+         id belief  true     ENPV       sd        N normalized_value
+      (int)  (chr) (chr)    (dbl)    (dbl)    (dbl)            (dbl)
+    1    52    HHL   LHH 344.5393 14.62523 327.5487         1.051872
+    2    60    HHH   LHH 334.2415 13.41355 327.5487         1.020433
+
+These are all scenarios in which the 'optimal' solution still scores rather poorly (see `ENPV`).
 
 ``` r
 ggplot(tbl) + 
@@ -184,4 +199,4 @@ ggplot(tbl) +
   theme(axis.text=element_blank())
 ```
 
-![](table_sethi_settings_files/figure-markdown_github/unnamed-chunk-12-1.png)
+![](table_sethi_settings_files/figure-markdown_github/unnamed-chunk-13-1.png)

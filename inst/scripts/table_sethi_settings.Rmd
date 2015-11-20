@@ -58,7 +58,7 @@ mean_value <- function(sigma_g_belief, sigma_m_belief, sigma_i_belief,
     group_by(rep) %>% 
     do(replicates()) %>% 
     ungroup() %>%
-    summarise(ENPV = mean(NPV), sd = sd(NPV))
+    summarise(ENPV = mean(NPV), sd = sd(NPV), min=min(NPV), max=max(NPV))
 
 
   }
@@ -68,7 +68,7 @@ mean_value <- function(sigma_g_belief, sigma_m_belief, sigma_i_belief,
 
 
 ```{r warning=FALSE}
-low <- 0.01
+low <- 0.1
 high <- 0.5
 cases <-
   expand.grid(
@@ -97,8 +97,8 @@ We want to collapse the columns that simply list the values of each true/belief 
 
 rekey <- function(str){
   str %>% 
-  stringr::str_replace_all("0.01", "L") %>%
-  stringr::str_replace_all("0.5", "H") %>%
+  stringr::str_replace_all(as.character(low), "L") %>%
+  stringr::str_replace_all(as.character(high), "H") %>%
   stringr::str_replace_all("_", "")
 }
 
@@ -139,11 +139,15 @@ tbl <- bind_rows(tbls) %>% arrange(id)
 
 ```
 
-Now we can normalize: 
+Now we can normalize for the final table: 
 
 ```{r}
 tbl %>% mutate(normalized_value = ENPV / N) -> tbl
 ```
+
+
+### Summarizing and Analyzing the table
+
 
 Ignoring uncertaines that are present:
 
@@ -172,11 +176,16 @@ After normalizing by the optimum that could be achieved for the given scenario, 
 ggplot(tbl) + geom_histogram(aes(normalized_value), binwidth=.05) + 
   facet_grid(belief ~ true)  + 
   theme(axis.text.y=element_blank()) + 
-  scale_x_continuous(breaks=scales::pretty_breaks(n=3))
+  scale_x_continuous(breaks=scales::pretty_breaks(n=4))
 ```
 
-Note that believing that both measurement and implementation error are low (`LLL` and `HLL`) gives you consistently the worst outcomes unless both sources of noise truely are low.  
+Note that some scenarios are doing better than optimal
 
+```{r}
+ tbl %>% filter(belief %in% c("HHH", "HHL"), true == "LHH")
+```
+
+These are all scenarios in which the 'optimal' solution still scores rather poorly (see `ENPV`).
 
 ```{r}
 ggplot(tbl) + 
