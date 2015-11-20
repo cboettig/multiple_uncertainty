@@ -170,8 +170,7 @@ After normalizing by the optimum that could be achieved for the given scenario, 
 ggplot(tbl) + geom_histogram(aes(normalized_value), binwidth=.05) + 
   facet_grid(belief ~ true)  + 
   theme(axis.text.y=element_blank()) + 
-  scale_x_continuous(breaks=scales::pretty_breaks(n=3)) + 
-  coord_cartesian(xlim=c(0, 1.2))
+  scale_x_continuous(breaks=scales::pretty_breaks(n=3))
 ```
 
 ![](table_sethi_settings_files/figure-markdown_github/unnamed-chunk-11-1.png)
