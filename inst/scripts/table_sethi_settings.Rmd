@@ -32,22 +32,22 @@ mean_value <- function(sigma_g_belief, sigma_m_belief, sigma_i_belief,
   delta <- 0.05
   grid <- seq(0,150,length=151) #seq(0, 200, length = 401)
   
-  S <- multiple_uncertainty(f = "ricker", 
+  S <- multiple_uncertainty(f = "logistic", 
                             x_grid = grid, 
                             sigma_g = sigma_g_belief, 
                             sigma_m = sigma_m_belief, 
                             sigma_i = sigma_i_belief,
                             delta = delta,
-                            noise_dist = "lognormal")
+                            noise_dist = "uniform")
 
   ## Function to compute to do a replicate simulation and return NPV
   replicates <- function(){
-    sim <- scenario(S, f = "ricker", 
+    sim <- scenario(S, f = "logistic", 
                     x_grid = grid, 
                     sigma_g = sigma_g_true, 
                     sigma_m = sigma_m_true, 
                     sigma_i = sigma_i_true, 
-                    noise_dist = "lognormal")
+                    noise_dist = "uniform")
     sim %>% 
       mutate(value = h * (1-delta) ^ t) %>% 
       summarise(NPV = sum(value))

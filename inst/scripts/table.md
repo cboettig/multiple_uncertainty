@@ -102,14 +102,14 @@ optimal %>% knitr::kable("pandoc")
 
 |   id| belief | true |      ENPV|          sd|
 |----:|:-------|:-----|---------:|-----------:|
-|    1| LLL    | LLL  |  602.7722|    1.810204|
-|   10| LLH    | LLH  |  458.1304|   90.734832|
-|   19| LHL    | LHL  |  277.9756|  124.425553|
-|   28| LHH    | LHH  |  248.3373|  110.209729|
-|   37| HLL    | HLL  |  764.1851|  124.416405|
-|   46| HLH    | HLH  |  505.6283|  155.409103|
-|   55| HHL    | HHL  |  305.1203|  134.972764|
-|   64| HHH    | HHH  |  259.2962|  120.848636|
+|    1| LLL    | LLL  |  603.0429|    2.134585|
+|   10| LLH    | LLH  |  466.7537|   80.174116|
+|   19| LHL    | LHL  |  292.8202|  124.046084|
+|   28| LHH    | LHH  |  241.5899|  107.514183|
+|   37| HLL    | HLL  |  774.3748|  136.523609|
+|   46| HLH    | HLH  |  471.1784|  154.090984|
+|   55| HHL    | HHL  |  288.1971|  130.285451|
+|   64| HHH    | HHH  |  280.3641|  128.069568|
 
 Is it worse to believe noise is present when it is absent (e.g. conservative noise model), or ingore sources of noise when they are present?
 
@@ -127,7 +127,7 @@ tbl <- bind_rows(tbls) %>% arrange(id)
 Now we can normalize:
 
 ``` r
-tbl %>% mutate(ENPV / N) -> tbl
+tbl %>% mutate(normalized_value = ENPV / N) -> tbl
 ```
 
 Ingore uncertaines that are present:
@@ -138,9 +138,9 @@ tbl %>% filter(belief == "HLL", true %in% c("HHL", "HLH", "HHH")) %>% knitr::kab
 
 |   id| belief | true |      ENPV|         sd|         N|     ENPV/N|
 |----:|:-------|:-----|---------:|----------:|---------:|----------:|
-|   38| HLL    | HLH  |  311.8716|  168.08611|  505.6283|  0.6168001|
-|   39| HLL    | HHL  |  201.3554|  104.69603|  305.1203|  0.6599215|
-|   40| HLL    | HHH  |  161.7940|   86.74184|  259.2962|  0.6239736|
+|   38| HLL    | HLH  |  296.5831|  139.03377|  471.1784|  0.6294498|
+|   39| HLL    | HHL  |  192.8838|  111.81136|  288.1971|  0.6692773|
+|   40| HLL    | HHH  |  162.3541|   78.81396|  280.3641|  0.5790831|
 
 Conservative: include uncertainty that doesn't exist
 
@@ -148,12 +148,20 @@ Conservative: include uncertainty that doesn't exist
 tbl %>% filter(true == "HLL", belief %in% c("HHL", "HLH", "HHH")) %>% knitr::kable("pandoc")
 ```
 
-|   id| belief | true |      ENPV|        sd|         N|     ENPV/N|
-|----:|:-------|:-----|---------:|---------:|---------:|----------:|
-|   45| HLH    | HLL  |  630.9335|  132.3907|  764.1851|  0.8256292|
-|   53| HHL    | HLL  |  590.9232|  117.4317|  764.1851|  0.7732724|
-|   61| HHH    | HLL  |  495.1301|  118.1861|  764.1851|  0.6479190|
+|   id| belief | true |      ENPV|         sd|         N|     ENPV/N|
+|----:|:-------|:-----|---------:|----------:|---------:|----------:|
+|   45| HLH    | HLL  |  615.7262|  126.31208|  774.3748|  0.7951269|
+|   53| HHL    | HLL  |  605.9144|  120.94954|  774.3748|  0.7824562|
+|   61| HHH    | HLL  |  480.9155|   95.93188|  774.3748|  0.6210371|
 
 ``` r
-write_csv(tbl, "data/table.csv")
+ggplot(tbl) + geom_histogram(aes(ENPV, color="belief"))
+```
+
+    stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
+
+![](table_files/figure-markdown_github/unnamed-chunk-10-1.png)
+
+``` r
+write_csv(tbl, "table_files/table.csv")
 ```
