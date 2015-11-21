@@ -27,27 +27,27 @@ Optimal control under multiple uncertainty by model:
 
 
 mean_value <- function(sigma_g_belief, sigma_m_belief, sigma_i_belief,
-                     sigma_g_true, sigma_m_true, sigma_i_true){
+                     sigma_g_true, sigma_m_true, sigma_i_true, f, noise_dist){
   
   delta <- 0.05
   grid <- seq(0,150,length=151) #seq(0, 200, length = 401)
   
-  S <- multiple_uncertainty(f = "ricker", 
+  S <- multiple_uncertainty(f = f, 
                             x_grid = grid, 
                             sigma_g = sigma_g_belief, 
                             sigma_m = sigma_m_belief, 
                             sigma_i = sigma_i_belief,
                             delta = delta,
-                            noise_dist = "lognormal")
+                            noise_dist = noise_dist)
 
   ## Function to compute to do a replicate simulation and return NPV
   replicates <- function(){
-    sim <- scenario(S, f = "ricker", 
+    sim <- scenario(S, f = f, 
                     x_grid = grid, 
                     sigma_g = sigma_g_true, 
                     sigma_m = sigma_m_true, 
                     sigma_i = sigma_i_true, 
-                    noise_dist = "lognormal")
+                    noise_dist = noise_dist)
     sim %>% 
       mutate(value = h * (1-delta) ^ t) %>% 
       summarise(NPV = sum(value))
@@ -84,7 +84,8 @@ group_by_all <- function(x,...) x %>%  group_by_(.dots = lapply(names(x), as.nam
 cases %>%
   group_by_all() %>%
   do(mean_value(.$sigma_g_belief, .$sigma_m_belief, .$sigma_i_belief,
-                 .$sigma_g_true, .$sigma_m_true, .$sigma_i_true)) %>% 
+                 .$sigma_g_true, .$sigma_m_true, .$sigma_i_true,
+                 "ricker", "lognormal")) %>% 
   ungroup() -> df
 
 ```
@@ -95,23 +96,41 @@ We want to collapse the columns that simply list the values of each true/belief 
 
 ```{r}
 
-rekey <- function(str){
-  str %>% 
-  stringr::str_replace_all("0.01", "L") %>%
-  stringr::str_replace_all("0.5", "H") %>%
-  stringr::str_replace_all("_", "")
+rekey_and_normalize <- function(df, low, high){
+  
+  ## 
+  rekey <- function(str){
+    str %>% 
+      stringr::str_replace_all(as.character(low), "L") %>%
+      stringr::str_replace_all(as.character(high), "H") %>%
+      stringr::str_replace_all("_", "")
+  }
+  
+  ## Replace columns with noise values like (0.5, 0.5, .1) into keys like (HHL)
+  df %>% 
+    unite_("true", names(df)[4:6]) %>% 
+    mutate(true = rekey(true)) %>% 
+    unite_("belief", names(df)[1:3]) %>% 
+    mutate(belief = rekey(belief)) %>% 
+    select(belief, true, ENPV, sd) -> 
+    table
+  
+  ## Include unique id for binding
+  table <- cbind(id = 1:dim(df)[1], table)
+  
+  ## Normalize
+  table %>% filter(belief == true) -> optimal
+  tbls <- lapply(optimal$true, function(x){
+    expr1 <- interp(~true == x)
+    expr2 <- interp(~N, N = filter_(optimal, .dots = list(expr1))[["ENPV"]])
+    table %>% filter_(~true == x) %>% mutate_(.dots = setNames(list(expr2), "N"))
+  })
+  tbl <- bind_rows(tbls) %>% arrange(id)
+  
+  tbl
 }
 
-df %>% 
-  unite_("true", names(df)[4:6]) %>% 
-  mutate(true = rekey(true)) %>% 
-  unite_("belief", names(df)[1:3]) %>% 
-  mutate(belief = rekey(belief)) %>% 
-  select(belief, true, ENPV, sd) -> 
-  table
-
-## Include unique id for binding
-table <- cbind(id = 1:dim(df)[1], table)
+tbl <- rekey_and_normalize(df, low, high)
 
 ```
 
@@ -119,31 +138,12 @@ table <- cbind(id = 1:dim(df)[1], table)
 In these 8 scenarios, the beliefs match the true values for each of the noise levels:
 
 ```{r}
-table %>% filter(belief == true) -> optimal
-optimal %>% knitr::kable("pandoc")
+tbl %>% filter(belief == true) %>% knitr::kable("pandoc")
 ```
 
-
+## Summary and analysis
 
 Is it worse to believe noise is present when it is absent (e.g. conservative noise model), or ingore sources of noise when they are present?   
-
-First, we'd like to normalize each case by the expected value achieved by applying the optimal control to the simulated scenario:
-
-```{r}
-tbls <- lapply(optimal$true, function(x){
-  expr1 <- interp(~true == x)
-  expr2 <- interp(~N, N = filter_(optimal, .dots = list(expr1))[["ENPV"]])
-  table %>% filter_(~true == x) %>% mutate_(.dots = setNames(list(expr2), "N"))
-})
-tbl <- bind_rows(tbls) %>% arrange(id)
-
-```
-
-Now we can normalize: 
-
-```{r}
-tbl %>% mutate(normalized_value = ENPV / N) -> tbl
-```
 
 Ignoring uncertaines that are present:
 
