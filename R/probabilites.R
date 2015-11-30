@@ -31,7 +31,7 @@ ilognpdf <- function(x, y, sigma){
 }
 
 ilogncdf <- function(x, y, sigma){ # FIXME rewrite this to catch conditions resulting in NAs first (throws WARNINGS)
-  N <- qlnorm(x, y, sigma)
+  suppressWarnings(N <- qlnorm(x, y, sigma))
   N[is.na(N)] <- 1
   N
 }
