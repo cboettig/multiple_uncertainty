@@ -29,3 +29,12 @@ gompertz <- function(x, h, r = 1, K = 100){
   S <- max(x - h, 0)
   S * exp(r - S / K)
 }
+
+
+#' Allen
+#' @export
+allen <- function(x, h, r = 1, C = 50, K = 100){
+  S <- max(x - h, 0)
+  S * exp(r * (1 - S / K) * (S - C) / K) 
+}
+
