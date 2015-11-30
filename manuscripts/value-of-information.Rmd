@@ -1,0 +1,9 @@
+---
+title: "Value of Information"
+author: "Carl Boettiger"
+date: "11/30/2015"
+output: pdf_document
+---
+
+The value of known unknowns
+
