@@ -1,0 +1,76 @@
+---
+title: "Multiple Uncertainty Revisited"
+author: "Carl Boettiger"
+date: "11/30/2015"
+output: pdf_document
+---
+
+
+# Introduction
+
+# Model 
+
+Our model formulation parallels @Sethi2005 precisely.
+
+Population growth of the stock, $x_t$, is determined by a stochastic stock $z_t^g$ to the growth function $G(s_{t-1})$ of the previous year's escaped stock $s_{t-1}$, 
+
+$$ x_t = z_t^g G(s_{t-1}) $$
+
+where escapement of a given year is the true stock minus what is harvested, 
+
+$$s_t = x_t - h_t$$
+
+Measured stock, $m$ is determined by a random shock $z_t^m$ to the true stock size $x_t$,
+
+$$ m_t = z_t^m x_t $$
+
+The harvest size is determined by a stochastic stock $z_t^i$ to the quota $q_t$ set by management policy, or the true stock size (whichever is smaller)
+
+$$ h_t = \min(x_t, z_t^i q_t) $$
+
+For discount rate $\alpha$ and utility function $U(m_t, q_t(m_t))$, the fisheries management problem can be written as the choice (policy) of quotas $\{ q_t \}$ for each year that maximize the expected total reward:
+
+$$ \max_{\{ q_t\} \ geq 0} \mathbb{E} \lbrace \sum_0^{\infty} \alpha^t U(m_t, q_t(m_t))\rbrace $$
+
+At each year $t$ the manager measures the stock (with error) $m_t$, and must then set a quota $q_t$. The optimal solution can thus be found by dynamic orogramming after defining a Bellman recusion equation in terms of the observed states $m_t$ and quotas $q_t$:
+
+$$ V_t(m_t) =  \max_{q_t} \[ U_t(m_t, q_t) + \alpha V_{t+1}(m_t) \] $$
+
+The trick is simply to define the appropriate utility for each possible (observed) state $m_t$ and action (quota) $q_t$, and the appropriate transition probability $P(m_{t+1} | m_t, q_t)$ for each possible quota $q_t$ and state $m_t$.  In this model, the transition probability will depend on the growth model and all three sources of uncertainty.  
+
+The expected utility is simpler to construct.  The utility $U_t$ of choosing a quota $q_t$ having measured state $m_t$ is given by the rewards derived from realizing a harvest $h_t$, integrated over the probability that a harvest $h_t$ would be realized by a quota $q_t$ and measurement $m_t$:
+
+$$ U(q_t, m_t)  = \int_x P(x_t | m_t)  \int_h P(h | q) R(x,h) dh dx $$
+
+Computing the probability $P(h|q)$ is straight forward, as it follows immediately from the distribution from which we choose shocks $h_t = z_t^i q_t$.  However, the probability $P(x_t | m_t)$ is more subtle, as we have thus far only defined the inverse relation, $P(m_t | x_t)$, by defining the shock $z_m^t$ in the expression $m_t = z_m^t x_t$.  
+
+
+The transition probability 
+
+# Results
+
+# Methods
+
+# Discussion
+
+Review of general lit
+
+
+Consistent with Sethi et al, we observe: 
+
+- Small uncertainties lead to only small deviations from classical expectations based on the deterministic model or growth-noise only model.
+- Large measurement uncertainty can lead to a significant deviation from "constant escapement"
+
+In contrast to Sethi et al, we find that: 
+
+- These observations are sensitive to way uncertainty is modelled, rather than being generally robust as claimed.
+
+- Large implementation uncertainty can also result in substantial deviations from the the "constant escapement" rule.  
+
+This is most pronounced in more realisitic models of uncertainty, such as log-normally distributed noise, but visible in uniform noise as well.  Small deviations from constant escapement are visible in the implementation error results of @Sethi2005, but are understated.  This contrasts to the @Sethi claim that
+
+> ... implementation sources of uncertainty is high, a constant-escapement policy is qualitatively appropriate since the slopes of these policies beyond the shutdown point are virtually flat.
+
+
+Substantial deviations from the optimal policy can be found for non-convex growth functions.  In particular, when there is small or negligible cost to harvest, the optimal quota can signficantly exceed the measured stock size, as the true stock size and true harvest can differ substantially.  
+
