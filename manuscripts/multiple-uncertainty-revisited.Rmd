@@ -3,6 +3,7 @@ title: "Multiple Uncertainty Revisited"
 author: "Carl Boettiger"
 date: "11/30/2015"
 output: pdf_document
+bibliography: citations.bib
 ---
 
 
@@ -30,19 +31,29 @@ $$ h_t = \min(x_t, z_t^i q_t) $$
 
 For discount rate $\alpha$ and utility function $U(m_t, q_t(m_t))$, the fisheries management problem can be written as the choice (policy) of quotas $\{ q_t \}$ for each year that maximize the expected total reward:
 
-$$ \max_{\{ q_t\} \ geq 0} \mathbb{E} \lbrace \sum_0^{\infty} \alpha^t U(m_t, q_t(m_t))\rbrace $$
+$$ \max_{\{ q_t\} \geq 0} \mathbb{E} \left[ \sum_0^{\infty} \alpha^t U \left(m_t, q_t(m_t) \right) \right] $$
 
 At each year $t$ the manager measures the stock (with error) $m_t$, and must then set a quota $q_t$. The optimal solution can thus be found by dynamic orogramming after defining a Bellman recusion equation in terms of the observed states $m_t$ and quotas $q_t$:
 
-$$ V_t(m_t) =  \max_{q_t} \[ U_t(m_t, q_t) + \alpha V_{t+1}(m_t) \] $$
+$$ V_t(m_t) =  \max_{q_t} \left[ U_t(m_t, q_t) + \alpha V_{t+1}(m_t) \right] $$
 
 The trick is simply to define the appropriate utility for each possible (observed) state $m_t$ and action (quota) $q_t$, and the appropriate transition probability $P(m_{t+1} | m_t, q_t)$ for each possible quota $q_t$ and state $m_t$.  In this model, the transition probability will depend on the growth model and all three sources of uncertainty.  
 
 The expected utility is simpler to construct.  The utility $U_t$ of choosing a quota $q_t$ having measured state $m_t$ is given by the rewards derived from realizing a harvest $h_t$, integrated over the probability that a harvest $h_t$ would be realized by a quota $q_t$ and measurement $m_t$:
 
-$$ U(q_t, m_t)  = \int_x P(x_t | m_t)  \int_h P(h | q) R(x,h) dh dx $$
+$$ U(q_t, m_t)  = \int_x P(x_t | m_t)  \int_h P(h_t | q_t) R(x_t,h_t) dh_t dx_t $$
 
-Computing the probability $P(h|q)$ is straight forward, as it follows immediately from the distribution from which we choose shocks $h_t = z_t^i q_t$.  However, the probability $P(x_t | m_t)$ is more subtle, as we have thus far only defined the inverse relation, $P(m_t | x_t)$, by defining the shock $z_m^t$ in the expression $m_t = z_m^t x_t$.  
+Computing the probability $P(h|q)$ is straight forward, as it follows immediately from the distribution from which we choose shocks $h_t = z_t^i q_t$.  However, the probability $P(x_t | m_t)$ is more subtle, as we have thus far only defined the inverse relation, $P(m_t | x_t)$ by defining the shock $z_m^t$ in the expression $m_t = z_m^t x_t$.  
+
+<!-- @JSanchirico @mspringborn -- perhaps we should avoid stating this, or do so more diplomatically? -->
+
+Though @Sethi2005 gloss over this step in the text, their approach can be determined from their code.  Rather than compute the inverse probability distribution directly, they first pose the problem in terms of Bayes Law:
+
+$$P(x_t | m_t ) = \frac{P(m_t | x_t) P(x_t)}{\int P(m_t | x_t) P(x_t) dx_t}$$
+
+with a simple but potentially questionable choice of prior belief $P(x_t)$: a uniform prior. While such uniformative priors are often appealing, it is difficult to argue that a model otherwise predicated on knowledge of the previous measured stocks, $m_{t-1}, m_{t-2}$ would continue to assume a completely uniform prior for $x_t$.   
+
+Perhaps a more straight-forward approach is to ask for the reciprocal distribution, $1 / m_t$  
 
 
 The transition probability 

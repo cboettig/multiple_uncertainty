@@ -7,6 +7,7 @@ iunifpdf <- function(x, y, sigma){
   out <- (x * log(b / a)) ^ -1
   ## Inverse Uniform Distribution, a la Springborn
   # out = y * (x ^ -2) / (b - a)
+  
   out[x < y / b] <- 0
   out[x > y / a] <- 0
   out
@@ -16,9 +17,10 @@ iunifcdf <- function(x, y, sigma){
   a <-  (1 - sigma)
   b <-  (1 + sigma)
   ## Bayes Law inversion of uniform, a la Sethi:
-  ## out = log(x * b / y) / log(b / a)
+  out = log(x * b / y) / log(b / a)
   ## Inverse uniform distribution CDF, a la Springborn
-  out <-  (b - y / x ) / (b - a)
+  # out <-  (b - y / x ) / (b - a)
+  
   out[x < y / b] = 0
   out[x > y / a] = 1
   out
@@ -36,8 +38,9 @@ ilogncdf <- function(x, y, sigma){ # FIXME rewrite this to catch conditions resu
   N
 }
 
-snap_to_grid <- function(x, grid) sapply(x, function(x) grid[which.min(abs(grid - x))])   
 
+
+snap_to_grid <- function(x, grid) sapply(x, function(x) grid[which.min(abs(grid - x))])   
 
 pdfn <- function(p, mu, s, grid, pdf){
   if(mu <= 0){
