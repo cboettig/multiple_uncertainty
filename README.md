@@ -1,5 +1,9 @@
+[![Build Status](https://travis-ci.org/cboettig/multiple_uncertainty.svg?branch=master)](https://travis-ci.org/cboettig/multiple_uncertainty)
+
 Multiple Uncertainty
 ====================
+
+
 
 * Carl Boettiger, Mike Springborn, Jim Sanchirico
 
@@ -22,7 +26,7 @@ install_github("multiple_uncertainty", "cboettig")
 
 from the R terminal.  
 
-[Research scripts](https://github.com/cboettig/multiple_uncertainty/tree/master/inst/examples)
+[Research scripts](https://github.com/cboettig/multiple_uncertainty/tree/master/inst/)
 --------------------
 
 Research scripts are [knitr](http://yihui.name/knitr) files containing various investigations that are part of this project.  These scripts contain notes and descriptions of the investigation, code to carry out the simulations and analyses, and graphs and tables of the results as part of a single dynamic document.  Version history of these scripts tracks the evolution of an analysis.  Methods common to all scripts that allow a more general toolbox for exploring optimal control and multiple uncertainty are provided as functions of the R package.  Scripts can be linked to their most recent version or to version-stable SHA1 hashes, ensuring that they can be reproduced.  Make sure all files from the repo match the hash to ensure that functions external to the script also match the original run.  
