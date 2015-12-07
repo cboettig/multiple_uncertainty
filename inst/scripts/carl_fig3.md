@@ -1,3 +1,8 @@
+---
+output: 
+  html_document: 
+    keep_md: yes
+---
 ``` r
 library("dplyr")
 library("tidyr")
