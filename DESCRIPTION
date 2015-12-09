@@ -10,3 +10,4 @@ URL: https://github.com/cboettig/multiple_uncertainty
 BugReports: https://github.com/cboettig/multiple_uncertainty/issues
 RoxygenNote: 5.0.0
 Suggests: testthat
+Depends: R (>= 3.2.2)
