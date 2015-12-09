@@ -14,12 +14,17 @@ A few additional files are provided that are not part of the built
 R package and are listed in `.Rbuildignore`, such as `.travis.yml`,
 which is used for continuous testing and integration.
 
+Notebook
+--------
 
-Code
-----
 
-All code for this package is found in `R/`, (except compiled source
-code, if used, which is in `/src`).  All functions should be thoroughly
+
+
+Functions
+---------
+
+All functions for this package is found in `R/`, (except compiled source
+code, if used, which is in `/src`).  Exported functions are at least roughly
 documented with `roxygen2` notation; see Documentation.
 
 Testing
@@ -64,7 +69,7 @@ button (ctrl+shift+k) or `rmarkdown::render()` .
 Manuscript
 ----------
 
-The manuscript files are found in the vignettes directory.
+The manuscript files are found in the vignettes directory as `.Rmd` files.
 
 
 Text should be hard-wrapped at less than 80 characters width when

@@ -5,5 +5,11 @@ date: "11/30/2015"
 output: pdf_document
 ---
 
+- Uncertainties of different types and different magnitudes
+- Quantifying uncertainties
+- Cost of overestimating vs underestimating uncertainties (Value in modeling a given uncertainty accurately)
+- Value in reducing a given uncertainty
+
+
 The value of known unknowns
 
