@@ -1,0 +1,98 @@
+---
+author: "Carl Boettiger"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+```
+
+```{r}
+devtools::install_github("rstudio/profvis")
+
+profvis::profvis({
+  devtools::load_all()
+
+   grid <- seq(0, 200, by = 0.5)
+  growth <- multiple_uncertainty(x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1)
+})
+```
+
+
+With parallel BLAS libraries enabled, parts of the multiple_uncertainty calculation are already parallelized.  
+On machines with small numbers of cores, it might make sense to run the `multiple_uncertainty`
+
+```{r}
+library("parallel")
+
+fig3 <- function(cost, dr, noise){  
+  grid <- seq(0, 200, by = 0.5)
+  price <- 1
+  profit <- function(x,h) price * pmin(x,h) - cost * h - dr * h ^ 2
+  
+  
+  o <- mclapply(
+    list(small = c(g = 0.1, m = 0.1, i = 0.1),
+         growth = c(g = 0.5, m = 0.1, i = 0.1),
+         measure = c(g = 0.1, m = 0.5, i = 0.1),
+         implement = c(g = 0.1, m = 0.1, i = 0.5)), 
+    function(s)
+      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s$g, sigma_m = s$m, sigma_i = s$i, noise_dist = noise, profit_fn = profit))
+  
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+```
+
+
+
+
+One option is to parallelize the `do` loop with `multidplyr`, however, this requires essentially `ncores` times as much memory, which is very inefficient.  
+
+```{r eval=FALSE}
+cl <- get_default_cluster()
+cl %>% cluster_assign_value("fig3", fig3) %>% cluster_library("multipleuncertainty")
+
+expand.grid(cost = c(0, 0.02, 0.2),
+            dr = c(0, 0.1),
+            noise = c("uniform", "lognormal")) %>%
+  multidplyr::partition() %>%
+  dplyr::group_by(cost, dr, noise) %>%
+  dplyr::do(fig3(.$cost, .$dr, .$noise)) -> df
+
+```
+
+
+
+```{r}
+df %>% 
+  dplyr::filter(noise == "uniform") %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(cost ~ dr) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+```
+
+
+
+
+## Reed Result
+
+
+```{r}
+reed <- multiple_uncertainty(noise_dist = "lognormal")
+
+qplot(seq_along(reed), reed) + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0, 150)) + 
+    xlab("Stock") + ylab("Escapement") +
+    theme_bw()
+```
