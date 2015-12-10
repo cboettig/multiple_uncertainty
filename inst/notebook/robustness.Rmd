@@ -271,7 +271,8 @@ fig3 <- function(cost, dr, noise){
          measure = c(g = 0.1, m = 0.5, i = 0.1),
          implement = c(g = 0.1, m = 0.1, i = 0.5)), 
     function(s)
-      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s[["g"]], sigma_m = s[["m"]], sigma_i = s[["i"]], noise_dist = noise, profit_fn = profit))
+      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s[["g"]], sigma_m = s[["m"]], sigma_i = s[["i"]], noise_dist = noise, profit_fn = profit),
+    mc.cores = parallel::detectCores())
   
   df <- data.frame(y_grid = grid, small = o$small, growth = o$growth, 
                    measure = o$measure, implement = o$implement) %>%
