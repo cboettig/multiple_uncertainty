@@ -5,9 +5,10 @@
 \title{multiple uncertainty}
 \usage{
 multiple_uncertainty(f = logistic, x_grid = seq(0, 150, length = 151),
-  h_grid = x_grid, Tmax = 50, sigma_g = 0.2, sigma_m = 0, sigma_i = 0,
-  delta = 0.05, noise_dist = "uniform", y_grid = x_grid,
-  q_grid = x_grid, profit_fn = function(x, h) pmin(x, h))
+  h_grid = x_grid, sigma_g = 0.2, sigma_m = 0, sigma_i = 0,
+  delta = 0.05, noise_dist = c("uniform", "lognormal"), y_grid = x_grid,
+  q_grid = x_grid, profit_fn = function(x, h) pmin(x, h),
+  assume = "Bayes")
 }
 \description{
 Stochastic dynamic programming solution under multiple uncertainty

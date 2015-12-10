@@ -81,24 +81,28 @@ assume = "Bayes"
   
   Ep <- Minv %*% P %*% t(I)
   
-  ## Initialize 
-  V <- Ep 
-  v_t <- numeric(n_y)
-  D <- array(0, c(n_y, Tmax))
   
   out <- MDPtoolbox::mdp_policy_iteration(P = T, R = Ep, discount = 1/(1+delta) )
-  S2 <- y_grid - q_grid[out$policy]
+  S <- y_grid - q_grid[out$policy]
   
-  ## main SDP recursion loop:
-  for(t in 1:Tmax){
-    for(j in 1:n_q){
-      V[,j] <- Ep[,j] + 1 / (1 + delta) * T[, , j] %*% v_t  ## 43% of runtime here
-    }
-    v_t <- apply(V, 1, max)
-    v_index <- apply(V, 1, which.max) 
-    D[, (Tmax - t + 1)] = t(v_index)
-  }
-  S = y_grid - q_grid[D[,1]]
+  ## Initialize 
+  #V <- Ep 
+  #v_t <- numeric(n_y)
+  #D <- array(0, c(n_y, Tmax))
+  
+  ## main SDP recursion loop (now done by MDPtoolbox, which is faster:
+  # for(t in 1:Tmax){
+  #  for(j in 1:n_q){
+  #    V[,j] <- Ep[,j] + 1 / (1 + delta) * T[, , j] %*% v_t  ## 43% of runtime here
+  #  }
+  #  v_t <- apply(V, 1, max)
+  #  v_index <- apply(V, 1, which.max) 
+  #  D[, (Tmax - t + 1)] = t(v_index)
+  #}
+  #S = y_grid - q_grid[D[,1]]
+  
+  
+  
 })
 
 ```

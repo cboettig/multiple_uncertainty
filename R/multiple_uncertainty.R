@@ -2,10 +2,10 @@
 #' 
 #' Stochastic dynamic programming solution under multiple uncertainty
 #' @export
+#' @importFrom MDPtoolbox mdp_policy_iteration
 multiple_uncertainty <- function(f = logistic, 
                                  x_grid = seq(0,150,length=151), 
                                  h_grid = x_grid, 
-                                 Tmax = 50, 
                                  sigma_g = 0.2, 
                                  sigma_m = 0.0, 
                                  sigma_i = 0.0, 
@@ -71,20 +71,9 @@ multiple_uncertainty <- function(f = logistic,
 
   Ep <- Minv %*% P %*% t(I) ## expected profit (from space x,h -> y,q)
   
-  ## Initialize 
-  V <- Ep 
-  v_t <- numeric(n_y)
-  D <- array(0, c(n_y, Tmax))
-
-## main SDP recursion loop:
-  for(t in 1:Tmax){
-    for(j in 1:n_q){
-      V[,j] <- Ep[,j] + 1 / (1 + delta) * T[, , j] %*% v_t
-    }
-    v_t <- apply(V, 1, max)
-    v_index <- apply(V, 1, which.max) 
-    D[, (Tmax - t + 1)] = t(v_index)
-  }
-  S = y_grid - q_grid[D[,1]]
+  ## Much faster than writing recursion by hand
+  out <- MDPtoolbox::mdp_policy_iteration(P = T, R = Ep, discount = 1/(1+delta) )
+  S <- y_grid - q_grid[out$policy]
+  
 }
 
