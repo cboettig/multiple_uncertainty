@@ -10,25 +10,32 @@ multiple_uncertainty <- function(f = logistic,
                                  sigma_m = 0.0, 
                                  sigma_i = 0.0, 
                                  delta = 0.05, 
-                                 noise_dist = "uniform", 
+                                 noise_dist = c("uniform", "lognormal"), 
                                  y_grid = x_grid, 
                                  q_grid = x_grid,
-                                 profit_fn = function(x,h) pmin(x, h)){
+                                 profit_fn = function(x,h) pmin(x, h),
+                                 assume = "Bayes"){
+  ## 'assume' determines the rule on how we compute the inverse
   
+  ## allow f to be a function or a character string
   if(is.character(f))
     f <- get(f)
   
+  ## Handle choice of noise distribution. Needs to define pdf, cdf, invpdf, invcdf
+  noise_dist <- match.arg(noise_dist)
   if(noise_dist == "uniform"){
     pdf = function(p,mu,s) dunif(p, mu * (1 - s), mu * (1 + s)) 
     cdf = function(p,mu,s) punif(p, mu * (1 - s), mu * (1 + s))
-    invpdf = function(p,mu,s) iunifpdf(p, mu, s) 
-    invcdf = function(p,mu,s) iunifcdf(p, mu, s)
+    invpdf = function(p,mu,s) iunifpdf(p, mu, s, assume = assume) 
+    invcdf = function(p,mu,s) iunifcdf(p, mu, s, assume = assume)
   } else if (noise_dist == "lognormal"){
     pdf = function(p,mu,s) dlnorm(p, log(mu), s)
     cdf = function(p,mu,s) plnorm(p, log(mu), s)
     invpdf = function(p,mu,s) ilognpdf(p, log(mu), s)
     invcdf = function(p,mu,s) ilogncdf(p, log(mu), s)
     ## Confirm cdf is integral pdf
+  } else {
+    stop("Noise distribution not recognized")
   }
 
   ## Store constants 

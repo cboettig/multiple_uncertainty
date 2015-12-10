@@ -1,25 +1,29 @@
 ## Internal functions
 
-iunifpdf <- function(x, y, sigma){
+iunifpdf <- function(x, y, sigma, assume = "Bayes"){
   a <- (1 - sigma)
   b <- (1 + sigma)
   ## Bayes Law inversion of uniform, a la Sethi
-  #out <- (x * log(b / a)) ^ -1
+  if(assume == "Bayes")
+    out <- (x * log(b / a)) ^ -1
   ## Inverse Uniform Distribution, a la Springborn
-   out = y * (x ^ -2) / (b - a)
+  else
+   out <- y * (x ^ -2) / (b - a)
   
   out[x < y / b] <- 0
   out[x > y / a] <- 0
   out
 }
 
-iunifcdf <- function(x, y, sigma){
+iunifcdf <- function(x, y, sigma, assume = "Bayes"){
   a <-  (1 - sigma)
   b <-  (1 + sigma)
   ## Bayes Law inversion of uniform, a la Sethi:
-  #out = log(x * b / y) / log(b / a)
+  if(assume == "Bayes")
+    out <- log(x * b / y) / log(b / a)
   ## Inverse uniform distribution CDF, a la Springborn
-   out <-  (b - y / x ) / (b - a)
+  else
+    out <-  (b - y / x ) / (b - a)
   
   out[x < y / b] = 0
   out[x > y / a] = 1
