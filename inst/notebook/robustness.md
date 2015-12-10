@@ -1,13 +1,4 @@
----
-title: "Fig3 robustness appendix"
-author: "Carl Boettiger"
-date: "9/24/2015"
-output: 
-  md_document:
-    variant: markdown_github
----
-
-```{r, message=FALSE}
+``` r
 library("dplyr")
 library("tidyr")
 library("ggplot2")
@@ -16,10 +7,10 @@ library("parallel")
 knitr::opts_chunk$set(cache = TRUE)
 ```
 
-## Focal result
+Focal result
+------------
 
-
-```{r}
+``` r
 fig3 <- function(noise){  
   grid <- seq(0, 200, by=0.5)
   small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise)
@@ -35,10 +26,9 @@ df <-
 data.frame(noise = c("uniform", "lognormal")) %>%
   dplyr::group_by(noise) %>%
   dplyr::do(fig3(.$noise))
-
 ```
 
-```{r}
+``` r
 df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
     facet_wrap(~ noise) + 
@@ -48,13 +38,16 @@ df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) +
     theme_bw()
 ```
 
------------------
+![](robustness_files/figure-markdown_github/unnamed-chunk-3-1.png)
 
-## Results are robust to grid
+------------------------------------------------------------------------
 
-We confirm the general pattern observed is independent of the choice of grid step-size or the grid's maximum range.  To do so, we consider all combinations of maximum grid range and grid step size, using possible maximum ranges of `150`, `200`, `300`, and `400`, and possible step sizes of `0.5`, `1`, and `2`. Note that the largest grid thus has 800 grid points and the resulting linear algebra may need 16 GB of memory.
+Results are robust to grid
+--------------------------
 
-```{r}
+We confirm the general pattern observed is independent of the choice of grid step-size or the grid's maximum range. To do so, we consider all combinations of maximum grid range and grid step size, using possible maximum ranges of `150`, `200`, `300`, and `400`, and possible step sizes of `0.5`, `1`, and `2`. Note that the largest grid thus has 800 grid points and the resulting linear algebra may need 16 GB of memory.
+
+``` r
 fig3 <- function(max, by, noise="uniform"){  
   grid <- seq(0, max, by = by)
   small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise)
@@ -71,12 +64,9 @@ expand.grid(max = c(150, 200, 300, 400),
             by = c(0.5, 1, 2)) %>%
   dplyr::group_by(max,by) %>%
   dplyr::do(fig3(.$max, .$by, "uniform"))
-
 ```
 
-
-
-```{r fig.width = 9, fig.height = 12}
+``` r
 plt <- function(df)
   df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
@@ -89,10 +79,11 @@ plt <- function(df)
 df %>% plt()
 ```
 
-We can repeat this analysis for lognormal noise, which we find to be even less sensitive to the small jitter created at the coarser grid sizes.  
+![](robustness_files/figure-markdown_github/unnamed-chunk-5-1.png)
 
+We can repeat this analysis for lognormal noise, which we find to be even less sensitive to the small jitter created at the coarser grid sizes.
 
-```{r}
+``` r
 df <- 
 expand.grid(max = c(150, 200, 300, 400), 
             by = c(0.5, 1, 2)) %>%
@@ -100,21 +91,20 @@ expand.grid(max = c(150, 200, 300, 400),
   dplyr::do(fig3(.$max, .$by, "lognormal"))
 ```
 
-
-
-```{r fig.width = 9, fig.height = 12}
+``` r
 df %>% plt()
 ```
 
+![](robustness_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 Based on these observations, we selected a maximum of `200` and and a `delta` of `0.5` as our chosen grid for most of the analysis.
 
+Robustness to noise level
+-------------------------
 
-## Robustness to noise level
+We consider the results across a range of possible values for the "low" and "high" noise limits chosen.
 
-We consider the results across a range of possible values for the "low" and "high" noise limits chosen. 
-
-```{r warning=FALSE}
+``` r
 fig3 <- function(low, high, noise_dist){  
   grid <- seq(0, 200, length = 401)
   model <- "logistic"
@@ -129,16 +119,13 @@ fig3 <- function(low, high, noise_dist){
 }
 ```
 
-```{r warning=FALSE}
+``` r
 expand.grid(low = c(0, 0.01, 0.1), high = c(0.2, 0.5, 0.8), noise_dist = c("lognormal", "uniform")) %>%
   dplyr::group_by(low, high, noise_dist) %>%
   dplyr::do(fig3(.$low, .$high, .$noise_dist)) -> df
-
 ```
 
-
-
-```{r fig.width = 6, fig.height = 8}
+``` r
 df %>% filter(noise_dist == "lognormal") %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
@@ -148,11 +135,11 @@ df %>% filter(noise_dist == "lognormal") %>%
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
     theme_bw() + 
     ggtitle("Lognormal noise")
-
 ```
 
+![](robustness_files/figure-markdown_github/unnamed-chunk-10-1.png)
 
-```{r fig.width = 6, fig.height = 8}
+``` r
 df %>% filter(noise_dist == "uniform") %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
@@ -162,23 +149,71 @@ df %>% filter(noise_dist == "uniform") %>%
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
     theme_bw() + 
     ggtitle("Uniform noise")
-
 ```
 
-## Robustness to model
+![](robustness_files/figure-markdown_github/unnamed-chunk-11-1.png)
+
+Robustness to model
+-------------------
 
 We consider a variety of functional forms for the population growth model. We use the following functional forms for the models:
 
-```{r}
+``` r
 logistic
+```
+
+    ## function (x, h, r = 1, K = 100) 
+    ## {
+    ##     S <- max(x - h, 0)
+    ##     max(r * S * (1 - S/K) + S, 0)
+    ## }
+    ## <environment: namespace:multipleuncertainty>
+
+``` r
 bevertonholt
+```
+
+    ## function (x, h, r = 1, K = 100) 
+    ## {
+    ##     S <- max(x - h, 0)
+    ##     max((1 + r) * S/(1 + S/K), 0)
+    ## }
+    ## <environment: namespace:multipleuncertainty>
+
+``` r
 ricker
+```
+
+    ## function (x, h, r = 1, K = 100) 
+    ## {
+    ##     S <- max(x - h, 0)
+    ##     S * exp(r * (1 - S/K))
+    ## }
+    ## <environment: namespace:multipleuncertainty>
+
+``` r
 gompertz
+```
+
+    ## function (x, h, r = 1, K = 100) 
+    ## {
+    ##     S <- max(x - h, 0)
+    ##     S * exp(r - S/K)
+    ## }
+    ## <environment: namespace:multipleuncertainty>
+
+``` r
 allen
 ```
 
+    ## function (x, h, r = 1, C = 50, K = 100) 
+    ## {
+    ##     S <- max(x - h, 0)
+    ##     S * exp(r * (1 - S/K) * (S - C)/K)
+    ## }
+    ## <environment: namespace:multipleuncertainty>
 
-```{r warning=FALSE}
+``` r
 fig3 <- function(model, noise_dist){  
   grid <- seq(0, 200, length = 401)
   model <- get(as.character(model))
@@ -197,11 +232,9 @@ expand.grid(model = c("logistic", "bevertonholt", "ricker", "gompertz"),
             noise_dist = c("uniform", "lognormal")) %>%
   dplyr::group_by(model, noise_dist) %>%
   dplyr::do(fig3(.$model, .$noise_dist)) -> df
-
 ```
 
-
-```{r fig.width = 6, fig.height = 8}
+``` r
 df %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
@@ -210,14 +243,14 @@ df %>%
     ylab("Escapement") + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
     theme_bw()
-
 ```
 
+![](robustness_files/figure-markdown_github/unnamed-chunk-14-1.png)
 
+Robustness to model parameters
+------------------------------
 
-## Robustness to model parameters
-
-```{r}
+``` r
 fig3 <- function(r, noise_dist){  
  # grid <- seq(0, 200, length = 401)
   grid <- seq(0, 150, by=1)
@@ -237,11 +270,9 @@ expand.grid(r = c(0.1, 0.5, 1, 2),
             noise_dist = c("uniform", "lognormal")) %>%
   dplyr::group_by(r, noise_dist) %>%
   dplyr::do(fig3(.$r, .$noise_dist)) -> df
-
 ```
 
-
-```{r fig.width = 6, fig.height = 8}
+``` r
 df %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
@@ -250,15 +281,16 @@ df %>%
     ylab("Escapement") + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
     theme_bw()
-
 ```
 
+![](robustness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
-## Alternate reward functions
+Alternate reward functions
+--------------------------
 
 Consider linear cost term to harvest, and possible quadratic term ("diminishing returns", whereby small increases in harvest effort are relatively cheap, but achieving very large harvests is disproportionally more expensive)
 
-```{r}
+``` r
 fig3 <- function(cost, dr, noise){  
   grid <- seq(0, 200, by = 0.5)
   price <- 1
@@ -285,10 +317,9 @@ expand.grid(cost = c(0, 0.02, 0.2),
             noise = c("uniform", "lognormal")) %>%
   dplyr::group_by(cost, dr, noise) %>%
   dplyr::do(fig3(.$cost, .$dr, .$noise)) -> df
-
 ```
 
-```{r}
+``` r
 df %>% 
   dplyr::filter(noise == "uniform") %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
@@ -300,18 +331,19 @@ df %>%
     theme_bw()
 ```
 
+![](robustness_files/figure-markdown_github/unnamed-chunk-18-1.png)
 
+Varying the assumption on inverse probability calculation (uniform noise only)
+------------------------------------------------------------------------------
 
+------------------------------------------------------------------------
 
-## Varying the assumption on inverse probability calculation (uniform noise only)
-
-------------------------
-
-## Visualizing models at different parameter values
+Visualizing models at different parameter values
+------------------------------------------------
 
 First we include plots of the growth function at different
 
-```{r}
+``` r
 case <- function(model, r){
   x <- seq(0,200, by=1)
   f <- get(as.character(model))
@@ -319,8 +351,7 @@ case <- function(model, r){
 }
 ```
 
-
-```{r}
+``` r
 options(stringsAsFactors = FALSE)
 
 expand.grid(model = c("logistic", "bevertonholt", "ricker", "gompertz", "allen"), 
@@ -334,7 +365,8 @@ ggplot(df, aes(x = x, y = f, color = model)) +
   #geom_segment(aes(x = 0, xend = 100, y = 100, yend = 100), col='black', linetype = 2) + 
   #geom_segment(aes(x = 100, xend = 100, y = 0, yend = 100), col='black', linetype = 2) +
   facet_grid(model ~ r)
-
 ```
 
-Recall or observe that the parameter `r` does not change the carrying capacity of the Logistic, Ricker or Allen models, but does for the Beverton-Holt and Gompertz model.  This makes it difficult to directly consider how 
+![](robustness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+
+Recall or observe that the parameter `r` does not change the carrying capacity of the Logistic, Ricker or Allen models, but does for the Beverton-Holt and Gompertz model. This makes it difficult to directly consider how
