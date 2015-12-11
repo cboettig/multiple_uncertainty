@@ -303,7 +303,7 @@ fig3 <- function(cost, dr, noise){
          measure = c(g = 0.1, m = 0.5, i = 0.1),
          implement = c(g = 0.1, m = 0.1, i = 0.5)), 
     function(s)
-      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s[["g"]], sigma_m = s[["m"]], sigma_i = s[["i"]], noise_dist = noise, profit_fn = profit),
+      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s[["g"]], sigma_m = s[["m"]], sigma_i = s[["i"]], noise_dist = as.character(noise), profit_fn = profit),
     mc.cores = parallel::detectCores())
   
   df <- data.frame(y_grid = grid, small = o$small, growth = o$growth, 
@@ -313,7 +313,7 @@ fig3 <- function(cost, dr, noise){
 
 
 expand.grid(cost = c(0, 0.02, 0.2),
-            dr = c(0, 0.1),
+            dr = c(0, 0.01),
             noise = c("uniform", "lognormal")) %>%
   dplyr::group_by(cost, dr, noise) %>%
   dplyr::do(fig3(.$cost, .$dr, .$noise)) -> df
@@ -328,10 +328,24 @@ df %>%
     xlab("Stock") + 
     ylab("Escapement") + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
-    theme_bw()
+    theme_bw() + ggtitle("Uniform Noise")
 ```
 
 ![](robustness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+
+``` r
+df %>% 
+  dplyr::filter(noise == "lognormal") %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(cost ~ dr) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw() + ggtitle("Lognormal Noise")
+```
+
+![](robustness_files/figure-markdown_github/unnamed-chunk-19-1.png)
 
 Varying the assumption on inverse probability calculation (uniform noise only)
 ------------------------------------------------------------------------------
@@ -367,6 +381,6 @@ ggplot(df, aes(x = x, y = f, color = model)) +
   facet_grid(model ~ r)
 ```
 
-![](robustness_files/figure-markdown_github/unnamed-chunk-20-1.png)
+![](robustness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 Recall or observe that the parameter `r` does not change the carrying capacity of the Logistic, Ricker or Allen models, but does for the Beverton-Holt and Gompertz model. This makes it difficult to directly consider how
