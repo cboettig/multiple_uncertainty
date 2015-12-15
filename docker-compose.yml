@@ -1,0 +1,8 @@
+
+rstudio: 
+  image: cboettig/2015
+  volumes: 
+    - .:/home/rstudio/code
+  ports:
+    - 8787:8787
+

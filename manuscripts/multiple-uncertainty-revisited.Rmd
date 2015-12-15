@@ -51,12 +51,19 @@ Though @Sethi2005 gloss over this step in the text, their approach can be determ
 
 $$P(x_t | m_t ) = \frac{P(m_t | x_t) P(x_t)}{\int P(m_t | x_t) P(x_t) dx_t}$$
 
-with a simple but potentially questionable choice of prior belief $P(x_t)$: a uniform prior. While such uniformative priors are often appealing, it is difficult to argue that a model otherwise predicated on knowledge of the previous measured stocks, $m_{t-1}, m_{t-2}$ would continue to assume a completely uniform prior for $x_t$.   
+with a simple (but potentially questionable) choice of prior belief $P(x_t)$: a uniform prior. While it would be preferable to define a prior that was conditional on the previous measurements $m_{\{t-1\}\dots m_0}$, such a calculation is not ammenable to a stochastic dynamic programming approach, in which transition probabilities must be defined only in terms of the current state and would thus have to consider all possible previous states $m_{t-1}$, as well as current states $m_t$, in determining the optimal quota $q_t$.  The increased dimension problem is beyond the scope considered by @Sethi2015 and likewise beyond our scope.  The uniform prior neatly sidesteps this.  
+
+<!-- 
+It is also possible to demonstrate that the qualitative patterns shown here are not sensitive to the precise choice of the resulting probability distribution for $P( x_t | m_t)$
+
+The choice of an uniformative priors are often appealing, it is difficult to argue that a model otherwise predicated on knowledge of the previous measured stocks, $m_{t-1}, m_{t-2}$ would continue to assume a completely uniform prior for $x_t$.   
+-->
+
+?Discuss inverse probability distribution?
 
 Perhaps a more straight-forward approach is to ask for the reciprocal distribution, $1 / m_t$  
 
 
-The transition probability 
 
 # Results
 
