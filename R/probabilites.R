@@ -30,15 +30,24 @@ iunifcdf <- function(x, y, sigma, assume = "Bayes"){
   out
 }
 
-ilognpdf <- function(x, y, sigma){
+ilognpdf <- function(x, y, sigma, assume = "Bayes"){
+  if(assume == "Bayes"){
+   # out <- exp(- (log(y) - log(x)) ^ 2 / (2 * sigma^2) ) / (x * sigma * sqrt(2 * pi))
+    out <- dlnorm(x, y, sigma)
+  } else {
     out <- (y / (x * sigma * sqrt(2 * pi))) * exp(-(log(x) - y)^2 / (2 * sigma^2))
+  }
     out[is.nan(out)] <- 0
-    out
+  out
 }
 
-ilogncdf <- function(x, y, sigma){ # FIXME rewrite this to catch conditions resulting in NAs first (throws WARNINGS)
-  suppressWarnings(N <- qlnorm(x, y, sigma))
-  N[is.na(N)] <- 1
+ilogncdf <- function(x, y, sigma, assume = "Bayes"){ 
+  if(assume == "Bayes"){
+    N <- plnorm(x, y, sigma)
+  } else {
+    suppressWarnings(N <- qlnorm(x, y, sigma))
+    N[is.na(N)] <- 1
+  }
   N
 }
 
