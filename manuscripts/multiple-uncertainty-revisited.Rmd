@@ -67,7 +67,12 @@ Perhaps a more straight-forward approach is to ask for the reciprocal distributi
 
 # Results
 
+Figure 1: 
+
+
 # Methods
+
+Our approach follows the general stochastic dynamic programming strategy employed by @Sethi2005 and typical of analyses considering sequential optimization of stochastic growth models.  There are several details of the implementation that require some thought and for which a variety of approaches would be reasonable, and are thus worth emphasizing more explicitly.  
 
 # Discussion
 
