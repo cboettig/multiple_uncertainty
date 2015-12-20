@@ -22,7 +22,6 @@ multiple_uncertainty <- function(f = logistic,
     f <- get(f)
   
   ## Handle choice of noise distribution. Needs to define pdf, cdf, invpdf, invcdf
-  noise_dist <- match.arg(noise_dist)
   if(noise_dist == "uniform"){
     pdf = function(p,mu,s) dunif(p, mu * (1 - s), mu * (1 + s)) 
     cdf = function(p,mu,s) punif(p, mu * (1 - s), mu * (1 + s))
@@ -31,8 +30,8 @@ multiple_uncertainty <- function(f = logistic,
   } else if (noise_dist == "lognormal"){
     pdf = function(p,mu,s) dlnorm(p, log(mu), s)
     cdf = function(p,mu,s) plnorm(p, log(mu), s)
-    invpdf = function(p,mu,s) ilognpdf(p, log(mu), s)
-    invcdf = function(p,mu,s) ilogncdf(p, log(mu), s)
+    invpdf = function(p,mu,s) ilognpdf(p, log(mu), s, assume = assume)
+    invcdf = function(p,mu,s) ilogncdf(p, log(mu), s, assume = assume)
     ## Confirm cdf is integral pdf
   } else {
     stop("Noise distribution not recognized")
