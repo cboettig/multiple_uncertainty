@@ -9,7 +9,18 @@ bibliography: citations.bib
 
 # Introduction
 
-# Model 
+
+- Importance of multiple uncertainty
+
+- The surprising sparse history of approaches (at least in optimal fisheries)
+
+- Context of partial observability in other areas, e.g. POMDP (cite Chades papers, Springborn paper)
+
+
+
+# Model and Methods
+
+## Model formulation
 
 Our model formulation parallels @Sethi2005 precisely.
 
@@ -43,31 +54,105 @@ The expected utility is simpler to construct.  The utility $U_t$ of choosing a q
 
 $$ U(q_t, m_t)  = \int_x P(x_t | m_t)  \int_h P(h_t | q_t) R(x_t,h_t) dh_t dx_t $$
 
-Computing the probability $P(h|q)$ is straight forward, as it follows immediately from the distribution from which we choose shocks $h_t = z_t^i q_t$.  However, the probability $P(x_t | m_t)$ is more subtle, as we have thus far only defined the inverse relation, $P(m_t | x_t)$ by defining the shock $z_m^t$ in the expression $m_t = z_m^t x_t$.  
+Computing the probability $P(h|q)$ is straight forward, as it follows immediately from the distribution from which we choose shocks $h_t = z_t^i q_t$.  However, the probability $P(x_t | m_t)$ is more subtle, as we have thus far only defined the inverse relation, $P(m_t | x_t)$ by defining the shock $z_m^t$ in the expression $m_t = z_m^t x_t$.  The conditional probability can be reversed with the help of Bayes Law:
 
-<!-- @JSanchirico @mspringborn -- perhaps we should avoid stating this, or do so more diplomatically? -->
+$$P(x_t | m_t ) = \frac{P(m_t | x_t) P(x_t)}{\int P(m_t | x_t) P(x_t) dx_t,}$$
 
-Though @Sethi2005 gloss over this step in the text, their approach can be determined from their code.  Rather than compute the inverse probability distribution directly, they first pose the problem in terms of Bayes Law:
+assuming a simple but naive choice of prior belief $P(x_t)$, a uniform prior. While it would be preferable to define a prior that was conditional on the previous measurements $m_{\{t-1\}\dots m_0}$, such a calculation is not ammenable to a stochastic dynamic programming approach, in which transition probabilities must be defined only in terms of the current state and would thus have to consider all possible previous states $m_{t-1}$, as well as current states $m_t$, in determining the optimal quota $q_t$.  The increased dimension problem is beyond our scope. The uniform prior neatly sidesteps this.[^1]  Though @Sethi2005 gloss over this detail in the text, a closer look at their code (personal comm.) confirms that they have taken exactly this approach. 
 
-$$P(x_t | m_t ) = \frac{P(m_t | x_t) P(x_t)}{\int P(m_t | x_t) P(x_t) dx_t}$$
+[^1]: It is also possible to demonstrate that the qualitative patterns shown here are not sensitive to the precise choice of the resulting probability distribution for $P( x_t | m_t)$, see [results](https://github.com/cboettig/multiple_uncertainty/blob/6f05467a89d355c4aef0a956a614ca03009b92d3/inst/notebook/2015-12-18-different-inverses.md). We compare these results to what we would find using the respective inverse probability function (inverse uniform, inverse log-normal), which compared to the approach discussed above, puts relatively less weight on stock sizes larger than the observed measurement and more weight on smaller values.  Note that this only impacts calculations involving measurement error (not implementation error).  
 
-with a simple (but potentially questionable) choice of prior belief $P(x_t)$: a uniform prior. While it would be preferable to define a prior that was conditional on the previous measurements $m_{\{t-1\}\dots m_0}$, such a calculation is not ammenable to a stochastic dynamic programming approach, in which transition probabilities must be defined only in terms of the current state and would thus have to consider all possible previous states $m_{t-1}$, as well as current states $m_t$, in determining the optimal quota $q_t$.  The increased dimension problem is beyond the scope considered by @Sethi2015 and likewise beyond our scope.  The uniform prior neatly sidesteps this.  
 
-<!-- 
-It is also possible to demonstrate that the qualitative patterns shown here are not sensitive to the precise choice of the resulting probability distribution for $P( x_t | m_t)$
+## Numerical implementation
 
-The choice of an uniformative priors are often appealing, it is difficult to argue that a model otherwise predicated on knowledge of the previous measured stocks, $m_{t-1}, m_{t-2}$ would continue to assume a completely uniform prior for $x_t$.   
--->
-
-?Discuss inverse probability distribution?
-
-Perhaps a more straight-forward approach is to ask for the reciprocal distribution, $1 / m_t$  
 
 
 
 # Results
 
-# Methods
+Figure 1 compares the optimal policies under the assumption of uniform noise and lognormal noise, using a logistic growth model with $r = 1$, $K = 100$, on a grid of $x \in [0,200]$ with interval $\Delta = 0.5$, all following @Sethi2005.  The left panel, uniform noise, corresponds almost exactly to the modeling assumptions (and results) of @Sethi2005's Figure 3.  (Note that though @Sethi2005 smooth the resulting policy using a cubic spline to eliminate noise introduced by the discritization, while here we have plotted the discrete results directly.  Note that such numerical noise is more acute in the case of uniform noise distribution, which itself is not smooth and may be split in-between grid boundaries.)  As in @Sethi2005, the discounting rate is set at 5%, the reward function places a fixed price per unit of fish harvested, with no cost to harvesting effort.  (The appendices explore the robustness of these results to variation in each of these choices.)
+
+
+```{r include=FALSE}
+knitr::opts_chunk(echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE)
+```
+```{r libraries, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+```
+
+
+```{r compute}
+fig3 <- function(noise){  
+  grid <- seq(0, 200, by=0.5)
+  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise)
+  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise)
+  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1, noise_dist = noise)
+  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5, noise_dist = noise)
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+df <- 
+data.frame(noise = c("uniform", "lognormal")) %>%
+  dplyr::group_by(noise) %>%
+  dplyr::do(fig3(.$noise))
+
+```
+
+```{r figure1}
+df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_wrap(~ noise) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+```
+
+
+The most salient comparison in Figure 1 is that, in contrast to the conclusion reached by @Sethi2005, it is clear that implementation error
+
+
+Interpretation of this figure is slightly more challenging due to the fact that it compares models in which all sources of noise are present in each case, but in different magnitudes. Observe that at very large stock estimates, all policies show a deviation from constant escapement. Though stock sizes significantly larger than carrying capacity are unlikely in practice, recall that the policy reflects *measured* stock sizes, not true stock sizes, where this range is more feasible to imagine (and particularly under the assumption of uniform measurement error shown here, quite likely to be observed in the models considered here).
+
+Provided the numerical algorithm is adjusted to treat the case of zero noise of a given type, we can generate a somewhat cleaner comparison beween cases with only a single source of noise (or none at all):
+
+
+```{r compute}
+fig3 <- function(noise){  
+  grid <- seq(0, 200, by=0.5)
+  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0., sigma_m = 0., sigma_i = 0., noise_dist = noise)
+  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0., sigma_i = 0., noise_dist = noise)
+  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0., sigma_m = 0.5, sigma_i = 0., noise_dist = noise)
+  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0., sigma_m = 0., sigma_i = 0.5, noise_dist = noise)
+  df <- data.frame(y_grid = grid, none = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+df <- 
+data.frame(noise = c("uniform", "lognormal")) %>%
+  dplyr::group_by(noise) %>%
+  dplyr::do(fig3(.$noise))
+
+```
+
+```{r figure1}
+df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_wrap(~ noise) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+```
+
+
+
 
 # Discussion
 
