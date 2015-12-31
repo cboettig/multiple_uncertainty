@@ -56,7 +56,7 @@ and must then set a quota $q_t$. The optimal solution can thus be
 found by dynamic orogramming after defining a Bellman recusion
 equation in terms of the observed states $m_t$ and quotas $q_t$:
 
-$$ V_t(m_t) =  \max_{q_t} \left[ U_t(m_t, q_t) + \alpha V_{t+1}(m_t) \right] $$
+$$ V_t(m_t) =  \max_{q_t} \left[ U_t(m_t, q_t) + \alpha V_{t+1}(m_t) \right] \label{bellman} $$
 
 The trick is simply to define the appropriate utility for each
 possible (observed) state $m_t$ and action (quota) $q_t$, and the
@@ -68,10 +68,10 @@ of uncertainty.
 The expected utility is simpler to construct.  The utility $U_t$
 of choosing a quota $q_t$ having measured state $m_t$ is given by
 the rewards derived from realizing a harvest $h_t$, integrated over
-the probability that a harvest $h_t$ would be realized by a quota
-$q_t$ and measurement $m_t$:
+the probability that a harvest $h_t$ would be realized by a measurement
+$m_t$ and quota $q_t$:
 
-$$ U(q_t, m_t)  = \int_x P(x_t | m_t)  \int_h P(h_t | q_t) R(x_t,h_t) dh_t dx_t $$
+$$ U(m_t, q_t)  = \int_x P(x_t | m_t)  \int_h P(h_t | q_t) R(x_t,h_t) dh_t dx_t \label{utility} $$
 
 Computing the probability $P(h|q)$ is straight forward, as it follows
 immediately from the distribution from which we choose shocks $h_t
@@ -109,6 +109,54 @@ calculations involving measurement error (not implementation error).
 
 
 ## Numerical implementation
+
+
+We solve the optimization problem using Stochastic Dynamic Programming, by first
+discritizing the problem described above and then determining the resluting utility
+matrix, $\mathcal{U}_{mq}$ and transition probability between measured states for
+each possible choice of quota, $\mathcal{T}_{m_t, m_{t+1}, q_t}$.  Given this matrix
+and tensor, the optimization can be solved through the standard policy iteration algorithm.
+We provide complete R code and Matlab/Octave code implementations for readers interested
+in the details or in running the algorithm and exploring on their own.
+
+
+We discritize the state space 
+(stock $x_t$, observed stock $m_t$, harvest $h_t$, quota $q_t$) onto
+identical uniform grids between values between 0 and 200 at 0.5 unit step size.
+(In general each dimension could have a different discritization; for instance,
+allowing the measured stock sizes and/or chosen quotas to limited to a coarser
+grid than the true dynamics, which could reflect real-world limitations and
+not merely numerical necessity.)
+
+The Supplemental material compares our results across a range of grid
+lengths and step sizes to confirm this choice is sufficient to minimize
+numerical errors introduced by the discritization.  
+
+Note that @Sethi2005
+perform a similar discritization but present only cubic-spline interpolations
+of the resulting policies. While this can supress numerical artifacts of the
+discritization, it can also merely blurr them or introduce additional artifacts.
+We present the policies as determined by discrete optimization without smoothing
+by splines, making interpretation more straight-forward.
+
+
+In the discrete problem, the Utility function $U(m_t, q_t)$ can be written as a
+matrix $\mathcal{U}_{mq}$, of size length(quota grid) by length(measurement grid).  To do so, we 
+begin by defining the matrix $\mathcal{R}_{xh}$ for the reward function $R(x_t, h_t)$ for harvest
+of $h_t$ at stock size $x_t$ for each of their respective grid point values. 
+We can then define a matrix $\mathcal{P}_{hq}$ as the probability of a harvest $h_t$ given a 
+quota set at $q_t$ from the assumed probability distribution $P(h_t | q_t)$. 
+Likewise given the probability of a true stock size of $x_t$ given a measurement of $m_t$, 
+$P(x_t | m_t)$ we define the probability matrix $\mathcal{P}_{xm}$.  Then the matrix products 
+
+$$\mathcal{U}_{mq} = \mathcal{P}_{xm} \mathcal{R}_{xh} \mathcal{P}_{hq}$$ 
+
+are the discrete equivalent of integrating over $h$ and $x$ in Eqn~\eqref{utility},
+giving us the utility matrix $\mathcal{U}_{mq}$.  
+
+
+
+
 
 
 
