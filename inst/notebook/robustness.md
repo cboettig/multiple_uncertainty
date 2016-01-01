@@ -285,35 +285,80 @@ df %>%
 
 ![](robustness_files/figure-markdown_github/unnamed-chunk-16-1.png)
 
+Here we do see a significant influence of the growth rate on the overall pattern.
+
+It is particularly curious that we see the relation between the "all low" and "large growth" uncertainty change with changing `r` values. We repeat this, considering a single noise source at a time,
+
+``` r
+fig3 <- function(r, noise_dist){  
+ # grid <- seq(0, 200, length = 401)
+  grid <- seq(0, 150, by=1)
+  model <- function(x, h) logistic(x, h, r)
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.0, sigma_m = 0.0, sigma_i = 0.0, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.5, sigma_m = 0.0, sigma_i = 0.0, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.0, sigma_m = 0.5, sigma_i = 0.0, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.0, sigma_m = 0.0, sigma_i = 0.5, noise_dist = noise_dist)
+  ## Combine records by scenario
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+
+expand.grid(r = c(0.1, 0.5, 1, 2), 
+            noise_dist = c("uniform", "lognormal")) %>%
+  dplyr::group_by(r, noise_dist) %>%
+  dplyr::do(fig3(.$r, .$noise_dist)) -> df
+```
+
+``` r
+df %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(r ~ noise_dist) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+```
+
+![](robustness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+
 Alternate reward functions
 --------------------------
 
-Consider linear cost term to harvest, and possible quadratic term ("diminishing returns", whereby small increases in harvest effort are relatively cheap, but achieving very large harvests is disproportionally more expensive)
+Consider a linear cost term to harvest, and possible quadratic term ("diminishing returns", whereby small increases in harvest effort are relatively cheap, but achieving very large harvests is disproportionally more expensive).
 
 ``` r
+cores <- parallel::detectCores()
+cores <- 1
+
 fig3 <- function(cost, dr, noise){  
   grid <- seq(0, 200, by = 0.5)
   price <- 1
   profit <- function(x,h) price * pmin(x,h) - cost * h - dr * h ^ 2
   
   
+  ## solve optimization in parallel is stll n-cores x as memory intensive
   o <- mclapply(
     list(small = c(g = 0.1, m = 0.1, i = 0.1),
          growth = c(g = 0.5, m = 0.1, i = 0.1),
          measure = c(g = 0.1, m = 0.5, i = 0.1),
          implement = c(g = 0.1, m = 0.1, i = 0.5)), 
     function(s)
-      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s[["g"]], sigma_m = s[["m"]], sigma_i = s[["i"]], noise_dist = as.character(noise), profit_fn = profit),
-    mc.cores = parallel::detectCores())
+      ## Uses parallel BLAS (if available) 
+      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s[["g"]], sigma_m = s[["m"]], 
+                           sigma_i = s[["i"]], noise_dist = as.character(noise), profit_fn = profit),
+    mc.cores = cores)
   
   df <- data.frame(y_grid = grid, small = o$small, growth = o$growth, 
                    measure = o$measure, implement = o$implement) %>%
     tidyr::gather(scenario, value, -y_grid)
 }
 
-
-expand.grid(cost = c(0, 0.02, 0.2),
-            dr = c(0, 0.01),
+## parallelization via multi-dplyr much too memory intensive
+expand.grid(cost = c(0, 0.05, 0.5),
+            dr = c(0, 0.001, .01),
             noise = c("uniform", "lognormal")) %>%
   dplyr::group_by(cost, dr, noise) %>%
   dplyr::do(fig3(.$cost, .$dr, .$noise)) -> df
@@ -331,7 +376,7 @@ df %>%
     theme_bw() + ggtitle("Uniform Noise")
 ```
 
-![](robustness_files/figure-markdown_github/unnamed-chunk-18-1.png)
+![](robustness_files/figure-markdown_github/unnamed-chunk-20-1.png)
 
 ``` r
 df %>% 
@@ -345,7 +390,7 @@ df %>%
     theme_bw() + ggtitle("Lognormal Noise")
 ```
 
-![](robustness_files/figure-markdown_github/unnamed-chunk-19-1.png)
+![](robustness_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 Varying the assumption on inverse probability calculation (uniform noise only)
 ------------------------------------------------------------------------------
@@ -381,6 +426,6 @@ ggplot(df, aes(x = x, y = f, color = model)) +
   facet_grid(model ~ r)
 ```
 
-![](robustness_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](robustness_files/figure-markdown_github/unnamed-chunk-23-1.png)
 
 Recall or observe that the parameter `r` does not change the carrying capacity of the Logistic, Ricker or Allen models, but does for the Beverton-Holt and Gompertz model. This makes it difficult to directly consider how
