@@ -10,3 +10,4 @@
 *.pdf
 .Rproj.user
 __packages
+notebook/*_cache/

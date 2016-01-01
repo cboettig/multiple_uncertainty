@@ -132,8 +132,7 @@ The Supplemental material compares our results across a range of grid
 lengths and step sizes to confirm this choice is sufficient to minimize
 numerical errors introduced by the discritization.  
 
-Note that @Sethi2005
-perform a similar discritization but present only cubic-spline interpolations
+Note that @Sethi2005 perform a similar discritization but present only cubic-spline interpolations
 of the resulting policies. While this can supress numerical artifacts of the
 discritization, it can also merely blurr them or introduce additional artifacts.
 We present the policies as determined by discrete optimization without smoothing
@@ -154,12 +153,9 @@ $$\mathcal{U}_{mq} = \mathcal{P}_{xm} \mathcal{R}_{xh} \mathcal{P}_{hq}$$
 are the discrete equivalent of integrating over $h$ and $x$ in Eqn~\eqref{utility},
 giving us the utility matrix $\mathcal{U}_{mq}$.  
 
-
-
-
-
-
-
+The transition probability tensor is likewise defined in the space of the
+manager (measured stock, quota), which must also be computed from the 
+true state of the system (stock, harvest).  
 
 # Results
 
@@ -168,10 +164,8 @@ uniform noise and lognormal noise, using a logistic growth model
 with $r = 1$, $K = 100$, on a grid of $x \in [0,200]$ with interval
 $\Delta = 0.5$, all following @Sethi2005.  The left panel, uniform
 noise, corresponds almost exactly to the modeling assumptions (and
-results) of @Sethi2005's Figure 3.  (Note that though @Sethi2005
-smooth the resulting policy using a cubic spline to eliminate noise
-introduced by the discritization, while here we have plotted the
-discrete results directly.  Note that such numerical noise is more
+results) of @Sethi2005's Figure 3.  (Note that the impact of 
+discritization is more
 acute in the case of uniform noise distribution, which itself is
 not smooth and may be split in-between grid boundaries.)  As in
 @Sethi2005, the discounting rate is set at 5%, the reward function
@@ -181,8 +175,10 @@ results to variation in each of these choices.)
 
 
 ```{r include=FALSE}
-knitr::opts_chunk(echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE)
 ```
+
+
 ```{r libraries, message=FALSE}
 library("dplyr")
 library("tidyr")
@@ -221,9 +217,20 @@ df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) +
 ```
 
 
-The most salient comparison in Figure 1 is that, in contrast to the
-conclusion reached by @Sethi2005, it is clear that implementation
-error
+The most salient result seen in Figure 1 is that both implementation
+error and measurement error can result in substantial deviations
+from the classic "Constant Escapment" result of @Reed1979.  Such a result 
+also stands in contrast to the conclusions of @Sethi2005, which emphasize
+that only measurement error can be responsible for significant deviations.
+@Sethi2005 consider only the case of uniform noise, and examine the optimal
+policy only for measured stock sizes less than or equal to carrying capacity
+(despite the fact that under the model assumption of large and uniformly
+distributed measurement noise, values greater than carrying capacity 
+will be not unfrequently realized even while true stocks are likely to remain
+below that value.)
+
+
+
 
 
 
@@ -232,7 +239,13 @@ Interpretation of this figure is slightly more challenging due to
 the fact that it compares models in which all sources of noise are
 present in each case, but in different magnitudes. Observe that at
 very large stock estimates, all policies show a deviation from
-constant escapement. Though stock sizes significantly larger than
+constant escapement (while @Reed1979 proves that the optimal solution for
+stochastic growth without other sources of uncertainty is a constant escapement
+policy even for stock sizes exceeding th ecarrying capacity). The deviations 
+seen here are not numerical artifact, but due to the precence of small but
+non-zero measurement error, and can be understood as follows:
+
+Though stock sizes significantly larger than
 carrying capacity are unlikely in practice, recall that the policy
 reflects *measured* stock sizes, not true stock sizes, where this
 range is more feasible to imagine (and particularly under the
@@ -242,10 +255,11 @@ to be observed in the models considered here).
 Provided the numerical algorithm is adjusted to treat the case of
 zero noise of a given type, we can generate a somewhat cleaner
 comparison beween cases with only a single source of noise (or none
-at all):
+at all), Figure 2.  Observe that the deterministic and growth-only
+solutions now recover the constant-escapement rule exactly.
 
 
-```{r compute}
+```{r compute2}
 fig3 <- function(noise){  
   grid <- seq(0, 200, by=0.5)
   small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0., sigma_m = 0., sigma_i = 0., noise_dist = noise)
@@ -264,7 +278,7 @@ data.frame(noise = c("uniform", "lognormal")) %>%
 
 ```
 
-```{r figure1}
+```{r figure2}
 df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
     facet_wrap(~ noise) + 
