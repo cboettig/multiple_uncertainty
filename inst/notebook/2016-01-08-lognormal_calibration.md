@@ -1,0 +1,65 @@
+``` r
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+Log-normal variance: \(e^{\sigma^2-1} e^{2 \mu + \sigma^2}\).
+
+Uniform variance: \(\frac{1}{12} (b-a)^2\), where \(b = \mu (1 + s)\), \(a = \mu (1 - s)\), so \(b - a = 2 mu * s\), so variance is \(\sigma^2 = \frac{\mu^2 s^2/3}\). Rescaling units we can eliminate \(\mu\), and we're left with a more apples to apples comparison of comparable magnitudes of variance by taking \(s = \sqrt{3} \sigma\))
+
+``` r
+fig3 <- function(noise){  
+  grid <- seq(0, 200, by=0.5)
+  
+  
+  if(noise == "lognormal"){
+    lo <- 0.0577 # 0.1 / sqrt(3)
+    hi <- 0.2887 # 0.5 / sqrt(3)
+  } else {
+    lo <- 0.1
+    hi <- 0.5
+  }
+  
+  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = lo, noise_dist = noise)
+  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = lo, sigma_i = lo, noise_dist = noise)
+  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = hi, sigma_i = lo, noise_dist = noise)
+  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = hi, noise_dist = noise)
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+df <- 
+data.frame(noise = c("uniform", "lognormal")) %>%
+  dplyr::group_by(noise) %>%
+  dplyr::do(fig3(.$noise))
+```
+
+``` r
+df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_wrap(~ noise) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+```
+
+![](2016-01-08-lognormal_calibration_files/figure-markdown_github/unnamed-chunk-3-1.png)
+
+Reed Result
+-----------
+
+``` r
+reed <- multiple_uncertainty(noise_dist = "lognormal")
+
+qplot(seq_along(reed), reed) + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0, 150)) + 
+    xlab("Stock") + ylab("Escapement") +
+    theme_bw()
+```
+
+![](2016-01-08-lognormal_calibration_files/figure-markdown_github/unnamed-chunk-4-1.png)
