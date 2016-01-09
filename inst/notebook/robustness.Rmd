@@ -130,7 +130,7 @@ fig3 <- function(low, high, noise_dist){
 ```
 
 ```{r warning=FALSE}
-expand.grid(low = c(0, 0.01, 0.1), high = c(0.2, 0.5, 0.8), noise_dist = c("lognormal", "uniform")) %>%
+expand.grid(low = c(0, 0.01, 0.1), high = c(0.2, 0.3, 0.4, 0.5, 0.8, 0.9), noise_dist = c("lognormal", "uniform")) %>%
   dplyr::group_by(low, high, noise_dist) %>%
   dplyr::do(fig3(.$low, .$high, .$noise_dist)) -> df
 
