@@ -138,7 +138,7 @@ expand.grid(low = c(0, 0.01, 0.1), high = c(0.2, 0.3, 0.4, 0.5, 0.8, 0.9), noise
 
 
 
-```{r fig.width = 6, fig.height = 8}
+```{r fig.width = 6, fig.height = 8, dependson=-1}
 df %>% filter(noise_dist == "lognormal") %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
