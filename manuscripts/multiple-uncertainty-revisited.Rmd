@@ -6,6 +6,10 @@ output: pdf_document
 bibliography: citations.bib
 ---
 
+# Abstract
+
+We explore the role of multiple forms of uncertainty on optimal management policies
+
 
 # Introduction
 
@@ -21,6 +25,21 @@ bibliography: citations.bib
 
 
 # Model and Methods
+
+
+```{r knitr_opts, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE)
+```
+
+
+```{r libraries, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+```
+
+
 
 ## Model formulation
 
@@ -174,30 +193,11 @@ true state of the system (stock, harvest).
 Figure 1 compares the optimal policies under the assumption of
 uniform noise and lognormal noise, using a logistic growth model
 with $r = 1$, $K = 100$, on a grid of $x \in [0,200]$ with interval
-$\Delta = 0.5$, all following @Sethi2005.  The left panel, uniform
-noise, corresponds almost exactly to the modeling assumptions (and
-results) of @Sethi2005's Figure 3.  (Note that the impact of 
-discritization is more
-acute in the case of uniform noise distribution, which itself is
-not smooth and may be split in-between grid boundaries.)  As in
+$\Delta = 0.5$, all following @Sethi2005. As in
 @Sethi2005, the discounting rate is set at 5%, the reward function
 places a fixed price per unit of fish harvested, with no cost to
 harvesting effort.  (The appendices explore the robustness of these
-results to variation in each of these choices.)
-
-
-```{r include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, cache = TRUE)
-```
-
-
-```{r libraries, message=FALSE}
-library("dplyr")
-library("tidyr")
-library("ggplot2")
-library("multipleuncertainty")
-```
-
+results to variation in each of these choices.) 
 
 ```{r compute}
 fig3 <- function(noise){  
@@ -232,54 +232,38 @@ data.frame(noise = c("uniform", "lognormal")) %>%
 df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
     facet_wrap(~ noise) + 
-    xlab("Stock") + 
-    ylab("Escapement") + 
+    xlab("Measured Stock Size") + 
+    ylab("Proposed Escapement") + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
     theme_bw()
 ```
 
 
-The most salient result seen in Figure 1 is that both implementation
-error and measurement error can result in substantial deviations
-from the classic "Constant Escapment" result of @Reed1979.  Such a result 
-also stands in contrast to the conclusions of @Sethi2005, which emphasize
-that only measurement error can be responsible for significant deviations.
-@Sethi2005 consider only the case of uniform noise, and examine the optimal
-policy only for measured stock sizes less than or equal to carrying capacity
-(despite the fact that under the model assumption of large and uniformly
-distributed measurement noise, values greater than carrying capacity 
-will be not unfrequently realized even while true stocks are likely to remain
-below that value.)
+The left panel of Figure 1 is thus almost directly comparable @Sethi2005's Figure 3,
+Our plot differs in three regards: First, we plot
+the optimal policy for measured stock values that exceed the carrying capacity
+(measured stock sizes up to 150), instead of cutting off the policy at carrying
+capacity (stock size of 100). In the absence of measurement error the policy
+above carrying capacity is of little interest, since such stock sizes are rarely
+realized.  Once we incorporate measurment error, observations of values in this 
+region are not at all unlikely (even if the true stock size is consistently below
+carrying capacity), and thus some useful insight can be found by examining these
+policies.  Second, as described in the methods, we have ommitted the spline smoothing
+step to show the policy that results directly from the discrete optimization, and 
+thus reveals the numerical discontinuities that result. Note that the impact of 
+discritization is more acute in the case of uniform noise distribution, which itself is
+not smooth and may be split in-between grid boundaries.  Finally, we have added the additional
+curve showing the case when all noise sources are set to the high variance levels to permit
+further comparison of the interactions between noise sources.  The right panel shows 
+identical conditions but for the replacement of the uniform noise assumption
+with lognormal noise of equivalent variance. 
 
-
-
-
-
-
-
-Interpretation of this figure is slightly more challenging due to
-the fact that it compares models in which all sources of noise are
-present in each case, but in different magnitudes. Observe that at
-very large stock estimates, all policies show a deviation from
-constant escapement (while @Reed1979 proves that the optimal solution for
-stochastic growth without other sources of uncertainty is a constant escapement
-policy even for stock sizes exceeding th ecarrying capacity). The deviations 
-seen here are not numerical artifact, but due to the precence of small but
-non-zero measurement error, and can be understood as follows:
-
-Though stock sizes significantly larger than
-carrying capacity are unlikely in practice, recall that the policy
-reflects *measured* stock sizes, not true stock sizes, where this
-range is more feasible to imagine (and particularly under the
-assumption of uniform measurement error shown here, quite likely
-to be observed in the models considered here).
-
-Provided the numerical algorithm is adjusted to treat the case of
-zero noise of a given type, we can generate a somewhat cleaner
-comparison beween cases with only a single source of noise (or none
-at all), Figure 2.  Observe that the deterministic and growth-only
-solutions now recover the constant-escapement rule exactly.
-
+In Figure 1, all sources of noise are present in each plot at "low" levels, while varying
+which noise source is present at a "high" level.  While this permits direct comparison
+to @Sethi2005, it is often instructive to consider each form of uncertainty individually
+while removing the other sources of uncertainty.  Such a plot is shown in Figure 2.
+Observe that the deterministic and growth-only solutions now recover the 
+constant-escapement rule exactly, as expected.
 
 ```{r compute2}
 fig3 <- function(noise){  
@@ -309,15 +293,188 @@ data.frame(noise = c("uniform", "lognormal")) %>%
 
 ```
 
-```{r figure2}
+```{r figure2, dependson="compute2"}
 df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
     facet_wrap(~ noise) + 
-    xlab("Stock") + 
-    ylab("Escapement") + 
+    xlab("Measured Stock Size") + 
+    ylab("Proposed Escapement") + 
     coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
     theme_bw()
 ```
+
+
+
+<!--
+
+- Deviation from constant escapement
+- Lognormal != uniform noise
+- 
+
+-->
+
+
+The most salient result seen in Figures 1 & 2 is that both implementation
+error and measurement error can both result in substantial deviations
+from the classic "Constant Escapment" result of @Reed1979.  Such a result 
+also stands in contrast to the conclusions of @Sethi2005, which emphasize
+that only measurement error can be responsible for significant deviations.
+
+
+Understanding how the optimal strategy differs from the classic constant escapement
+solution is also of interest.  In particular, it is interesting to ask if or when accounting
+for these additional uncertainties will make the resulting policy more conservative or less
+conservative than the policy based on growth noise alone.  Recall that @Reed1979 proves that
+accounting for uncertainty in the growth process can only make the solution _more_ conservative,
+but not less: $S >= D$, where $S$ is the constant escapement level of the stochastic model and
+$D$ that of the deterministic model.  Moreover, Reed showed that for sufficiently small noise,
+$S=D$.  
+
+The impacts of measurement and implementation uncertainties are more complex: sometimes
+more conservative, sometimes more agressive.  In general, very large measured stock
+sizes are treated more conservatively after accounting for measurement error than they
+would be if that error were ignored.  For stock sizes larger than carrying capacity, 
+this is intuitive: such values are much more likely to be the result of measurement error.
+
+Note that the same conservative pattern holds true for implementation error, even when
+the measured stock sizes are known exactly (Figure 2, implementation error policy).  In
+this case, the inituition is different but equally straight forward: because implementation
+error is multiplicative, large harvests come with much greater variance than small harvests.
+For instance, under the uniform noise assumption a quota set at 100 is just as likely to harvest
+150 as it is to harvest 100 units.  
+
+A similar intuition operates at the other extreme.  The combination of population growth and
+the harvest policy push the stock towards the optimal escapement level.  Therefore, Measurements of
+stock sizes significantly below that target escapement are most likely to result from measurement
+error (when present) underestimating the stock size.  Consequently, the quota set for small stock
+sizes is higher (thus the escapement is lower) under the assumption of measurment error than without it.
+
+The intepretation for implementation error is more subtle, and indeed the effect is less extreme. Just
+as for very high stock sizes the proposed quotas were very large and very uncertain, for low stock sizes
+the quotas are very small. In fact, for the deterministic case, quotas are zero below constant escapement
+level.  If we add only implementation noise (Figure 2), below the deterministic constant escapement level
+there is no reason to deviate from the deterministic policy: a quota of zero gets a harvest of exactly zero.
+As the stock sizes get just above this, harvesting begins at small amounts.  If only implementation error
+is present, it makes sense to harvest slightly more (setting escapement slightly lower) than in the deterministic
+case because the value (dock-side revenue) from under-harvesting a little bit is less than from over-harvesting
+due to the discounting and concave nature of the stock-recruitment curve.  (Knocking the population down a little too low 
+means you derive the immediate benefit of the higher harvest, at the cost of the stock next year being lower than it would
+be a the optimal harvest.  Fishing too little imposes an immediate cost of less harvest than optimal, and a slight
+benefit of higher-than-expected stock the following year.  However, future benefits are discounted, and growth
+rate at higher population densities slows).
+
+Implementation error can also interact with other forms of uncertainty to result in a more aggressive 
+harvest even for stock values measured below the deterministic constant escapement. By comparing the 
+results of all uncertainties set to "small" noise in Figure 1 to implementation uncertainty being large
+(while others are small but non-zero), we see that non-zero quotas begin even before they would under
+the same amount of measurement error but smaller implementation error (i.e. the more agressive quota 
+seen for measured stock sizes below the deterministic escapement is not driven by measurement uncertainty alone.)  
+At small stock sizes, the possibility of bumper growth (from the stochastic recruitment process) and the possibility of understimated 
+stock sizes make it worthwhile to set a more agressive quota when implementation is very uncertain than when it is 
+relatively precise.  
+
+
+<!-- Simulate dynamics and histogram to show where measurements and true values spend most of their time under optimal management-->
+```{r}
+
+  sigma_g = 0.1
+  sigma_m = 0.5
+  sigma_i = 0.1
+  f = "logistic"
+  noise_dist = "uniform"
+  delta <- 0.05
+  grid <- seq(0,250,length=401)
+  
+  S <- multiple_uncertainty(f = f, 
+                            x_grid = grid, 
+                            sigma_g = sigma_g, 
+                            sigma_m = sigma_m, 
+                            sigma_i = sigma_i,
+                            delta = delta,
+                            noise_dist = noise_dist)
+```
+  
+```{r}  
+    sims <- function(i) 
+          scenario(S, f = f, 
+                    x_grid = grid,
+                    x0= 75,
+                    Tmax = 500,
+                    sigma_g = sigma_g, 
+                    sigma_m = sigma_m, 
+                    sigma_i = sigma_i,
+                    noise_dist = noise_dist) 
+sim <- purrr::map_df(1:100, sims)
+
+sim %>% 
+  mutate(s = x - h) %>% 
+  select(t, x, y, s) %>% 
+  tidyr::gather(variable, value, -t) %>%
+  ggplot() + geom_density(aes(value, fill=variable), alpha=0.2)
+    
+```
+
+
+While such arguments help us understand the edge behavior, only the precise optimal policy calculation
+can deterime exactly where the policies cross -- that is, where increased uncertainties results in a more 
+conservative or more agressive fishing quota.  Under uniform noise, we see a stark difference between only 
+implementation uncertainty and only measurement uncertainty in the range of measured stock sizes that is of greatest
+interest (e.g. most likely to be observed): As measurement uncertainty increases, the policy is consistently more agressive (higher quotas, lower escapement)
+across this entire range, while as implementation uncertainty increases the policy becomes more conservative (lower quotas, higher escapement).
+
+This is by no means a generic result.  Under lognormal noise, the results of measurement vs implementation
+uncertainty are far more similar.  Policy under implementation error is always more conservative than an equivalent magnitude
+of measurement error, all else equal, but measurement error crosses the deterministic policy far sooner.  
+
+
+
+If we consider much smaller growth rates, the pattern is dramatically different:
+
+
+```{r }
+fig3 <- function(noise){  
+  grid <- seq(0, 200, by=0.5)
+  
+  ## Scale noise comparably for log-normal vs uniform
+  if(noise == "lognormal"){
+    lo <- 0 #0.0577 # 0.1 / sqrt(3)
+    hi <- 0.2887 # 0.5 / sqrt(3)
+  } else {
+    lo <- 0.0
+    hi <- 0.5
+  }
+  model <- function(x, h) logistic(x, h, r = 0.1)
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = lo, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = hi, sigma_m = lo, sigma_i = lo, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = lo, sigma_m = hi, sigma_i = lo, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = hi, noise_dist = noise_dist)
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+df <- 
+data.frame(noise = c("uniform", "lognormal")) %>%
+  dplyr::group_by(noise) %>%
+  dplyr::do(fig3(.$noise))
+
+```
+
+```{r, dependson=-1}
+df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_wrap(~ noise) + 
+    xlab("Measured Stock Size") + 
+    ylab("Proposed Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+```
+
+
+If we use a compensating instead of overcompensating recruitment function such as Beverton-Holt, the pattern is also quite different.
+
+
+The magnitude of the noise makes some difference as well, with larger magnitudes driving earlier crossing points.
 
 
 
