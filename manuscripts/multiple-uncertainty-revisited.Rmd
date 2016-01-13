@@ -10,6 +10,8 @@ bibliography: citations.bib
 # Introduction
 
 
+- Influence of Reed 1979 in our understanding of management under uncertainty
+
 - Importance of multiple uncertainty
 
 - The surprising sparse history of approaches (at least in optimal fisheries)
@@ -76,7 +78,7 @@ $$ U(m_t, q_t)  = \int_x P(x_t | m_t)  \int_h P(h_t | q_t) R(x_t,h_t) dh_t dx_t 
 Computing the probability $P(h|q)$ is straight forward, as it follows
 immediately from the distribution from which we choose shocks $h_t
 = z_t^i q_t$.  However, the probability $P(x_t | m_t)$ is more
-subtle, as we have thus far only defined the inverse relation,
+subtle[^1], as we have thus far only defined the inverse relation,
 $P(m_t | x_t)$ by defining the shock $z_m^t$ in the expression $m_t
 = z_m^t x_t$.  The conditional probability can be reversed with the
 help of Bayes Law:
@@ -86,17 +88,27 @@ $$P(x_t | m_t ) = \frac{P(m_t | x_t) P(x_t)}{\int P(m_t | x_t) P(x_t) dx_t,}$$
 assuming a simple but naive choice of prior belief $P(x_t)$, a
 uniform prior. While it would be preferable to define a prior that
 was conditional on the previous measurements $m_{\{t-1\}\dots m_0}$,
-such a calculation is not ammenable to a stochastic dynamic programming
+this would forefit the Markovian assumption need to make the problem
+amenable to solution. Such a calculation is not ammenable to a stochastic dynamic programming
 approach, in which transition probabilities must be defined only
 in terms of the current state and would thus have to consider all
 possible previous states $m_{t-1}$, as well as current states $m_t$,
 in determining the optimal quota $q_t$.  The increased dimension
 problem is beyond our scope. The uniform prior neatly sidesteps
-this.[^1]  Though @Sethi2005 gloss over this detail in the text, a
-closer look at their code (personal comm.) confirms that they have
+this.[^2]  Though @Sethi2005 gloss over any detail about how $P(x_t | m_t)$
+is constructed, confirms that they have
 taken exactly this approach.
 
-[^1]: It is also possible to demonstrate that the qualitative
+[^1]: Introducing measurement uncertainty into Markov Decision Processes
+is the focus of Partially Observed Markov Decision Processes (POMDP) research,
+an active area in artificial intelligence community. Solutions do not use dynamic
+programming algorithm, relying instead on a variety of approximation algorithms
+which the mathematical biology community would recognize more as Expectation-Maximization (EM)
+algorithms for Hidden Markov Models.  These models permit active or online learning
+about the process, rather than the single optimal policy functions considered here.
+Their analysis is beyond the scope of this paper.  
+
+[^2]: It is also possible to demonstrate that the qualitative
 patterns shown here are not sensitive to the precise choice of the
 resulting probability distribution for $P( x_t | m_t)$, see
 [results](https://github.com/cboettig/multiple_uncertainty/blob/6f05467a89d355c4aef0a956a614ca03009b92d3/inst/notebook/2015-12-18-different-inverses.md).
@@ -203,8 +215,9 @@ fig3 <- function(noise){
   growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = lo, sigma_i = lo, noise_dist = noise)
   measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = hi, sigma_i = lo, noise_dist = noise)
   implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = hi, noise_dist = noise)
+  large     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = hi, sigma_i = hi, noise_dist = noise)
   df <- data.frame(y_grid = grid, small = small, growth = growth, 
-                   measure = measure, implement = implement) %>%
+                   measure = measure, implement = implement, large = large) %>%
     tidyr::gather(scenario, value, -y_grid)
 }
 
@@ -215,7 +228,7 @@ data.frame(noise = c("uniform", "lognormal")) %>%
 
 ```
 
-```{r figure1}
+```{r figure1, dependson="compute"}
 df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
     facet_wrap(~ noise) + 
@@ -271,10 +284,19 @@ solutions now recover the constant-escapement rule exactly.
 ```{r compute2}
 fig3 <- function(noise){  
   grid <- seq(0, 200, by=0.5)
-  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0., sigma_m = 0., sigma_i = 0., noise_dist = noise)
-  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0., sigma_i = 0., noise_dist = noise)
-  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0., sigma_m = 0.5, sigma_i = 0., noise_dist = noise)
-  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0., sigma_m = 0., sigma_i = 0.5, noise_dist = noise)
+  
+  ## Scale noise comparably for log-normal vs uniform
+  if(noise == "lognormal"){
+    hi <- 0.2887 # 0.5 / sqrt(3)
+  } else {
+    hi <- 0.5
+  }
+  lo <- 0.0
+  
+  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = lo, noise_dist = noise)
+  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = lo, sigma_i = lo, noise_dist = noise)
+  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = hi, sigma_i = lo, noise_dist = noise)
+  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = hi, noise_dist = noise)
   df <- data.frame(y_grid = grid, none = small, growth = growth, 
                    measure = measure, implement = implement) %>%
     tidyr::gather(scenario, value, -y_grid)

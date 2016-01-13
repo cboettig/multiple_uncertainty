@@ -19,15 +19,25 @@ knitr::opts_chunk$set(cache = TRUE)
 ## Focal result
 
 
-```{r}
+```{r focal}
 fig3 <- function(noise){  
   grid <- seq(0, 200, by=0.5)
-  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise)
-  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise)
-  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1, noise_dist = noise)
-  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5, noise_dist = noise)
+  
+  ## Scale noise comparably for log-normal vs uniform
+  if(noise == "lognormal"){
+    lo <- 0.0577 # 0.1 / sqrt(3)
+    hi <- 0.2887 # 0.5 / sqrt(3)
+  } else {
+    lo <- 0.1
+    hi <- 0.5
+  }
+  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = lo, noise_dist = noise)
+  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = lo, sigma_i = lo, noise_dist = noise)
+  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = hi, sigma_i = lo, noise_dist = noise)
+  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = hi, noise_dist = noise)
+  large     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = hi, sigma_i = hi, noise_dist = noise)
   df <- data.frame(y_grid = grid, small = small, growth = growth, 
-                   measure = measure, implement = implement) %>%
+                   measure = measure, implement = implement, large = large) %>%
     tidyr::gather(scenario, value, -y_grid)
 }
 
@@ -38,7 +48,7 @@ data.frame(noise = c("uniform", "lognormal")) %>%
 
 ```
 
-```{r}
+```{r dependson = -1}
 df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
     facet_wrap(~ noise) + 
@@ -76,7 +86,7 @@ expand.grid(max = c(150, 200, 300, 400),
 
 
 
-```{r fig.width = 9, fig.height = 12}
+```{r fig.width = 9, fig.height = 12, dependson=-1}
 plt <- function(df)
   df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
@@ -102,7 +112,7 @@ expand.grid(max = c(150, 200, 300, 400),
 
 
 
-```{r fig.width = 9, fig.height = 12}
+```{r fig.width = 9, fig.height = 12 dependson=-1}
 df %>% plt()
 ```
 
@@ -152,7 +162,7 @@ df %>% filter(noise_dist == "lognormal") %>%
 ```
 
 
-```{r fig.width = 6, fig.height = 8}
+```{r fig.width = 6, fig.height = 8, dependson=-2}
 df %>% filter(noise_dist == "uniform") %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
@@ -201,7 +211,7 @@ expand.grid(model = c("logistic", "bevertonholt", "ricker", "gompertz"),
 ```
 
 
-```{r fig.width = 6, fig.height = 8}
+```{r fig.width = 6, fig.height = 8, dependson=-1}
 df %>%
   ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
