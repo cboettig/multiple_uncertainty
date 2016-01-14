@@ -474,6 +474,47 @@ df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) +
 If we use a compensating instead of overcompensating recruitment function such as Beverton-Holt, the pattern is also quite different.
 
 
+```{r }
+fig3 <- function(noise){  
+  grid <- seq(0, 200, by=0.5)
+  
+  ## Scale noise comparably for log-normal vs uniform
+  if(noise == "lognormal"){
+    lo <- 0 #0.0577 # 0.1 / sqrt(3)
+    hi <- 0.2887 # 0.5 / sqrt(3)
+  } else {
+    lo <- 0.0
+    hi <- 0.5
+  }
+  model <- "bevertonholt"
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = lo, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = hi, sigma_m = lo, sigma_i = lo, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = lo, sigma_m = hi, sigma_i = lo, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = hi, noise_dist = noise_dist)
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+df <- 
+data.frame(noise = c("uniform", "lognormal")) %>%
+  dplyr::group_by(noise) %>%
+  dplyr::do(fig3(.$noise))
+
+```
+
+```{r, dependson=-1}
+df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_wrap(~ noise) + 
+    xlab("Measured Stock Size") + 
+    ylab("Proposed Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+```
+
+
+
 The magnitude of the noise makes some difference as well, with larger magnitudes driving earlier crossing points.
 
 
