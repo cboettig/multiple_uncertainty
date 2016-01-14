@@ -1,7 +1,6 @@
 ---
 title: "Fig3 robustness appendix"
 author: "Carl Boettiger"
-date: "9/24/2015"
 output: 
   md_document:
     variant: markdown_github
@@ -15,50 +14,6 @@ library("multipleuncertainty")
 library("parallel")
 knitr::opts_chunk$set(cache = TRUE)
 ```
-
-## Focal result
-
-
-```{r focal}
-fig3 <- function(noise){  
-  grid <- seq(0, 200, by=0.5)
-  
-  ## Scale noise comparably for log-normal vs uniform
-  if(noise == "lognormal"){
-    lo <- 0.0577 # 0.1 / sqrt(3)
-    hi <- 0.2887 # 0.5 / sqrt(3)
-  } else {
-    lo <- 0.1
-    hi <- 0.5
-  }
-  small     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = lo, noise_dist = noise)
-  growth    <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = lo, sigma_i = lo, noise_dist = noise)
-  measure   <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = hi, sigma_i = lo, noise_dist = noise)
-  implement <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = lo, sigma_m = lo, sigma_i = hi, noise_dist = noise)
-  large     <- multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = hi, sigma_m = hi, sigma_i = hi, noise_dist = noise)
-  df <- data.frame(y_grid = grid, small = small, growth = growth, 
-                   measure = measure, implement = implement, large = large) %>%
-    tidyr::gather(scenario, value, -y_grid)
-}
-
-df <- 
-data.frame(noise = c("uniform", "lognormal")) %>%
-  dplyr::group_by(noise) %>%
-  dplyr::do(fig3(.$noise))
-
-```
-
-```{r dependson = -1}
-df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
-    geom_line()  + 
-    facet_wrap(~ noise) + 
-    xlab("Stock") + 
-    ylab("Escapement") + 
-    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
-    theme_bw()
-```
-
------------------
 
 ## Results are robust to grid
 

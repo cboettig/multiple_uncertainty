@@ -1,0 +1,83 @@
+---
+title: "Fig3 robustness appendix"
+author: "Carl Boettiger"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+library("parallel")
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+## Alternate reward functions
+
+Consider a linear cost term to harvest, and possible quadratic term ("diminishing returns", 
+whereby small increases in harvest effort are relatively cheap, but achieving very large
+harvests is disproportionally more expensive).
+
+```{r}
+cores <- parallel::detectCores()
+cores <- 1
+
+fig3 <- function(cost, dr, noise){  
+  grid <- seq(0, 200, by = 0.5)
+  price <- 1
+  profit <- function(x,h) price * pmin(x,h) - cost * h - dr * h ^ 2
+  
+  
+  ## solve optimization in parallel is stll n-cores x as memory intensive
+  o <- mclapply(
+    list(small = c(g = 0.1, m = 0.1, i = 0.1),
+         growth = c(g = 0.5, m = 0.1, i = 0.1),
+         measure = c(g = 0.1, m = 0.5, i = 0.1),
+         implement = c(g = 0.1, m = 0.1, i = 0.5)), 
+    function(s)
+      ## Uses parallel BLAS (if available) 
+      multiple_uncertainty(f = logistic, x_grid = grid, sigma_g = s[["g"]], sigma_m = s[["m"]], 
+                           sigma_i = s[["i"]], noise_dist = as.character(noise), profit_fn = profit),
+    mc.cores = cores)
+  
+  df <- data.frame(y_grid = grid, small = o$small, growth = o$growth, 
+                   measure = o$measure, implement = o$implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+## parallelization via multi-dplyr much too memory intensive
+expand.grid(cost = c(0, 0.05, 0.5),
+            dr = c(0, 0.001, .01),
+            noise = c("uniform", "lognormal")) %>%
+  dplyr::group_by(cost, dr, noise) %>%
+  dplyr::do(fig3(.$cost, .$dr, .$noise)) -> df
+```
+
+```{r}
+df %>% 
+  dplyr::filter(noise == "uniform") %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(cost ~ dr) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw() + ggtitle("Uniform Noise")
+```
+
+```{r}
+df %>% 
+  dplyr::filter(noise == "lognormal") %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(cost ~ dr) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw() + ggtitle("Lognormal Noise")
+```
+
+

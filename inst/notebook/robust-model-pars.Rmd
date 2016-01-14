@@ -1,0 +1,101 @@
+---
+title: "Fig3 robustness appendix"
+author: "Carl Boettiger"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+library("parallel")
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+
+## Robustness to model parameters
+
+```{r}
+fig3 <- function(r, noise_dist){  
+ # grid <- seq(0, 200, length = 401)
+  grid <- seq(0, 150, by=1)
+  model <- function(x, h) logistic(x, h, r)
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5, noise_dist = noise_dist)
+  ## Combine records by scenario
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+
+expand.grid(r = c(0.1, 0.5, 1, 2), 
+            noise_dist = c("uniform", "lognormal")) %>%
+  dplyr::group_by(r, noise_dist) %>%
+  dplyr::do(fig3(.$r, .$noise_dist)) -> df
+
+```
+
+
+```{r fig.width = 6, fig.height = 8}
+df %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(r ~ noise_dist) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+
+```
+
+
+Here we do see a significant influence of the growth rate on the overall pattern.  
+
+
+
+It is particularly curious that we see the relation between the "all low" and "large growth" uncertainty change with changing `r` values.  We repeat this, considering a single noise source at a time,
+
+
+```{r}
+fig3 <- function(r, noise_dist){  
+ # grid <- seq(0, 200, length = 401)
+  grid <- seq(0, 150, by=1)
+  model <- function(x, h) logistic(x, h, r)
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.0, sigma_m = 0.0, sigma_i = 0.0, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.5, sigma_m = 0.0, sigma_i = 0.0, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.0, sigma_m = 0.5, sigma_i = 0.0, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.0, sigma_m = 0.0, sigma_i = 0.5, noise_dist = noise_dist)
+  ## Combine records by scenario
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+
+expand.grid(r = c(0.1, 0.5, 1, 2), 
+            noise_dist = c("uniform", "lognormal")) %>%
+  dplyr::group_by(r, noise_dist) %>%
+  dplyr::do(fig3(.$r, .$noise_dist)) -> df
+
+```
+
+
+```{r fig.width = 6, fig.height = 8}
+df %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(r ~ noise_dist) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+
+```
+
+

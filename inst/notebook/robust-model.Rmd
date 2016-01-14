@@ -1,0 +1,98 @@
+---
+title: "Fig3 robustness appendix"
+author: "Carl Boettiger"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+library("parallel")
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+## Robustness to model
+
+We consider a variety of functional forms for the population growth model. We use the following functional forms for the models:
+
+```{r}
+logistic
+bevertonholt
+ricker
+gompertz
+allen
+```
+
+
+```{r warning=FALSE}
+fig3 <- function(model, noise_dist){  
+  grid <- seq(0, 200, length = 401)
+  model <- get(as.character(model))
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.5, sigma_m = 0.1, sigma_i = 0.1, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.5, sigma_i = 0.1, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = 0.1, sigma_m = 0.1, sigma_i = 0.5, noise_dist = noise_dist)
+  ## Combine records by scenario
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+
+
+expand.grid(model = c("logistic", "bevertonholt", "ricker", "gompertz"), 
+            noise_dist = c("uniform", "lognormal")) %>%
+  dplyr::group_by(model, noise_dist) %>%
+  dplyr::do(fig3(.$model, .$noise_dist)) -> df
+
+```
+
+
+```{r fig.width = 6, fig.height = 8, dependson=-1}
+df %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(model ~ noise_dist) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw()
+
+```
+
+
+
+## Visualizing models at different parameter values
+
+First we include plots of the growth function at different
+
+```{r}
+case <- function(model, r){
+  x <- seq(0,200, by=1)
+  f <- get(as.character(model))
+  data.frame(x = x, f = sapply(x, f, h = 0, r = r))
+}
+```
+
+
+```{r}
+options(stringsAsFactors = FALSE)
+
+expand.grid(model = c("logistic", "bevertonholt", "ricker", "gompertz", "allen"), 
+            r = c(0.1, 0.5, 0.75, 1)) %>%
+  dplyr::group_by(model, r) %>%
+  dplyr::do(case(.$model, .$r)) -> 
+  df
+
+ggplot(df, aes(x = x, y = f, color = model)) + 
+  geom_line() + 
+  #geom_segment(aes(x = 0, xend = 100, y = 100, yend = 100), col='black', linetype = 2) + 
+  #geom_segment(aes(x = 100, xend = 100, y = 0, yend = 100), col='black', linetype = 2) +
+  facet_grid(model ~ r)
+
+```
+
+Recall or observe that the parameter `r` does not change the carrying capacity of the Logistic, Ricker or Allen models, but does for the Beverton-Holt and Gompertz model.  This makes it difficult to directly consider how 

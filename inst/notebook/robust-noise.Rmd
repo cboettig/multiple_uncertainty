@@ -1,0 +1,71 @@
+---
+title: "Fig3 robustness appendix"
+author: "Carl Boettiger"
+output: 
+  md_document:
+    variant: markdown_github
+---
+
+```{r, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("multipleuncertainty")
+library("parallel")
+knitr::opts_chunk$set(cache = TRUE)
+```
+
+## Robustness to noise level
+
+We consider the results across a range of possible values for the "low" and "high" noise limits chosen. 
+
+```{r warning=FALSE}
+fig3 <- function(low, high, noise_dist){  
+  grid <- seq(0, 200, length = 401)
+  model <- "logistic"
+  small     <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = low, sigma_m = low, sigma_i = low, noise_dist = noise_dist)
+  growth    <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = high, sigma_m = low, sigma_i = low, noise_dist = noise_dist)
+  measure   <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = low, sigma_m = high, sigma_i = low, noise_dist = noise_dist)
+  implement <- multiple_uncertainty(f = model, x_grid = grid, sigma_g = low, sigma_m = low, sigma_i = high, noise_dist = noise_dist)
+  ## Combine records by scenario
+  df <- data.frame(y_grid = grid, small = small, growth = growth, 
+                   measure = measure, implement = implement) %>%
+    tidyr::gather(scenario, value, -y_grid)
+}
+```
+
+```{r warning=FALSE}
+expand.grid(low = c(0, 0.01, 0.1), high = c(0.2, 0.3, 0.4, 0.5, 0.8, 0.9), noise_dist = c("lognormal", "uniform")) %>%
+  dplyr::group_by(low, high, noise_dist) %>%
+  dplyr::do(fig3(.$low, .$high, .$noise_dist)) -> df
+
+```
+
+
+
+```{r fig.width = 6, fig.height = 8, dependson=-1}
+df %>% filter(noise_dist == "lognormal") %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(high ~ low) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw() + 
+    ggtitle("Lognormal noise")
+
+```
+
+
+```{r fig.width = 6, fig.height = 8, dependson=-2}
+df %>% filter(noise_dist == "uniform") %>%
+  ggplot(aes(x = y_grid, y = value, col = scenario)) + 
+    geom_line()  + 
+    facet_grid(high ~ low) + 
+    xlab("Stock") + 
+    ylab("Escapement") + 
+    coord_cartesian(xlim = c(0, 150), ylim = c(0,100)) + 
+    theme_bw() + 
+    ggtitle("Uniform noise")
+
+```
