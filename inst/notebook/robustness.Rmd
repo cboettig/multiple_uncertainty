@@ -112,7 +112,7 @@ expand.grid(max = c(150, 200, 300, 400),
 
 
 
-```{r fig.width = 9, fig.height = 12 dependson=-1}
+```{r fig.width = 9, fig.height = 12, dependson=-1}
 df %>% plt()
 ```
 
