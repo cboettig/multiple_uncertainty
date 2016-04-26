@@ -2,7 +2,9 @@
 title: "Multiple Uncertainty Revisited"
 author: "Carl Boettiger"
 date: "11/30/2015"
-output: pdf_document
+output: 
+  pdf_document:
+    keep_tex: true
 bibliography: citations.bib
 ---
 
@@ -36,6 +38,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, cache = TR
 library("dplyr")
 library("tidyr")
 library("ggplot2")
+library("multidplyr")
 library("multipleuncertainty")
 ```
 
@@ -199,7 +202,7 @@ places a fixed price per unit of fish harvested, with no cost to
 harvesting effort.  (The appendices explore the robustness of these
 results to variation in each of these choices.) 
 
-```{r compute}
+```{r function}
 fig3 <- function(noise){  
   grid <- seq(0, 200, by=0.5)
   
@@ -220,15 +223,22 @@ fig3 <- function(noise){
                    measure = measure, implement = implement, large = large) %>%
     tidyr::gather(scenario, value, -y_grid)
 }
+```
+
+```{r compute, dependson='function'}
+cluster <- create_cluster(2)
 
 df <- 
 data.frame(noise = c("uniform", "lognormal")) %>%
-  dplyr::group_by(noise) %>%
+  dplyr::group_by(noise) %>% 
+  multidplyr::partition(noise, cluster = cluster) %>%
   dplyr::do(fig3(.$noise))
 
 ```
 
 ```{r figure1, dependson="compute"}
+
+
 df %>% ggplot(aes(x = y_grid, y = value, col = scenario)) + 
     geom_line()  + 
     facet_wrap(~ noise) + 
