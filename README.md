@@ -1,4 +1,5 @@
-[![Build Status](https://travis-ci.org/cboettig/multiple_uncertainty.svg?branch=master)](https://travis-ci.org/cboettig/multiple_uncertainty)
+[![Build Status](https://travis-ci.org/cboettig/multiple_uncertainty.svg?branch=master)](https://travis-ci.org/cboettig/multiple_uncertainty) [![DOI](https://zenodo.org/badge/7348253.svg)](https://zenodo.org/badge/latestdoi/7348253)
+
 
 Multiple Uncertainty
 ====================
